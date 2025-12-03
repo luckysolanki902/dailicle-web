@@ -1,9 +1,14 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { BookText, Sparkles } from "lucide-react";
 
 export default function Loading() {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <motion.div

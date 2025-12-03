@@ -50,7 +50,10 @@ export function Hero({ todayTopic }: HeroProps) {
           <h2 className="text-xl md:text-2xl font-medium text-foreground/70 max-w-2xl leading-relaxed">
             The antidote to doomscrolling.
             <br />
-            <span className="text-foreground/50">One deeply researched essay on philosophy, tech, and culture.</span>
+            <span className="text-sm md:text-base text-foreground/50">
+              One transformative essay each day - distilled from philosophy, psychology, and startup wisdom. 
+              For curious minds, ambitious builders, and anyone seeking insights from the greatest thinkers.
+            </span>
           </h2>
         </motion.div>
 
