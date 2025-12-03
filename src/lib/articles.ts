@@ -32,9 +32,18 @@ export async function getLatestArticle() {
   const client = await clientPromise;
   const db = client.db(DB_NAME);
   
+  // Only fetch fields needed for hero display
   const article = await db
     .collection(COLLECTION)
-    .find({})
+    .find({}, {
+      projection: {
+        _id: 1,
+        topic_title: 1,
+        topic_rationale: 1,
+        reading_time_minutes: 1,
+        // Exclude heavy fields like article_markdown
+      }
+    })
     .sort({ date: -1 })
     .limit(1)
     .next();
@@ -88,9 +97,23 @@ export async function getArticles(page = 1, limit = 10, search = "") {
     };
   }
 
+  // Only fetch fields needed for list view, not the full article_markdown
   const articles = await db
     .collection(COLLECTION)
-    .find(query)
+    .find(query, {
+      projection: {
+        _id: 1,
+        topic_title: 1,
+        topic_rationale: 1,
+        category: 1,
+        tags: 1,
+        estimated_wordcount: 1,
+        reading_time_minutes: 1,
+        date: 1,
+        date_str: 1,
+        // Exclude article_markdown, youtube, and papers for performance
+      }
+    })
     .sort({ date: -1 })
     .skip(skip)
     .limit(limit)
