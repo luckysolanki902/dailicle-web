@@ -13,50 +13,77 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!articleData) {
     return {
-      title: "Article Not Found",
+      title: "Article Not Found - Dailicle",
       description: "The requested article could not be found.",
     };
   }
 
   const description = articleData.topic_rationale || `Read this deeply researched essay on ${articleData.category || 'various topics'}. A ${articleData.reading_time_minutes}-minute read exploring ${articleData.topic_title}.`;
+  const fullTitle = `${articleData.topic_title} - Dailicle`;
+  const ogTitle = `${articleData.topic_title} | Dailicle`;
   
   return {
-    title: `${articleData.topic_title}`,
+    title: fullTitle,
     description: description.slice(0, 160),
     keywords: [
       articleData.category,
-      ...articleData.tags || [],
+      ...(articleData.tags || []),
       "deep reading",
       "thoughtful essay",
       "long-form article",
       "intellectual content",
+      "daily essay",
+      "research-based",
     ],
-    authors: [{ name: "Lucky Solanki" }],
+    authors: [{ name: "Lucky Solanki", url: "https://dailicle.vercel.app" }],
+    creator: "Lucky Solanki",
+    publisher: "The Dailicle",
     openGraph: {
-      title: articleData.topic_title,
+      title: ogTitle,
       description: description.slice(0, 200),
-      url: `https://dailicle.com/read/${id}`,
+      url: `https://dailicle.vercel.app/read/${id}`,
+      siteName: "The Dailicle",
+      locale: "en_US",
       type: "article",
       publishedTime: articleData.date_str,
+      modifiedTime: articleData.date_str,
       authors: ["Lucky Solanki"],
+      section: articleData.category,
       tags: articleData.tags || [articleData.category],
       images: [
         {
-          url: `/og-article.png`,
+          url: `https://dailicle.vercel.app/og-article.png`,
           width: 1200,
           height: 630,
           alt: articleData.topic_title,
+          type: "image/png",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: articleData.topic_title,
+      site: "@dailicle",
+      creator: "@luckysolanki",
+      title: ogTitle,
       description: description.slice(0, 200),
-      images: [`/og-article.png`],
+      images: {
+        url: `https://dailicle.vercel.app/og-article.png`,
+        alt: articleData.topic_title,
+      },
     },
     alternates: {
-      canonical: `https://dailicle.com/read/${id}`,
+      canonical: `https://dailicle.vercel.app/read/${id}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }
@@ -79,7 +106,7 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
     papers: articleData.papers,
   };
   
-  // Structured Data for SEO
+  // Structured Data for SEO (JSON-LD)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -88,27 +115,35 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
     "author": {
       "@type": "Person",
       "name": "Lucky Solanki",
-      "url": "https://dailicle.com"
+      "url": "https://dailicle.vercel.app"
     },
     "publisher": {
       "@type": "Organization",
       "name": "The Dailicle",
+      "url": "https://dailicle.vercel.app",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://dailicle.com/logo.png"
+        "url": "https://dailicle.vercel.app/logo.png"
       }
     },
     "datePublished": articleData.date_str,
     "dateModified": articleData.date_str,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://dailicle.com/read/${id}`
+      "@id": `https://dailicle.vercel.app/read/${id}`
     },
-    "image": "https://dailicle.com/og-article.png",
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://dailicle.vercel.app/og-article.png",
+      "width": 1200,
+      "height": 630
+    },
     "articleSection": articleData.category,
     "keywords": articleData.tags?.join(", ") || articleData.category,
     "wordCount": articleData.article_markdown?.split(/\s+/).length || 0,
     "timeRequired": `PT${articleData.reading_time_minutes}M`,
+    "inLanguage": "en-US",
+    "isAccessibleForFree": true,
     "citation": [
       ...(articleData.papers || []).map((paper: any) => ({
         "@type": "ScholarlyArticle",

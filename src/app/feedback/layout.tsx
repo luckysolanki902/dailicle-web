@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Feedback - Help Shape The Dailicle",
     description: "Share your thoughts and help us improve the daily reading experience.",
-    url: "https://dailicle.com/feedback",
+    url: "https://dailicle.vercel.app/feedback",
     type: "website",
   },
   twitter: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     description: "Share your thoughts and help us improve the daily reading experience.",
   },
   alternates: {
-    canonical: "https://dailicle.com/feedback",
+    canonical: "https://dailicle.vercel.app/feedback",
   },
   robots: {
     index: true,

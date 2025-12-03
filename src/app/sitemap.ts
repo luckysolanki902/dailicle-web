@@ -2,12 +2,12 @@ import { MetadataRoute } from 'next'
 import { getArticles } from '@/lib/articles'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://dailicle.com'
+  const baseUrl = 'https://dailicle.vercel.app'
   
-  // Get all articles for sitemap
-  const { articles } = await getArticles(1, 1000, '')
+  // Get all articles for sitemap - fetching more to ensure all articles are included
+  const { articles } = await getArticles(1, 10000, '')
   
-  // Static pages
+  // Static pages - only homepage and archive (removed manifesto and feedback)
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -16,31 +16,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${baseUrl}/manifesto`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
       url: `${baseUrl}/archive`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
-    {
-      url: `${baseUrl}/feedback`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
   ]
   
-  // Dynamic article pages
-  const articlePages: MetadataRoute.Sitemap = articles.map((article: {_id: string, date_str?: string}) => ({
+  // Dynamic article pages - all blog posts with proper metadata
+  const articlePages: MetadataRoute.Sitemap = articles.map((article: {_id: string, date_str?: string, date?: Date}) => ({
     url: `${baseUrl}/read/${article._id}`,
-    lastModified: new Date(article.date_str || new Date()),
+    lastModified: article.date_str ? new Date(article.date_str) : (article.date || new Date()),
     changeFrequency: 'monthly' as const,
-    priority: 0.7,
+    priority: 0.8,
   }))
   
   return [...staticPages, ...articlePages]

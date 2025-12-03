@@ -19,7 +19,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/_next/'],
       },
     ],
-    sitemap: 'https://dailicle.com/sitemap.xml',
-    host: 'https://dailicle.com',
+    sitemap: 'https://dailicle.vercel.app/sitemap.xml',
+    host: 'https://dailicle.vercel.app',
   }
 }

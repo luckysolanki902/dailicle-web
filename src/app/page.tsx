@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The Dailicle - One Transformative Essay Every Day",
     description: "Escape doomscrolling with deeply researched essays on psychology, philosophy, and startup wisdom. Published daily at 9 AM IST.",
-    url: "https://dailicle.com",
+    url: "https://dailicle.vercel.app",
     type: "website",
     images: [
       {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "https://dailicle.com",
+    canonical: "https://dailicle.vercel.app",
   },
 };
 
@@ -56,21 +56,21 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "The Dailicle",
-    "url": "https://dailicle.com",
+    "url": "https://dailicle.vercel.app",
     "description": "One deeply researched essay every day on psychology, philosophy, and startup wisdom.",
     "publisher": {
       "@type": "Organization",
       "name": "The Dailicle",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://dailicle.com/logo.png"
+        "url": "https://dailicle.vercel.app/logo.png"
       }
     },
     "potentialAction": {
       "@type": "ReadAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://dailicle.com/read/{id}",
+        "urlTemplate": "https://dailicle.vercel.app/read/{id}",
         "actionPlatform": [
           "http://schema.org/DesktopWebPlatform",
           "http://schema.org/MobileWebPlatform"
