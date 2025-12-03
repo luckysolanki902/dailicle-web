@@ -1,44 +1,127 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
 
 export function Sources() {
+  const sources = [
+    "Paul Graham Essays",
+    "Sam Altman Blog", 
+    "arXiv.org",
+    "Farnam Street",
+    "Wait But Why",
+    "Harvard Business Review",
+    "Nature Journal",
+    "First Round Review",
+    "James Clear",
+    "Derek Sivers",
+    "Tim Urban",
+    "Cal Newport"
+  ];
+
+  const books = [
+    "Thinking, Fast and Slow",
+    "The Lean Startup", 
+    "Sapiens",
+    "Atomic Habits",
+    "Zero to One",
+    "The Mom Test"
+  ];
+
   return (
     <section className="py-24 px-6 border-y border-foreground/10 bg-foreground/5">
-      <div className="max-w-5xl mx-auto text-center space-y-10">
-        <div className="space-y-2">
-          <p className="text-xs font-bold uppercase tracking-widest text-foreground/50">
-            Powered by research from
+      <div className="max-w-5xl mx-auto text-center space-y-12">
+        {/* Header */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-2">
+            <Sparkles size={16} className="text-foreground/40" />
+            <p className="text-xs font-bold uppercase tracking-widest text-foreground/50">
+              Curated by OpenAI Deep Research
+            </p>
+            <Sparkles size={16} className="text-foreground/40" />
+          </div>
+          <h3 className="text-3xl md:text-4xl font-bold text-foreground">
+            A well-researched essay every day at 9 AM sharp
+          </h3>
+          <p className="text-base md:text-lg text-foreground/60 max-w-2xl mx-auto">
+            Synthesized from world-class essayists, bloggers, research papers, and popular books
           </p>
-          <h3 className="text-2xl md:text-3xl font-bold text-foreground/80">World-Class Sources</h3>
+        </div>
+
+        {/* Sources Grid */}
+        <div className="space-y-10">
+          {/* Essayists & Bloggers */}
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
+              Including essays & blogs from
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 opacity-60 hover:opacity-100 transition-opacity duration-500">
+              {sources.map((source, i) => (
+                <motion.span 
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="text-sm md:text-base font-medium text-foreground"
+                >
+                  {source}
+                </motion.span>
+              ))}
+              <motion.span 
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: sources.length * 0.05 }}
+                className="text-sm md:text-base font-medium text-foreground/50"
+              >
+                + many more
+              </motion.span>
+            </div>
+          </div>
+
+          {/* Books */}
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
+              Insights from books like
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 opacity-60 hover:opacity-100 transition-opacity duration-500">
+              {books.map((book, i) => (
+                <motion.span 
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="text-sm md:text-base font-serif italic text-foreground"
+                >
+                  {book}
+                </motion.span>
+              ))}
+              <motion.span 
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: books.length * 0.05 }}
+                className="text-sm md:text-base font-serif italic text-foreground/50"
+              >
+                + hundreds more
+              </motion.span>
+            </div>
+          </div>
         </div>
         
-        <div className="flex flex-col items-center gap-8">
-          <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-            {["Paul Graham", "arXiv.org", "Harvard Business Review", "Nature", "First Round Review", "Famous Books"].map((source, i) => (
-              <motion.span 
-                key={i}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-xl md:text-2xl font-serif font-medium text-foreground"
-              >
-                {source}
-              </motion.span>
-            ))}
-          </div>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6 }}
-            className="text-xs text-foreground/30 font-medium max-w-md mx-auto"
-          >
-            And other trusted research papers, essays, and blogs.
-          </motion.p>
-        </div>
+        {/* Footer Note */}
+        <motion.p 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.8 }}
+          className="text-xs text-foreground/30 font-medium max-w-lg mx-auto pt-4"
+        >
+          We continuously pull from thousands of research papers, academic journals, YouTube videos, 
+          and trusted online resources — synthesizing the best ideas into one coherent essay daily.
+        </motion.p>
       </div>
     </section>
   );

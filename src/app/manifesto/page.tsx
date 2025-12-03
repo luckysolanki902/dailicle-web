@@ -2,11 +2,44 @@
 
 import { motion } from "framer-motion";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
+import type { Metadata } from "next";
 
+// Note: For client components, we'll handle SEO via Next.js metadata in a server wrapper
+// or add the metadata export in a layout.tsx for this route
 export default function ManifestoPage() {
+  // Structured Data for SEO
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Why Read Dailicle? A Manifesto for the Slow Web",
+    "description": "A rebellion against the noise of the internet. The philosophy behind one essay per day.",
+    "author": {
+      "@type": "Person",
+      "name": "Lucky Solanki"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Dailicle",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dailicle.com/logo.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://dailicle.com/manifesto"
+    },
+    "articleBody": "The internet was supposed to be a library. Instead, it became a casino. Dailicle is a rebellion against the noise. We publish exactly one essay per day."
+  };
+
   return (
-    <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
-      <ThemeSwitcher />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
+        <ThemeSwitcher />
       
       <article className="max-w-2xl mx-auto px-6 py-32 md:py-40">
         <motion.div
@@ -67,6 +100,7 @@ export default function ManifestoPage() {
           </div>
         </motion.div>
       </article>
-    </main>
+      </main>
+    </>
   );
 }
