@@ -12,7 +12,7 @@ const features = [
   {
     icon: Clock,
     title: "Respects Your Time",
-    description: "One essay a day. Delivered at 9 AM. No infinite scroll, no doomscrolling loops. Just 5 minutes of high-signal reading."
+    description: "One essay a day. Delivered at 9 AM. No infinite scroll, no doomscrolling loops. Just 25 minutes of high-signal reading."
   },
   {
     icon: Sparkles,
