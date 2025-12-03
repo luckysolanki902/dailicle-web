@@ -1,9 +1,8 @@
 import { ArchiveList } from "@/components/archive/ArchiveList";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import { getArticles } from "@/lib/articles";
-import { getSecondsUntil9AMIST } from "@/lib/cache";
 
-export const revalidate = getSecondsUntil9AMIST(); // Auto-clear cache at 9 AM IST, otherwise 1 hour
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function ArchivePage({
   searchParams,
