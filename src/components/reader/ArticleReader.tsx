@@ -106,9 +106,9 @@ export function ArticleReader({ article }: ArticleReaderProps) {
                           rel="noopener noreferrer"
                           className="group block p-4 rounded-xl bg-foreground/5 hover:bg-foreground/10 transition-colors"
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium truncate pr-4">{video.title}</span>
-                            <ExternalLink size={14} className="opacity-50 group-hover:opacity-100" />
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="text-sm font-medium break-words flex-1 leading-relaxed">{video.title}</span>
+                            <ExternalLink size={14} className="opacity-50 group-hover:opacity-100 flex-shrink-0 mt-0.5" />
                           </div>
                         </a>
                       </li>
@@ -133,9 +133,9 @@ export function ArticleReader({ article }: ArticleReaderProps) {
                           rel="noopener noreferrer"
                           className="group block p-4 rounded-xl bg-foreground/5 hover:bg-foreground/10 transition-colors"
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium truncate pr-4">{paper.title}</span>
-                            <ExternalLink size={14} className="opacity-50 group-hover:opacity-100" />
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="text-sm font-medium wrap-break-word flex-1 leading-relaxed">{paper.title}</span>
+                            <ExternalLink size={14} className="opacity-50 group-hover:opacity-100 shrink-0 mt-0.5" />
                           </div>
                         </a>
                       </li>
