@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { motion } from "framer-motion";
-import { ArrowLeft, Clock, Calendar, Youtube, FileText, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Clock, Calendar, Youtube, FileText, ExternalLink, Share2, Twitter, Linkedin, Link2, Check, MessageCircle, X } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +29,73 @@ interface ArticleReaderProps {
 }
 
 export function ArticleReader({ article }: ArticleReaderProps) {
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Get current URL for sharing
+  const getShareUrl = () => {
+    if (typeof window !== "undefined") {
+      return window.location.href;
+    }
+    return "";
+  };
+
+  const shareText = `"${article.title}" — A thoughtful essay from The Dailicle`;
+
+  const shareOptions = [
+    {
+      name: "Twitter",
+      icon: Twitter,
+      action: () => {
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(getShareUrl())}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      },
+    },
+    {
+      name: "LinkedIn",
+      icon: Linkedin,
+      action: () => {
+        const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl())}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      },
+    },
+    {
+      name: "WhatsApp",
+      icon: MessageCircle,
+      action: () => {
+        const url = `https://wa.me/?text=${encodeURIComponent(`${shareText}\n\n${getShareUrl()}`)}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      },
+    },
+    {
+      name: "Copy Link",
+      icon: copied ? Check : Link2,
+      action: async () => {
+        await navigator.clipboard.writeText(getShareUrl());
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      },
+    },
+  ];
+
+  // Native share API for mobile
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: article.title,
+          text: shareText,
+          url: getShareUrl(),
+        });
+      } catch (err) {
+        // User cancelled or share failed, show fallback menu
+        setShowShareMenu(true);
+      }
+    } else {
+      setShowShareMenu(true);
+    }
+  };
+
   return (
     <article className="min-h-screen py-12 md:py-20 px-4 md:px-6 overflow-x-hidden">
       <motion.div 
@@ -39,15 +106,81 @@ export function ArticleReader({ article }: ArticleReaderProps) {
       >
         {/* Header */}
         <header className="mb-12 space-y-6 text-center">
-          <Link 
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-foreground/40 hover:text-foreground transition-colors mb-8"
-          >
-            <ArrowLeft size={14} />
-            <span>Back to Daily</span>
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link 
+              href="/"
+              className="inline-flex items-center gap-2 text-sm text-foreground/40 hover:text-foreground transition-colors"
+            >
+              <ArrowLeft size={14} />
+              <span>Back to Daily</span>
+            </Link>
+            
+            {/* Share Button */}
+            <div className="relative">
+              <button
+                onClick={handleNativeShare}
+                className="inline-flex items-center gap-2 text-sm text-foreground/40 hover:text-foreground transition-colors p-2 rounded-lg hover:bg-foreground/5"
+                aria-label="Share article"
+              >
+                <Share2 size={18} />
+                <span className="hidden sm:inline">Share</span>
+              </button>
 
-          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 text-xs font-medium uppercase text-foreground/40">
+              {/* Share Menu Dropdown */}
+              <AnimatePresence>
+                {showShareMenu && (
+                  <>
+                    {/* Backdrop */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowShareMenu(false)}
+                    />
+                    
+                    {/* Menu */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl shadow-2xl overflow-hidden bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700"
+                    >
+                      <div className="p-2">
+                        <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-200 dark:border-neutral-700 mb-2">
+                          <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Share this essay</span>
+                          <button 
+                            onClick={() => setShowShareMenu(false)}
+                            className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                        {shareOptions.map((option) => (
+                          <button
+                            key={option.name}
+                            onClick={() => {
+                              option.action();
+                              if (option.name !== "Copy Link") {
+                                setShowShareMenu(false);
+                              }
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+                          >
+                            <option.icon size={16} />
+                            <span>{option.name === "Copy Link" && copied ? "Copied!" : option.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 text-xs font-medium uppercase text-foreground/40 pt-4">
             <span>{article.category}</span>
             <span className="hidden md:inline">•</span>
             <span className="flex items-center gap-1">
