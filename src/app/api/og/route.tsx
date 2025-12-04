@@ -8,9 +8,10 @@ export async function GET(request: NextRequest) {
   
   // Get parameters from URL
   const title = searchParams.get('title') || 'The Dailicle';
-  const subtitle = searchParams.get('subtitle') || 'One Transformative Essay Every Day';
+  const subtitle = searchParams.get('subtitle') || '';
   const category = searchParams.get('category') || '';
   const readTime = searchParams.get('readTime') || '';
+  const isMinimal = searchParams.get('minimal') === 'true';
   
   // Brand colors (Wooden/Study theme)
   const bgColor = '#F5F2EB';
@@ -104,21 +105,23 @@ export async function GET(request: NextRequest) {
           {title}
         </div>
         
-        {/* Subtitle */}
-        <div
-          style={{
-            color: accentColor,
-            fontSize: '28px',
-            textAlign: 'center',
-            maxWidth: '800px',
-            marginBottom: '40px',
-          }}
-        >
-          {subtitle}
-        </div>
+        {/* Subtitle - only show if not minimal and has content */}
+        {!isMinimal && subtitle && (
+          <div
+            style={{
+              color: accentColor,
+              fontSize: '28px',
+              textAlign: 'center',
+              maxWidth: '800px',
+              marginBottom: '40px',
+            }}
+          >
+            {subtitle}
+          </div>
+        )}
         
-        {/* Reading time */}
-        {readTime && (
+        {/* Reading time - only show if not minimal */}
+        {!isMinimal && readTime && (
           <div
             style={{
               color: accentColor,

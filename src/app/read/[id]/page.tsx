@@ -15,6 +15,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     return {
       title: "Article Not Found - Dailicle",
       description: "The requested article could not be found.",
+      openGraph: {
+        title: "Article Not Found - Dailicle",
+        description: "The requested article could not be found.",
+        images: [{ url: "https://dailicle.com/og-image.png" }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        images: ["https://dailicle.com/og-image.png"],
+      },
     };
   }
 
@@ -22,12 +31,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const fullTitle = `${articleData.topic_title} - Dailicle`;
   const ogTitle = `${articleData.topic_title} | Dailicle`;
   
-  // Build dynamic OG image URL with article details
+  // Build dynamic OG image URL with article details (only category + title)
   const ogImageUrl = new URL('https://dailicle.com/api/og');
   ogImageUrl.searchParams.set('title', articleData.topic_title);
   ogImageUrl.searchParams.set('category', articleData.category || '');
-  ogImageUrl.searchParams.set('readTime', `${articleData.reading_time_minutes || ''} min read`);
-  ogImageUrl.searchParams.set('subtitle', description.slice(0, 80));
+  ogImageUrl.searchParams.set('minimal', 'true');
   
   return {
     title: fullTitle,
