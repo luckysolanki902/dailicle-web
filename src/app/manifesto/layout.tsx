@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Our Manifesto - Why Read Dailicle? | The Slow Web Movement",
     description: "A rebellion against the noise. One essay per day. No recommendations. No infinite scroll. Just deep, thoughtful reading.",
-    url: "https://dailicle.vercel.app/manifesto",
+    url: "https://dailicle.com/manifesto",
     type: "article",
     images: [
       {
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     images: ["/og-manifesto.png"],
   },
   alternates: {
-    canonical: "https://dailicle.vercel.app/manifesto",
+    canonical: "https://dailicle.com/manifesto",
   },
 };
 

@@ -28,7 +28,7 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://dailicle.vercel.app'),
+  metadataBase: new URL('https://dailicle.com'),
   title: {
     default: "The Dailicle - One Transformative Essay Every Day | Deep Reading for Curious Minds",
     template: "%s | The Dailicle"
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://dailicle.vercel.app",
+    url: "https://dailicle.com",
     siteName: "The Dailicle",
     title: "The Dailicle - One Transformative Essay Every Day",
     description: "Escape doomscrolling with deeply researched essays on psychology, philosophy, and startup wisdom. Free, no signup required.",
@@ -99,7 +99,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://dailicle.vercel.app",
+    canonical: "https://dailicle.com",
   },
   verification: {
     google: "google-site-verification-code",

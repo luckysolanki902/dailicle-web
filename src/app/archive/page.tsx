@@ -20,19 +20,19 @@ export const metadata: Metadata = {
     "intellectual content archive",
     "doomscrolling"
   ],
-  authors: [{ name: "Lucky Solanki", url: "https://dailicle.vercel.app" }],
+  authors: [{ name: "Lucky Solanki", url: "https://dailicle.com" }],
   creator: "Lucky Solanki",
   publisher: "The Dailicle",
   openGraph: {
     title: "Archive - Browse All Daily Essays | The Dailicle",
     description: "Browse hundreds of deeply researched essays on psychology, philosophy, and startup wisdom. Search and discover thought-provoking content.",
-    url: "https://dailicle.vercel.app/archive",
+    url: "https://dailicle.com/archive",
     siteName: "The Dailicle",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "https://dailicle.vercel.app/og-archive.png",
+        url: "https://dailicle.com/og-archive.png",
         width: 1200,
         height: 630,
         alt: "The Dailicle Archive - Browse All Essays",
@@ -47,12 +47,12 @@ export const metadata: Metadata = {
     title: "Archive - Browse All Daily Essays",
     description: "Browse hundreds of deeply researched essays on psychology, philosophy, and startup wisdom.",
     images: {
-      url: "https://dailicle.vercel.app/og-archive.png",
+      url: "https://dailicle.com/og-archive.png",
       alt: "The Dailicle Archive - Browse All Essays",
     },
   },
   alternates: {
-    canonical: "https://dailicle.vercel.app/archive",
+    canonical: "https://dailicle.com/archive",
   },
   robots: {
     index: true,
@@ -84,7 +84,7 @@ export default async function ArchivePage({
     "@type": "CollectionPage",
     "name": "The Dailicle Archive",
     "description": "Browse our complete archive of deeply researched essays on psychology, philosophy, and startup wisdom.",
-    "url": "https://dailicle.vercel.app/archive",
+    "url": "https://dailicle.com/archive",
     "publisher": {
       "@type": "Organization",
       "name": "The Dailicle"
@@ -93,7 +93,7 @@ export default async function ArchivePage({
       "@type": "Article",
       "headline": article.topic_title,
       "datePublished": article.date_str,
-      "url": `https://dailicle.vercel.app/read/${article._id}`,
+      "url": `https://dailicle.com/read/${article._id}`,
       "author": {
         "@type": "Person",
         "name": "Lucky Solanki"

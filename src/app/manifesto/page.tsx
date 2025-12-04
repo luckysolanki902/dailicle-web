@@ -22,12 +22,12 @@ export default function ManifestoPage() {
       "name": "The Dailicle",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://dailicle.vercel.app/logo.png"
+        "url": "https://dailicle.com/logo.png"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https://dailicle.vercel.app/manifesto"
+      "@id": "https://dailicle.com/manifesto"
     },
     "articleBody": "The internet was supposed to be a library. Instead, it became a casino. Dailicle is a rebellion against the noise. We publish exactly one essay per day."
   };

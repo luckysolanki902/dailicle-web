@@ -35,13 +35,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       "daily essay",
       "research-based",
     ],
-    authors: [{ name: "Lucky Solanki", url: "https://dailicle.vercel.app" }],
+    authors: [{ name: "Lucky Solanki", url: "https://dailicle.com" }],
     creator: "Lucky Solanki",
     publisher: "The Dailicle",
     openGraph: {
       title: ogTitle,
       description: description.slice(0, 200),
-      url: `https://dailicle.vercel.app/read/${id}`,
+      url: `https://dailicle.com/read/${id}`,
       siteName: "The Dailicle",
       locale: "en_US",
       type: "article",
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       tags: articleData.tags || [articleData.category],
       images: [
         {
-          url: `https://dailicle.vercel.app/og-article.png`,
+          url: `https://dailicle.com/og-article.png`,
           width: 1200,
           height: 630,
           alt: articleData.topic_title,
@@ -67,12 +67,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title: ogTitle,
       description: description.slice(0, 200),
       images: {
-        url: `https://dailicle.vercel.app/og-article.png`,
+        url: `https://dailicle.com/og-article.png`,
         alt: articleData.topic_title,
       },
     },
     alternates: {
-      canonical: `https://dailicle.vercel.app/read/${id}`,
+      canonical: `https://dailicle.com/read/${id}`,
     },
     robots: {
       index: true,
@@ -115,26 +115,26 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
     "author": {
       "@type": "Person",
       "name": "Lucky Solanki",
-      "url": "https://dailicle.vercel.app"
+      "url": "https://dailicle.com"
     },
     "publisher": {
       "@type": "Organization",
       "name": "The Dailicle",
-      "url": "https://dailicle.vercel.app",
+      "url": "https://dailicle.com",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://dailicle.vercel.app/logo.png"
+        "url": "https://dailicle.com/logo.png"
       }
     },
     "datePublished": articleData.date_str,
     "dateModified": articleData.date_str,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://dailicle.vercel.app/read/${id}`
+      "@id": `https://dailicle.com/read/${id}`
     },
     "image": {
       "@type": "ImageObject",
-      "url": "https://dailicle.vercel.app/og-article.png",
+      "url": "https://dailicle.com/og-article.png",
       "width": 1200,
       "height": 630
     },

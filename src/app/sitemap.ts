@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { getArticles } from '@/lib/articles'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://dailicle.vercel.app'
+  const baseUrl = 'https://dailicle.com'
   
   // Get all articles for sitemap - fetching more to ensure all articles are included
   const { articles } = await getArticles(1, 10000, '')
