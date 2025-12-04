@@ -22,6 +22,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const fullTitle = `${articleData.topic_title} - Dailicle`;
   const ogTitle = `${articleData.topic_title} | Dailicle`;
   
+  // Build dynamic OG image URL with article details
+  const ogImageUrl = new URL('https://dailicle.com/api/og');
+  ogImageUrl.searchParams.set('title', articleData.topic_title);
+  ogImageUrl.searchParams.set('category', articleData.category || '');
+  ogImageUrl.searchParams.set('readTime', `${articleData.reading_time_minutes || ''} min read`);
+  ogImageUrl.searchParams.set('subtitle', description.slice(0, 80));
+  
   return {
     title: fullTitle,
     description: description.slice(0, 160),
@@ -52,7 +59,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       tags: articleData.tags || [articleData.category],
       images: [
         {
-          url: `https://dailicle.com/og-article.png`,
+          url: ogImageUrl.toString(),
           width: 1200,
           height: 630,
           alt: articleData.topic_title,
@@ -67,7 +74,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title: ogTitle,
       description: description.slice(0, 200),
       images: {
-        url: `https://dailicle.com/og-article.png`,
+        url: ogImageUrl.toString(),
         alt: articleData.topic_title,
       },
     },
@@ -106,6 +113,12 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
     papers: articleData.papers,
   };
   
+  // Build dynamic OG image URL for JSON-LD
+  const ogImageUrl = new URL('https://dailicle.com/api/og');
+  ogImageUrl.searchParams.set('title', articleData.topic_title);
+  ogImageUrl.searchParams.set('category', articleData.category || '');
+  ogImageUrl.searchParams.set('readTime', `${articleData.reading_time_minutes || ''} min read`);
+  
   // Structured Data for SEO (JSON-LD)
   const jsonLd = {
     "@context": "https://schema.org",
@@ -134,7 +147,7 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
     },
     "image": {
       "@type": "ImageObject",
-      "url": "https://dailicle.com/og-article.png",
+      "url": ogImageUrl.toString(),
       "width": 1200,
       "height": 630
     },

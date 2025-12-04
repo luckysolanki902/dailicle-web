@@ -128,7 +128,7 @@ export async function GET(request: NextRequest) {
               gap: '8px',
             }}
           >
-            ☕ {readTime} min read
+            ☕ {readTime}
           </div>
         )}
         
