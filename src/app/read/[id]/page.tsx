@@ -1,6 +1,6 @@
 import { ArticleReader } from "@/components/reader/ArticleReader";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { getArticleById } from "@/lib/articles";
+import { getArticleById, Resource } from "@/lib/articles";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -119,6 +119,8 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
     category: articleData.category,
     youtube: articleData.youtube,
     papers: articleData.papers,
+    audioUrl: articleData.audio_url,
+    audioDuration: articleData.audio_duration_seconds,
   };
   
   // Build dynamic OG image URL for JSON-LD
@@ -166,12 +168,12 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
     "inLanguage": "en-US",
     "isAccessibleForFree": true,
     "citation": [
-      ...(articleData.papers || []).map((paper: any) => ({
+      ...(articleData.papers || []).map((paper: Resource) => ({
         "@type": "ScholarlyArticle",
         "name": paper.title,
         "url": paper.url
       })),
-      ...(articleData.youtube || []).map((video: any) => ({
+      ...(articleData.youtube || []).map((video: Resource) => ({
         "@type": "VideoObject",
         "name": video.title,
         "url": video.url

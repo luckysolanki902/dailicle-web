@@ -1,21 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Lock, Clock, AlertTriangle, Sparkles, BookOpen, BrainCircuit } from "lucide-react";
 import Link from "next/link";
+import { getArticleForCurrentTime } from "@/lib/utils";
 
-interface HeroProps {
-  todayTopic: {
-    title: string;
-    teaser: string;
-    readTime: number;
-    id: string;
-  };
+interface ArticleTopic {
+  title: string;
+  teaser: string;
+  readTime: number;
+  id: string;
+  date?: string;
+  createdAt?: string;  // ISO timestamp of when article was created
 }
 
-export function Hero({ todayTopic }: HeroProps) {
+interface HeroProps {
+  todayTopic: ArticleTopic;
+  previousTopic?: ArticleTopic;
+}
+
+// Hook to detect client-side rendering without causing hydration mismatch
+function useIsClient() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+}
+
+export function Hero({ todayTopic, previousTopic }: HeroProps) {
   const [showWarning, setShowWarning] = useState(false);
+  const isClient = useIsClient();
+
+  // Determine which article to show based on local 9 AM rule
+  // Server renders with todayTopic, client hydrates with the correct one
+  const displayTopic = isClient 
+    ? getArticleForCurrentTime(todayTopic, previousTopic)
+    : todayTopic;
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden pt-8 md:pt-20 pb-10">
@@ -41,7 +63,7 @@ export function Hero({ todayTopic }: HeroProps) {
             </h1>
             <div className="flex items-center justify-center gap-2 text-xs md:text-sm font-medium text-foreground/50">
               <Sparkles size={12} className="text-yellow-500" />
-              <span>Daily at 9 AM IST</span>
+              <span>Daily at 9 AM</span>
               <span className="mx-1">•</span>
               <span>No signup required</span>
             </div>
@@ -69,7 +91,7 @@ export function Hero({ todayTopic }: HeroProps) {
               Today&apos;s Read
             </span>
             <h1 className="text-3xl md:text-6xl lg:text-7xl font-bold tracking-tight text-balance leading-tight md:leading-[1.1] max-w-4xl mx-auto">
-              {todayTopic.title}
+              {displayTopic.title}
             </h1>
           </motion.div>
 
@@ -79,7 +101,7 @@ export function Hero({ todayTopic }: HeroProps) {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-base md:text-2xl text-foreground/70 max-w-2xl mx-auto leading-relaxed text-balance font-serif italic"
           >
-            &quot;{todayTopic.teaser}&quot;
+            &quot;{displayTopic.teaser}&quot;
           </motion.p>
         </div>
 
@@ -121,7 +143,7 @@ export function Hero({ todayTopic }: HeroProps) {
           <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 text-sm text-foreground/50">
             <div className="flex items-center gap-1.5">
               <Clock size={14} />
-              <span>{todayTopic.readTime} min read</span>
+              <span>{displayTopic.readTime} min read</span>
             </div>
             <span className="text-foreground/30">•</span>
             <span className="font-medium">Free forever</span>
@@ -161,7 +183,7 @@ export function Hero({ todayTopic }: HeroProps) {
                 <div className="space-y-2">
                   <h3 className="text-xl font-semibold">Are you sure?</h3>
                   <p className="text-foreground/70 leading-relaxed">
-                    This essay is not for skimmers. It requires <strong>{todayTopic.readTime} minutes</strong> of deep focus. 
+                    This essay is not for skimmers. It requires <strong>{displayTopic.readTime} minutes</strong> of deep focus. 
                     <br/><br/>
                     Most people won&apos;t finish it. Proceed only if you are ready to think.
                   </p>
@@ -169,7 +191,7 @@ export function Hero({ todayTopic }: HeroProps) {
 
                 <div className="flex flex-col w-full gap-3 pt-2">
                   <Link 
-                    href={`/read/${todayTopic.id}`}
+                    href={`/read/${displayTopic.id}`}
                     className="w-full py-3 bg-foreground text-background rounded-xl font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                   >
                     <Lock size={16} />

@@ -15,7 +15,6 @@ export function Sources() {
     "First Round Review",
     "James Clear",
     "Derek Sivers",
-    "Tim Urban",
     "Cal Newport"
   ];
 
@@ -25,7 +24,13 @@ export function Sources() {
     "Sapiens",
     "Atomic Habits",
     "Zero to One",
-    "The Mom Test"
+    "The Mom Test",
+    "Deep Work",
+    "Hooked",
+    "The Power of Habit",
+    "Meditations",
+    "Grit",
+    "The Hard Thing About Hard Things"
   ];
 
   return (
@@ -111,17 +116,6 @@ export function Sources() {
           </div>
         </div>
         
-        {/* Footer Note */}
-        <motion.p 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.8 }}
-          className="text-xs text-foreground/30 font-medium max-w-lg mx-auto pt-4"
-        >
-          We continuously pull from thousands of research papers, academic journals, YouTube videos, 
-          and trusted online resources — synthesizing the best ideas into one coherent essay daily.
-        </motion.p>
       </div>
     </section>
   );

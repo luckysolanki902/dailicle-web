@@ -26,6 +26,12 @@ export interface Article {
   date_str: string;
   youtube?: Resource[];
   papers?: Resource[];
+  // Audio fields
+  audio_url?: string;
+  audio_s3_key?: string;
+  audio_voice?: string;
+  audio_duration_seconds?: number;
+  audio_generated_at?: Date;
 }
 
 export async function getLatestArticle() {
@@ -41,6 +47,8 @@ export async function getLatestArticle() {
         topic_title: 1,
         topic_rationale: 1,
         reading_time_minutes: 1,
+        date: 1,
+        date_str: 1,
         // Exclude heavy fields like article_markdown
       }
     })
@@ -54,6 +62,36 @@ export async function getLatestArticle() {
     ...article,
     _id: article._id.toString(),
   } as Article;
+}
+
+/**
+ * Get the two most recent articles for time-based display logic.
+ * The client will decide which to show based on local 9 AM threshold.
+ */
+export async function getLatestTwoArticles() {
+  const client = await clientPromise;
+  const db = client.db(DB_NAME);
+  
+  const articles = await db
+    .collection(COLLECTION)
+    .find({}, {
+      projection: {
+        _id: 1,
+        topic_title: 1,
+        topic_rationale: 1,
+        reading_time_minutes: 1,
+        date: 1,
+        date_str: 1,
+      }
+    })
+    .sort({ date: -1 })
+    .limit(2)
+    .toArray();
+
+  return articles.map(doc => ({
+    ...doc,
+    _id: doc._id.toString(),
+  })) as Article[];
 }
 
 export async function getArticleById(id: string) {

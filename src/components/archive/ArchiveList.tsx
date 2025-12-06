@@ -1,11 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore, useMemo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Article } from "@/lib/articles";
+import { isArticleVisible } from "@/lib/utils";
+
+// Hook to detect client-side rendering without causing hydration mismatch
+function useIsClient() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+}
 
 interface ArchiveListProps {
   initialArticles: Article[];
@@ -23,6 +33,20 @@ export function ArchiveList({
   const router = useRouter();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const isClient = useIsClient();
+
+  // Filter articles based on 9 AM rule (only on client)
+  const visibleArticles = useMemo(() => {
+    if (!isClient) {
+      // On server, return all articles (will be filtered on client)
+      return initialArticles;
+    }
+    // On client, filter out articles that shouldn't be visible yet
+    return initialArticles.filter(article => {
+      // Use the date field (MongoDB Date object converted to string)
+      return isArticleVisible(article.date);
+    });
+  }, [initialArticles, isClient]);
 
   // Debounce search
   useEffect(() => {
@@ -75,7 +99,7 @@ export function ArchiveList({
 
       {/* List */}
       <div className="space-y-2">
-        {initialArticles.map((article, index) => (
+        {visibleArticles.map((article, index) => (
           <motion.div
             key={article._id}
             initial={{ opacity: 0, y: 10 }}
@@ -105,7 +129,7 @@ export function ArchiveList({
           </motion.div>
         ))}
 
-        {initialArticles.length === 0 && (
+        {visibleArticles.length === 0 && (
           <div className="text-center py-20 text-foreground/40">
             No essays found matching "{searchQuery}"
           </div>

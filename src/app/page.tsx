@@ -2,7 +2,7 @@ import { Hero } from "@/components/landing/Hero";
 import { ValueProps } from "@/components/landing/ValueProps";
 import { Sources } from "@/components/landing/Sources";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { getLatestArticle } from "@/lib/articles";
+import { getLatestTwoArticles } from "@/lib/articles";
 import type { Metadata } from "next";
 
 export const revalidate = 360; // Revalidate every 6 minutes
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: "Escape doomscrolling with The Dailicle. One deeply researched, AI-powered essay daily on psychology, philosophy, and startup wisdom. Free, no signup, distraction-free reading for ambitious builders.",
   openGraph: {
     title: "The Dailicle - One Transformative Essay Every Day",
-    description: "Escape doomscrolling with deeply researched essays on psychology, philosophy, and startup wisdom. Published daily at 9 AM IST.",
+    description: "Escape doomscrolling with deeply researched essays on psychology, philosophy, and startup wisdom. Published daily at 9 AM.",
     url: "https://dailicle.com",
     type: "website",
     images: [
@@ -36,7 +36,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const latestArticle = await getLatestArticle();
+  const articles = await getLatestTwoArticles();
+  const latestArticle = articles[0] || null;
+  const previousArticle = articles[1] || null;
 
   // Fallback if no article found (e.g. DB empty)
   const todayTopic = latestArticle ? {
@@ -44,12 +46,23 @@ export default async function Home() {
     title: latestArticle.topic_title,
     teaser: latestArticle.topic_rationale,
     readTime: latestArticle.reading_time_minutes,
+    date: latestArticle.date_str,
+    createdAt: latestArticle.date?.toISOString() || new Date().toISOString(),
   } : {
     id: "#",
     title: "No Article Today",
     teaser: "The ink is dry. Come back tomorrow.",
     readTime: 0,
   };
+
+  const previousTopic = previousArticle ? {
+    id: previousArticle._id,
+    title: previousArticle.topic_title,
+    teaser: previousArticle.topic_rationale,
+    readTime: previousArticle.reading_time_minutes,
+    date: previousArticle.date_str,
+    createdAt: previousArticle.date?.toISOString() || new Date().toISOString(),
+  } : undefined;
 
   // Structured Data for SEO
   const jsonLd = {
@@ -87,7 +100,7 @@ export default async function Home() {
       />
       <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
         <ThemeSwitcher />
-        <Hero todayTopic={todayTopic} />
+        <Hero todayTopic={todayTopic} previousTopic={previousTopic} />
         <Sources />
         <ValueProps />
         

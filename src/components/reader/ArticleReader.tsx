@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Clock, Calendar, Youtube, FileText, ExternalLink, Share2, Twitter, Linkedin, Link2, Check, MessageCircle, X } from "lucide-react";
+import { ArrowLeft, Clock, Calendar, Youtube, FileText, ExternalLink, Share2, Twitter, Linkedin, Link2, Check, MessageCircle, X, Play, Pause, Volume2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -25,12 +25,101 @@ interface ArticleReaderProps {
     category: string;
     youtube?: Resource[];
     papers?: Resource[];
+    audioUrl?: string;
+    audioDuration?: number;
   };
 }
 
 export function ArticleReader({ article }: ArticleReaderProps) {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
+  
+  // Audio player state
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showAudioPlayer, setShowAudioPlayer] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Build full audio URL from relative path
+  const getAudioUrl = (audioPath: string | undefined): string | undefined => {
+    if (!audioPath) return undefined;
+    
+    // If already a full URL, extract the relative path
+    if (audioPath.startsWith('http')) {
+      // Extract path after the domain (handle both S3 and CloudFront URLs)
+      const url = new URL(audioPath);
+      const relativePath = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+      return `${process.env.NEXT_PUBLIC_CLOUDFRONT_BASEURL}/${relativePath}`;
+    }
+    
+    // Already relative, prepend CloudFront base URL
+    return `${process.env.NEXT_PUBLIC_CLOUDFRONT_BASEURL}/${audioPath}`;
+  };
+
+  const audioUrl = getAudioUrl(article.audioUrl);
+
+  // Audio controls
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setIsPlaying(false);
+    setShowAudioPlayer(false);
+    setCurrentTime(0);
+  };
+
+  const startListening = () => {
+    setShowAudioPlayer(true);
+    setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
+    }, 100);
+  };
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Update progress
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateTime = () => setCurrentTime(audio.currentTime);
+    const updateDuration = () => setDuration(audio.duration);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+
+    audio.addEventListener('timeupdate', updateTime);
+    audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [showAudioPlayer]);
 
   // Get current URL for sharing
   const getShareUrl = () => {
@@ -108,11 +197,11 @@ export function ArticleReader({ article }: ArticleReaderProps) {
         <header className="mb-12 space-y-6 text-center">
           <div className="flex items-center justify-between">
             <Link 
-              href="/"
+              href="/archive"
               className="inline-flex items-center gap-2 text-sm text-foreground/40 hover:text-foreground transition-colors"
             >
               <ArrowLeft size={14} />
-              <span>Back to Daily</span>
+              <span>Back to Archive</span>
             </Link>
             
             {/* Share Button */}
@@ -198,7 +287,67 @@ export function ArticleReader({ article }: ArticleReaderProps) {
           <h1 className="text-3xl md:text-5xl font-bold leading-tight text-balance">
             {article.title}
           </h1>
+
+          {/* Listen Button - minimal, inline with the aesthetic */}
+          {audioUrl && !showAudioPlayer && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              onClick={startListening}
+              className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-foreground/40 hover:text-foreground/70 transition-colors"
+            >
+              <Volume2 size={12} />
+              <span>Listen</span>
+            </motion.button>
+          )}
         </header>
+
+        {/* Floating Audio Player - minimal and elegant */}
+        <AnimatePresence>
+          {showAudioPlayer && audioUrl && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50"
+            >
+              <audio ref={audioRef} src={audioUrl} preload="metadata" />
+              
+              <div className="flex items-center gap-4 px-5 py-3 bg-background/95 backdrop-blur-sm border border-foreground/10 rounded-lg shadow-sm">
+                {/* Play/Pause */}
+                <button
+                  onClick={togglePlay}
+                  className="text-foreground/70 hover:text-foreground transition-colors"
+                  aria-label={isPlaying ? "Pause" : "Play"}
+                >
+                  {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+                </button>
+
+                {/* Time & Progress */}
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-foreground/40 font-mono tabular-nums">{formatTime(currentTime)}</span>
+                  <div className="w-32 md:w-48 h-0.5 bg-foreground/10 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-foreground/40 rounded-full"
+                      style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
+                    />
+                  </div>
+                  <span className="text-xs text-foreground/30 font-mono tabular-nums">{formatTime(duration || article.audioDuration || 0)}</span>
+                </div>
+
+                {/* Close */}
+                <button
+                  onClick={stopAudio}
+                  className="text-foreground/30 hover:text-foreground/60 transition-colors"
+                  aria-label="Stop"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Content */}
         <div className={cn(
@@ -240,8 +389,8 @@ export function ArticleReader({ article }: ArticleReaderProps) {
                           className="group block p-4 rounded-xl bg-foreground/5 hover:bg-foreground/10 transition-colors"
                         >
                           <div className="flex items-start justify-between gap-3">
-                            <span className="text-sm font-medium break-words flex-1 leading-relaxed">{video.title}</span>
-                            <ExternalLink size={14} className="opacity-50 group-hover:opacity-100 flex-shrink-0 mt-0.5" />
+                            <span className="text-sm font-medium wrap-break-word flex-1 leading-relaxed">{video.title}</span>
+                            <ExternalLink size={14} className="opacity-50 group-hover:opacity-100 shrink-0 mt-0.5" />
                           </div>
                         </a>
                       </li>
