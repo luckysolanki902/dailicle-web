@@ -34,6 +34,11 @@ export function isPublishedToday(articleDate: Date | string): boolean {
  * An article is visible if:
  * - It was published before today, OR
  * - It was published today AND it's past 9 AM
+ * 
+ * Note: This function uses the raw article generation date from the database,
+ * not the display date (which adds 1 day). This is intentional - we check visibility
+ * based on when the article was created, while the display date shows when it's meant
+ * to be read (after 9 AM the next day).
  */
 export function isArticleVisible(articleDate: Date | string): boolean {
   const now = new Date();
@@ -104,6 +109,12 @@ export function formatArticleDisplayDate(
 ): string {
   // Parse the date
   const date = new Date(articleDate);
+  
+  // Validate the date
+  if (isNaN(date.getTime())) {
+    console.error(`Invalid date provided to formatArticleDisplayDate: ${articleDate}`);
+    return 'Invalid Date';
+  }
   
   // Add 1 day (24 hours in milliseconds)
   const displayDate = new Date(date.getTime() + 24 * 60 * 60 * 1000);
