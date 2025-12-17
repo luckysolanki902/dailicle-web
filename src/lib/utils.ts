@@ -88,3 +88,36 @@ export function getArticleForCurrentTime<T extends { createdAt?: string; date?: 
   // Latest article not yet visible (before 9 AM today), show previous
   return previousArticle;
 }
+
+/**
+ * Format article date for display.
+ * Articles are generated at ~1 AM UTC (intended for the next day after 9 AM).
+ * This function adds 1 day to the article's generation date to show the correct display date.
+ * 
+ * @param articleDate - The article's date field (Date object or ISO string)
+ * @param format - Optional format: 'short' (Dec 17), 'medium' (Dec 17, 2025), 'iso' (2025-12-17)
+ * @returns Formatted date string
+ */
+export function formatArticleDisplayDate(
+  articleDate: Date | string,
+  format: 'short' | 'medium' | 'iso' = 'medium'
+): string {
+  // Parse the date
+  const date = new Date(articleDate);
+  
+  // Add 1 day (24 hours in milliseconds)
+  const displayDate = new Date(date.getTime() + 24 * 60 * 60 * 1000);
+  
+  if (format === 'iso') {
+    // Return ISO format: YYYY-MM-DD
+    return displayDate.toISOString().split('T')[0];
+  }
+  
+  // Format as human-readable date in the user's locale
+  const options: Intl.DateTimeFormatOptions = 
+    format === 'short'
+      ? { month: 'short', day: 'numeric' }
+      : { month: 'short', day: 'numeric', year: 'numeric' };
+  
+  return displayDate.toLocaleDateString('en-US', options);
+}

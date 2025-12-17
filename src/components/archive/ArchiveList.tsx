@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Article } from "@/lib/articles";
-import { isArticleVisible } from "@/lib/utils";
+import { isArticleVisible, formatArticleDisplayDate } from "@/lib/utils";
 
 // Hook to detect client-side rendering without causing hydration mismatch
 function useIsClient() {
@@ -116,7 +116,7 @@ export function ArchiveList({
                     {article.topic_title}
                   </h3>
                   <div className="flex items-center gap-3 mt-1 text-xs text-foreground/40 uppercase tracking-wider">
-                    <span>{article.date_str}</span>
+                    <span>{formatArticleDisplayDate(article.date, 'iso')}</span>
                     <span>•</span>
                     <span>{article.category}</span>
                   </div>

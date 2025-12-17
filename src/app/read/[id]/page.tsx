@@ -1,6 +1,7 @@
 import { ArticleReader } from "@/components/reader/ArticleReader";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import { getArticleById, Resource } from "@/lib/articles";
+import { formatArticleDisplayDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -60,8 +61,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       siteName: "The Dailicle",
       locale: "en_US",
       type: "article",
-      publishedTime: articleData.date_str,
-      modifiedTime: articleData.date_str,
+      publishedTime: formatArticleDisplayDate(articleData.date, 'iso'),
+      modifiedTime: formatArticleDisplayDate(articleData.date, 'iso'),
       authors: ["Lucky Solanki"],
       section: articleData.category,
       tags: articleData.tags || [articleData.category],
@@ -114,7 +115,7 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
   const article = {
     title: articleData.topic_title,
     content: articleData.article_markdown,
-    date: articleData.date_str,
+    date: formatArticleDisplayDate(articleData.date, 'medium'),
     readTime: articleData.reading_time_minutes,
     category: articleData.category,
     youtube: articleData.youtube,
@@ -149,8 +150,8 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
         "url": "https://dailicle.com/logo.png"
       }
     },
-    "datePublished": articleData.date_str,
-    "dateModified": articleData.date_str,
+    "datePublished": formatArticleDisplayDate(articleData.date, 'iso'),
+    "dateModified": formatArticleDisplayDate(articleData.date, 'iso'),
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": `https://dailicle.com/read/${id}`
