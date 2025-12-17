@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { getArticles } from '@/lib/articles'
+import { formatArticleDisplayDate } from '@/lib/utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://dailicle.com'
@@ -30,12 +31,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
   
   // Dynamic article pages - all blog posts with proper metadata
-  const articlePages: MetadataRoute.Sitemap = articles.map((article: {_id: string, date_str?: string, date?: Date}) => ({
-    url: `${baseUrl}/read/${article._id}`,
-    lastModified: article.date_str ? new Date(article.date_str) : (article.date || new Date()),
-    changeFrequency: 'monthly' as const,
-    priority: 0.8,
-  }))
+  // Use the display date (which adds 1 day to account for overnight generation)
+  const articlePages: MetadataRoute.Sitemap = articles.map((article: {_id: string, date_str?: string, date?: Date}) => {
+    const displayDate = article.date 
+      ? new Date(formatArticleDisplayDate(article.date, 'iso'))
+      : new Date();
+    
+    return {
+      url: `${baseUrl}/read/${article._id}`,
+      lastModified: displayDate,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    };
+  })
   
   return [...staticPages, ...articlePages]
 }

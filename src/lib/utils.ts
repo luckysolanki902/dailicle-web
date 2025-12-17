@@ -34,6 +34,11 @@ export function isPublishedToday(articleDate: Date | string): boolean {
  * An article is visible if:
  * - It was published before today, OR
  * - It was published today AND it's past 9 AM
+ * 
+ * Note: This function uses the raw article generation date from the database,
+ * not the display date (which adds 1 day). This is intentional - we check visibility
+ * based on when the article was created, while the display date shows when it's meant
+ * to be read (after 9 AM the next day).
  */
 export function isArticleVisible(articleDate: Date | string): boolean {
   const now = new Date();
@@ -87,4 +92,43 @@ export function getArticleForCurrentTime<T extends { createdAt?: string; date?: 
   
   // Latest article not yet visible (before 9 AM today), show previous
   return previousArticle;
+}
+
+/**
+ * Format article date for display.
+ * Articles are generated at ~1 AM UTC (intended for the next day after 9 AM).
+ * This function adds 1 day to the article's generation date to show the correct display date.
+ * 
+ * @param articleDate - The article's date field (Date object or ISO string)
+ * @param format - Optional format: 'short' (Dec 17), 'medium' (Dec 17, 2025), 'iso' (2025-12-17)
+ * @returns Formatted date string
+ */
+export function formatArticleDisplayDate(
+  articleDate: Date | string,
+  format: 'short' | 'medium' | 'iso' = 'medium'
+): string {
+  // Parse the date
+  const date = new Date(articleDate);
+  
+  // Validate the date
+  if (isNaN(date.getTime())) {
+    console.error(`Invalid date provided to formatArticleDisplayDate: ${articleDate}`);
+    return 'Invalid Date';
+  }
+  
+  // Add 1 day (24 hours in milliseconds)
+  const displayDate = new Date(date.getTime() + 24 * 60 * 60 * 1000);
+  
+  if (format === 'iso') {
+    // Return ISO format: YYYY-MM-DD
+    return displayDate.toISOString().split('T')[0];
+  }
+  
+  // Format as human-readable date in the user's locale
+  const options: Intl.DateTimeFormatOptions = 
+    format === 'short'
+      ? { month: 'short', day: 'numeric' }
+      : { month: 'short', day: 'numeric', year: 'numeric' };
+  
+  return displayDate.toLocaleDateString('en-US', options);
 }

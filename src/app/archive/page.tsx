@@ -1,6 +1,7 @@
 import { ArchiveList } from "@/components/archive/ArchiveList";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import { getArticles } from "@/lib/articles";
+import { formatArticleDisplayDate } from "@/lib/utils";
 import type { Metadata } from "next";
 
 export const revalidate = 360; // Revalidate every 6 minutes
@@ -92,7 +93,7 @@ export default async function ArchivePage({
     "hasPart": articles.map((article: any) => ({
       "@type": "Article",
       "headline": article.topic_title,
-      "datePublished": article.date_str,
+      "datePublished": formatArticleDisplayDate(article.date, 'iso'),
       "url": `https://dailicle.com/read/${article._id}`,
       "author": {
         "@type": "Person",
