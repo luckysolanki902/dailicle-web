@@ -5,25 +5,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://dailicle.com'
 
   const essays = await getAllReadable()
+  const latestEssayDate = essays[0]?.published_at
+    ? new Date(essays[0].published_at)
+    : new Date()
 
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: latestEssayDate,
       changeFrequency: 'weekly',
       priority: 1,
     },
     {
       url: `${baseUrl}/archive`,
-      lastModified: new Date(),
+      lastModified: latestEssayDate,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/manifesto`,
-      lastModified: new Date(),
+      lastModified: new Date('2026-07-04'),
       changeFrequency: 'yearly',
       priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/feedback`,
+      lastModified: new Date('2026-07-04'),
+      changeFrequency: 'yearly',
+      priority: 0.3,
     },
   ]
 

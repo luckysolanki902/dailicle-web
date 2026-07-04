@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Our Manifesto - Why Read Dailicle?",
-  description: "The Dailicle manifesto: A rebellion against the noise. Learn why we publish one deeply researched essay per day, no algorithms, no infinite scrolls. For the curious, builders, and thinkers who value depth over breadth.",
+  description: "The Dailicle manifesto: a rebellion against the noise. Learn why we publish one deeply researched essay a week, no algorithms, no infinite scrolls.",
   keywords: [
     "slow web manifesto",
     "digital wellbeing",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Our Manifesto - Why Read Dailicle? | The Slow Web Movement",
-    description: "A rebellion against the noise. One essay per day. No recommendations. No infinite scroll. Just deep, thoughtful reading.",
+    description: "A rebellion against the noise. One essay a week. No recommendations. No infinite scroll. Just deep, thoughtful reading.",
     url: "https://dailicle.com/manifesto",
     type: "article",
     images: [
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Our Manifesto - Why Read Dailicle?",
-    description: "A rebellion against the noise. One essay per day. No recommendations. No infinite scroll.",
+    description: "A rebellion against the noise. One essay a week. No recommendations. No infinite scroll.",
     images: ["/og-manifesto.png"],
   },
   alternates: {

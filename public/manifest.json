@@ -1,7 +1,7 @@
 {
   "name": "The Dailicle",
   "short_name": "Dailicle",
-  "description": "One transformative essay every day. Deep reading for curious minds.",
+  "description": "One essay a week on the mind, meaning, money, and how to live.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F5F2EB",
