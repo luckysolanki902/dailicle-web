@@ -1,77 +1,65 @@
-import { ArticleReader } from "@/components/reader/ArticleReader";
+import { EssayReader } from "@/components/reader/EssayReader";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { getArticleById, Resource } from "@/lib/articles";
-import { formatArticleDisplayDate } from "@/lib/utils";
+import { getEssay, getNextTopic } from "@/lib/essays";
+import { themeLabel } from "@/lib/themes";
+import { formatDate, nextMonday } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-export const revalidate = 360; // Revalidate every 6 minutes
+export const revalidate = 3600;
 
-// Generate dynamic metadata for each article
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   const { id } = await params;
-  const articleData = await getArticleById(id);
+  const essay = await getEssay(id);
 
-  if (!articleData) {
+  if (!essay) {
     return {
-      title: "Article Not Found - Dailicle",
-      description: "The requested article could not be found.",
-      openGraph: {
-        title: "Article Not Found - Dailicle",
-        description: "The requested article could not be found.",
-        images: [{ url: "https://dailicle.com/og-image.png" }],
-      },
-      twitter: {
-        card: "summary_large_image",
-        images: ["https://dailicle.com/og-image.png"],
-      },
+      title: "Essay Not Found - The Dailicle",
+      description: "The requested essay could not be found.",
     };
   }
 
-  const description = articleData.topic_rationale || `Read this deeply researched essay on ${articleData.category || 'various topics'}. A ${articleData.reading_time_minutes}-minute read exploring ${articleData.topic_title}.`;
-  const fullTitle = `${articleData.topic_title} - Dailicle`;
-  const ogTitle = `${articleData.topic_title} | Dailicle`;
-  
-  // Build dynamic OG image URL with article details (only category + title)
-  const ogImageUrl = new URL('https://dailicle.com/api/og');
-  ogImageUrl.searchParams.set('title', articleData.topic_title);
-  ogImageUrl.searchParams.set('category', articleData.category || '');
-  ogImageUrl.searchParams.set('minimal', 'true');
-  
+  const canonicalPath = `/read/${essay.slug || essay._id}`;
+  const description = (essay.hook ||
+    `An essay from The Dailicle. A ${essay.reading_minutes}-minute read.`).slice(0, 160);
+
+  const ogImageUrl = new URL("https://dailicle.com/api/og");
+  ogImageUrl.searchParams.set("title", essay.title);
+  ogImageUrl.searchParams.set("category", themeLabel(essay.theme));
+  ogImageUrl.searchParams.set("minimal", "true");
+
   return {
-    title: fullTitle,
-    description: description.slice(0, 160),
+    title: `${essay.title} - The Dailicle`,
+    description,
     keywords: [
-      articleData.category,
-      ...(articleData.tags || []),
-      "deep reading",
-      "thoughtful essay",
-      "long-form article",
-      "intellectual content",
-      "daily essay",
-      "research-based",
+      themeLabel(essay.theme),
+      "essay",
+      "weekly essay",
+      "long-form writing",
+      "thoughtful reading",
     ],
-    authors: [{ name: "Lucky Solanki", url: "https://dailicle.com" }],
-    creator: "Lucky Solanki",
+    authors: [{ name: "The Dailicle Desk", url: "https://dailicle.com" }],
     publisher: "The Dailicle",
     openGraph: {
-      title: ogTitle,
-      description: description.slice(0, 200),
-      url: `https://dailicle.com/read/${id}`,
+      title: `${essay.title} | The Dailicle`,
+      description,
+      url: `https://dailicle.com${canonicalPath}`,
       siteName: "The Dailicle",
       locale: "en_US",
       type: "article",
-      publishedTime: formatArticleDisplayDate(articleData.date, 'iso'),
-      modifiedTime: formatArticleDisplayDate(articleData.date, 'iso'),
-      authors: ["Lucky Solanki"],
-      section: articleData.category,
-      tags: articleData.tags || [articleData.category],
+      publishedTime: formatDate(essay.published_at, "iso"),
+      authors: ["The Dailicle Desk"],
+      section: themeLabel(essay.theme),
       images: [
         {
           url: ogImageUrl.toString(),
           width: 1200,
           height: 630,
-          alt: articleData.topic_title,
+          alt: essay.title,
           type: "image/png",
         },
       ],
@@ -79,109 +67,59 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     twitter: {
       card: "summary_large_image",
       site: "@dailicle",
-      creator: "@luckysolanki",
-      title: ogTitle,
-      description: description.slice(0, 200),
-      images: {
-        url: ogImageUrl.toString(),
-        alt: articleData.topic_title,
-      },
+      title: `${essay.title} | The Dailicle`,
+      description,
+      images: { url: ogImageUrl.toString(), alt: essay.title },
     },
     alternates: {
-      canonical: `https://dailicle.com/read/${id}`,
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
+      canonical: `https://dailicle.com${canonicalPath}`,
     },
   };
 }
 
-export default async function ReadPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ReadPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
-  const articleData = await getArticleById(id);
+  const [essay, nextTopic] = await Promise.all([getEssay(id), getNextTopic()]);
 
-  if (!articleData) {
+  if (!essay || !essay.body) {
     notFound();
   }
 
-  const article = {
-    title: articleData.topic_title,
-    content: articleData.article_markdown,
-    date: formatArticleDisplayDate(articleData.date, 'medium'),
-    readTime: articleData.reading_time_minutes,
-    category: articleData.category,
-    youtube: articleData.youtube,
-    papers: articleData.papers,
-    audioUrl: articleData.audio_url,
-    audioDuration: articleData.audio_duration_seconds,
-  };
-  
-  // Build dynamic OG image URL for JSON-LD
-  const ogImageUrl = new URL('https://dailicle.com/api/og');
-  ogImageUrl.searchParams.set('title', articleData.topic_title);
-  ogImageUrl.searchParams.set('category', articleData.category || '');
-  ogImageUrl.searchParams.set('readTime', `${articleData.reading_time_minutes || ''} min read`);
-  
-  // Structured Data for SEO (JSON-LD)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": articleData.topic_title,
-    "description": articleData.topic_rationale,
-    "author": {
-      "@type": "Person",
-      "name": "Lucky Solanki",
-      "url": "https://dailicle.com"
-    },
-    "publisher": {
+    headline: essay.title,
+    description: essay.hook,
+    author: {
       "@type": "Organization",
-      "name": "The Dailicle",
-      "url": "https://dailicle.com",
-      "logo": {
+      name: "The Dailicle",
+      url: "https://dailicle.com",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "The Dailicle",
+      url: "https://dailicle.com",
+      logo: {
         "@type": "ImageObject",
-        "url": "https://dailicle.com/logo.png"
-      }
+        url: "https://dailicle.com/logo.png",
+      },
     },
-    "datePublished": formatArticleDisplayDate(articleData.date, 'iso'),
-    "dateModified": formatArticleDisplayDate(articleData.date, 'iso'),
-    "mainEntityOfPage": {
+    datePublished: formatDate(essay.published_at, "iso"),
+    mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://dailicle.com/read/${id}`
+      "@id": `https://dailicle.com/read/${essay.slug || essay._id}`,
     },
-    "image": {
-      "@type": "ImageObject",
-      "url": ogImageUrl.toString(),
-      "width": 1200,
-      "height": 630
-    },
-    "articleSection": articleData.category,
-    "keywords": articleData.tags?.join(", ") || articleData.category,
-    "wordCount": articleData.article_markdown?.split(/\s+/).length || 0,
-    "timeRequired": `PT${articleData.reading_time_minutes}M`,
-    "inLanguage": "en-US",
-    "isAccessibleForFree": true,
-    "citation": [
-      ...(articleData.papers || []).map((paper: Resource) => ({
-        "@type": "ScholarlyArticle",
-        "name": paper.title,
-        "url": paper.url
-      })),
-      ...(articleData.youtube || []).map((video: Resource) => ({
-        "@type": "VideoObject",
-        "name": video.title,
-        "url": video.url
-      }))
-    ]
+    articleSection: themeLabel(essay.theme),
+    wordCount: essay.word_count || essay.body.split(/\s+/).length,
+    timeRequired: `PT${essay.reading_minutes}M`,
+    inLanguage: "en-US",
+    isAccessibleForFree: true,
   };
-  
+
   return (
     <>
       <script
@@ -190,7 +128,29 @@ export default async function ReadPage({ params }: { params: Promise<{ id: strin
       />
       <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
         <ThemeSwitcher />
-        <ArticleReader article={article} />
+        <EssayReader
+          essay={{
+            title: essay.title,
+            hook: essay.hook,
+            body: essay.body,
+            dateLabel: formatDate(essay.published_at, "medium"),
+            readingMinutes: essay.reading_minutes,
+            themeLabel: themeLabel(essay.theme),
+            issue: essay.issue,
+            archived: essay.status === "archived",
+            furtherReading: essay.further_reading,
+            audioUrl: essay.audio_url,
+            audioDuration: essay.audio_duration_seconds,
+          }}
+          nextTease={
+            nextTopic
+              ? {
+                  title: nextTopic.title,
+                  dateLabel: formatDate(nextMonday(), "medium"),
+                }
+              : null
+          }
+        />
       </main>
     </>
   );

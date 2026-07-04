@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
-import { Monitor, Moon, Sun, TreeDeciduous, Rocket, Sparkles } from "lucide-react";
+import { Moon, Sun, TreeDeciduous, Rocket, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function ThemeSwitcher() {

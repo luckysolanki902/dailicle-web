@@ -1,32 +1,29 @@
-import { ArchiveList } from "@/components/archive/ArchiveList";
+import { ArchiveList, ArchiveEntry } from "@/components/archive/ArchiveList";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { getArticles } from "@/lib/articles";
-import { formatArticleDisplayDate } from "@/lib/utils";
+import { getPublishedEssays, getArchived2025, Essay } from "@/lib/essays";
+import { formatDate } from "@/lib/utils";
 import type { Metadata } from "next";
 
-export const revalidate = 360; // Revalidate every 6 minutes
+export const revalidate = 3600;
+
+const DESCRIPTION =
+  "Every essay we've published — one a week on the mind, meaning, money, and how to live.";
 
 export const metadata: Metadata = {
-  title: "Archive - Browse All Daily Essays | The Dailicle",
-  description: "Browse our complete archive of deeply researched essays on psychology, philosophy, startup wisdom, and more. Search through hundreds of thought-provoking articles designed for curious minds and ambitious builders.",
+  title: "The Essays - Archive | The Dailicle",
+  description: DESCRIPTION,
   keywords: [
     "essay archive",
-    "philosophy articles",
+    "philosophy essays",
     "psychology essays",
-    "startup wisdom archive",
-    "deep reading archive",
-    "thoughtful content library",
-    "curated essays",
-    "long-form articles collection",
-    "intellectual content archive",
-    "doomscrolling"
+    "weekly essays",
+    "long-form reading",
+    "thoughtful writing",
   ],
-  authors: [{ name: "Lucky Solanki", url: "https://dailicle.com" }],
-  creator: "Lucky Solanki",
   publisher: "The Dailicle",
   openGraph: {
-    title: "Archive - Browse All Daily Essays | The Dailicle",
-    description: "Browse hundreds of deeply researched essays on psychology, philosophy, and startup wisdom. Search and discover thought-provoking content.",
+    title: "The Essays - Archive | The Dailicle",
+    description: DESCRIPTION,
     url: "https://dailicle.com/archive",
     siteName: "The Dailicle",
     locale: "en_US",
@@ -36,7 +33,7 @@ export const metadata: Metadata = {
         url: "https://dailicle.com/og-archive.png",
         width: 1200,
         height: 630,
-        alt: "The Dailicle Archive - Browse All Essays",
+        alt: "The Dailicle Archive",
         type: "image/png",
       },
     ],
@@ -44,12 +41,11 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     site: "@dailicle",
-    creator: "@luckysolanki",
-    title: "Archive - Browse All Daily Essays",
-    description: "Browse hundreds of deeply researched essays on psychology, philosophy, and startup wisdom.",
+    title: "The Essays - Archive | The Dailicle",
+    description: DESCRIPTION,
     images: {
       url: "https://dailicle.com/og-archive.png",
-      alt: "The Dailicle Archive - Browse All Essays",
+      alt: "The Dailicle Archive",
     },
   },
   alternates: {
@@ -61,45 +57,56 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
 };
 
+function toEntry(essay: Essay): ArchiveEntry {
+  return {
+    href: `/read/${essay.slug || essay._id}`,
+    title: essay.title,
+    hook: essay.hook,
+    theme: essay.theme,
+    readingMinutes: essay.reading_minutes,
+    dateLabel: formatDate(essay.published_at, "medium"),
+    issue: essay.issue,
+  };
+}
+
 export default async function ArchivePage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; q?: string }>;
+  searchParams: Promise<{ theme?: string }>;
 }) {
-  const { page, q } = await searchParams;
-  const currentPage = Number(page) || 1;
-  const searchQuery = q || "";
-  
-  const { articles, totalPages } = await getArticles(currentPage, 10, searchQuery);
+  const { theme } = await searchParams;
+  const [published, archived] = await Promise.all([
+    getPublishedEssays(),
+    getArchived2025(),
+  ]);
 
-  // Structured Data for SEO
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "The Dailicle Archive",
-    "description": "Browse our complete archive of deeply researched essays on psychology, philosophy, and startup wisdom.",
-    "url": "https://dailicle.com/archive",
-    "publisher": {
+    name: "The Dailicle Archive",
+    description: DESCRIPTION,
+    url: "https://dailicle.com/archive",
+    publisher: {
       "@type": "Organization",
-      "name": "The Dailicle"
+      name: "The Dailicle",
     },
-    "hasPart": articles.map((article: any) => ({
+    hasPart: [...published, ...archived].map((essay) => ({
       "@type": "Article",
-      "headline": article.topic_title,
-      "datePublished": formatArticleDisplayDate(article.date, 'iso'),
-      "url": `https://dailicle.com/read/${article._id}`,
-      "author": {
-        "@type": "Person",
-        "name": "Lucky Solanki"
-      }
-    }))
+      headline: essay.title,
+      datePublished: formatDate(essay.published_at, "iso"),
+      url: `https://dailicle.com/read/${essay.slug || essay._id}`,
+      author: {
+        "@type": "Organization",
+        name: "The Dailicle",
+      },
+    })),
   };
 
   return (
@@ -110,11 +117,10 @@ export default async function ArchivePage({
       />
       <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
         <ThemeSwitcher />
-        <ArchiveList 
-          initialArticles={articles} 
-          totalPages={totalPages} 
-          currentPage={currentPage}
-          initialSearch={searchQuery}
+        <ArchiveList
+          current={published.map(toEntry)}
+          legacy={archived.map(toEntry)}
+          initialTheme={theme}
         />
       </main>
     </>

@@ -1,166 +1,237 @@
 "use client";
 
-import React, { useState, useEffect, useSyncExternalStore, useMemo } from "react";
-import { motion } from "framer-motion";
+import React, { useCallback, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Search, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { Article } from "@/lib/articles";
-import { isArticleVisible, formatArticleDisplayDate } from "@/lib/utils";
+import { ChevronDown, Search, X } from "lucide-react";
+import { THEMES, themeLabel } from "@/lib/themes";
+import { cn } from "@/lib/utils";
 
-// Hook to detect client-side rendering without causing hydration mismatch
-function useIsClient() {
-  return useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
+export interface ArchiveEntry {
+  href: string;
+  title: string;
+  hook: string;
+  theme: string;
+  readingMinutes: number;
+  dateLabel: string;
+  issue?: number | null;
 }
 
 interface ArchiveListProps {
-  initialArticles: Article[];
-  totalPages: number;
-  currentPage: number;
-  initialSearch: string;
+  current: ArchiveEntry[]; // the weekly era — the publication proper
+  legacy: ArchiveEntry[]; // the 2025 archive — tucked away, never promoted
+  initialTheme?: string;
 }
 
-export function ArchiveList({ 
-  initialArticles, 
-  totalPages, 
-  currentPage,
-  initialSearch 
-}: ArchiveListProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [searchQuery, setSearchQuery] = useState(initialSearch);
-  const isClient = useIsClient();
+function EntryRow({
+  entry,
+  index,
+  muted = false,
+}: {
+  entry: ArchiveEntry;
+  index: number;
+  muted?: boolean;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.4, delay: Math.min(index, 6) * 0.04 }}
+    >
+      <Link
+        href={entry.href}
+        className={cn(
+          "group block py-6 border-b border-foreground/10 hover:bg-foreground/[0.03] transition-colors -mx-4 px-4 rounded-lg",
+          muted && "py-4 opacity-75 hover:opacity-100"
+        )}
+      >
+        <p className="text-[10px] font-semibold tracking-[0.18em] uppercase mb-1.5">
+          <span className={muted ? "text-foreground/45" : "text-accent"}>
+            {themeLabel(entry.theme)}
+          </span>
+          <span className="text-foreground/40 font-medium">
+            {entry.issue ? ` · Issue ${entry.issue}` : ""} · {entry.dateLabel} ·{" "}
+            {entry.readingMinutes} min
+          </span>
+        </p>
+        <h3
+          className={cn(
+            "font-display leading-snug tracking-tight group-hover:underline decoration-foreground/25 underline-offset-4",
+            muted ? "text-base md:text-lg text-foreground/80" : "text-lg md:text-xl"
+          )}
+        >
+          {entry.title}
+        </h3>
+        {!muted && entry.hook && (
+          <p className="mt-1.5 text-sm text-foreground/55 leading-relaxed line-clamp-2">
+            {entry.hook}
+          </p>
+        )}
+      </Link>
+    </motion.div>
+  );
+}
 
-  // Filter articles based on 9 AM rule (only on client)
-  const visibleArticles = useMemo(() => {
-    if (!isClient) {
-      // On server, return all articles (will be filtered on client)
-      return initialArticles;
+export function ArchiveList({ current, legacy, initialTheme }: ArchiveListProps) {
+  const [query, setQuery] = useState("");
+  const [showLegacy, setShowLegacy] = useState(false);
+  const [theme, setThemeState] = useState<string | null>(
+    initialTheme && THEMES.some((t) => t.slug === initialTheme) ? initialTheme : null
+  );
+
+  // Keep the URL shareable without triggering a navigation.
+  const setTheme = useCallback((slug: string | null) => {
+    setThemeState(slug);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      if (slug) url.searchParams.set("theme", slug);
+      else url.searchParams.delete("theme");
+      window.history.replaceState(null, "", url.toString());
     }
-    // On client, filter out articles that shouldn't be visible yet
-    return initialArticles.filter(article => {
-      // Use the date field (MongoDB Date object converted to string)
-      return isArticleVisible(article.date);
-    });
-  }, [initialArticles, isClient]);
+  }, []);
 
-  // Debounce search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery !== initialSearch) {
-        const params = new URLSearchParams();
-        if (searchQuery) params.set("q", searchQuery);
-        params.set("page", "1"); // Reset to page 1 on search
-        router.push(`${pathname}?${params.toString()}`);
-      }
-    }, 500);
+  // Chips and search work on the current era only — the 2025 archive sits
+  // apart and unfiltered, an option rather than part of the catalogue.
+  const countFor = (slug: string) => current.filter((e) => e.theme === slug).length;
 
-    return () => clearTimeout(timer);
-  }, [searchQuery, initialSearch, pathname, router]);
-
-  const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams();
-    if (searchQuery) params.set("q", searchQuery);
-    params.set("page", newPage.toString());
-    router.push(`${pathname}?${params.toString()}`);
-  };
+  let shown = current;
+  if (theme) shown = shown.filter((e) => e.theme === theme);
+  if (query.trim()) {
+    const q = query.trim().toLowerCase();
+    shown = shown.filter(
+      (e) => e.title.toLowerCase().includes(q) || e.hook.toLowerCase().includes(q)
+    );
+  }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-20">
-      
+    <div className="max-w-2xl mx-auto px-6 py-24">
       {/* Header */}
-      <header className="mb-16 space-y-6">
-        <Link 
-          href="/"
-          className="text-sm text-foreground/40 hover:text-foreground transition-colors"
-        >
-          ← Back to Home
-        </Link>
-        <h1 className="text-4xl font-bold tracking-tight">Archive</h1>
-        
-        {/* Search Bar */}
-        <div className="relative group">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-foreground/30 group-focus-within:text-foreground/60 transition-colors" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search by title, category, or tag..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-foreground/5 border border-transparent focus:border-foreground/20 rounded-xl py-3 pl-10 pr-4 outline-none transition-all placeholder:text-foreground/30"
-          />
-        </div>
+      <header className="mb-12 space-y-5 text-center">
+        <h1 className="font-display text-4xl md:text-5xl tracking-tight">The essays</h1>
+        <p className="text-foreground/55 text-base">
+          One a week, every Monday. Choose a strand or just start at the top.
+        </p>
       </header>
 
-      {/* List */}
-      <div className="space-y-2">
-        {visibleArticles.map((article, index) => (
-          <motion.div
-            key={article._id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-          >
-            <Link 
-              href={`/read/${article._id}`}
-              className="group block p-4 -mx-4 rounded-2xl hover:bg-foreground/5 transition-colors"
-            >
-              <div className="flex items-baseline justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-medium truncate group-hover:text-foreground/80 transition-colors">
-                    {article.topic_title}
-                  </h3>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-foreground/40 uppercase tracking-wider">
-                    <span>{formatArticleDisplayDate(article.date, 'iso')}</span>
-                    <span>•</span>
-                    <span>{article.category}</span>
-                  </div>
-                </div>
-                <div className="text-foreground/20 group-hover:translate-x-1 transition-transform">
-                  <ArrowRight size={18} />
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
+      {/* Controls */}
+      <div className="mb-12 space-y-5">
+        <div className="relative">
+          <Search
+            size={16}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/35"
+          />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search the essays…"
+            className="w-full pl-11 pr-4 py-3 rounded-xl bg-foreground/5 border border-foreground/10 focus:border-accent/60 focus:outline-none text-sm placeholder:text-foreground/35 transition-colors"
+          />
+        </div>
 
-        {visibleArticles.length === 0 && (
-          <div className="text-center py-20 text-foreground/40">
-            No essays found matching "{searchQuery}"
-          </div>
-        )}
+        <div className="flex flex-wrap justify-center gap-2">
+          <button
+            onClick={() => setTheme(null)}
+            className={cn(
+              "px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors",
+              theme === null
+                ? "bg-foreground text-background border-foreground"
+                : "border-foreground/15 text-foreground/60 hover:border-foreground/40 hover:text-foreground"
+            )}
+          >
+            All <span className="opacity-50">{current.length}</span>
+          </button>
+          {THEMES.map((t) => {
+            const count = countFor(t.slug);
+            return (
+              <button
+                key={t.slug}
+                onClick={() => setTheme(theme === t.slug ? null : t.slug)}
+                disabled={count === 0}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors",
+                  theme === t.slug
+                    ? "bg-foreground text-background border-foreground"
+                    : count === 0
+                      ? "border-foreground/10 text-foreground/25 cursor-not-allowed"
+                      : "border-foreground/15 text-foreground/60 hover:border-foreground/40 hover:text-foreground"
+                )}
+              >
+                {t.label} <span className="opacity-50">{count}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="mt-16 flex items-center justify-center gap-4">
-          <button 
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage <= 1}
-            className="p-2 rounded-lg hover:bg-foreground/5 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          
-          <span className="text-sm font-medium">
-            Page {currentPage} of {totalPages}
-          </span>
-          
-          <button 
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage >= totalPages}
-            className="p-2 rounded-lg hover:bg-foreground/5 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-          >
-            <ChevronRight size={20} />
-          </button>
+      {/* Current era */}
+      {shown.length > 0 ? (
+        <section className="mb-20">
+          {shown.map((entry, i) => (
+            <EntryRow key={entry.href} entry={entry} index={i} />
+          ))}
+        </section>
+      ) : (
+        <div className="text-center py-16 space-y-4 mb-10">
+          <p className="text-foreground/50 text-sm">
+            Nothing matches{query ? ` “${query}”` : ""} yet — the collection grows
+            by one every Monday.
+          </p>
+          {(query || theme) && (
+            <button
+              onClick={() => {
+                setQuery("");
+                setTheme(null);
+              }}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline underline-offset-4"
+            >
+              <X size={14} />
+              Clear filters
+            </button>
+          )}
         </div>
       )}
 
+      {/* 2025 archive — a closed drawer, not a shelf */}
+      {legacy.length > 0 && (
+        <section className="border-t border-foreground/10 pt-8">
+          <button
+            onClick={() => setShowLegacy((v) => !v)}
+            className="w-full flex items-center justify-between py-2 text-left group"
+            aria-expanded={showLegacy}
+          >
+            <span className="text-xs font-medium tracking-[0.18em] uppercase text-foreground/40 group-hover:text-foreground/60 transition-colors">
+              From 2025, before the weekly era ({legacy.length})
+            </span>
+            <ChevronDown
+              size={16}
+              className={cn(
+                "text-foreground/35 transition-transform duration-300",
+                showLegacy && "rotate-180"
+              )}
+            />
+          </button>
+
+          <AnimatePresence initial={false}>
+            {showLegacy && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div className="pt-4">
+                  {legacy.map((entry, i) => (
+                    <EntryRow key={entry.href} entry={entry} index={i} muted />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+      )}
     </div>
   );
 }

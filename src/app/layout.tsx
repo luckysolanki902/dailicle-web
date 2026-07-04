@@ -30,34 +30,29 @@ const lora = Lora({
 export const metadata: Metadata = {
   metadataBase: new URL('https://dailicle.com'),
   title: {
-    default: "The Dailicle - One Transformative Essay Every Day | Deep Reading for Curious Minds",
+    default: "The Dailicle - One Essay a Week, Written to Be Read Slowly",
     template: "%s | The Dailicle"
   },
-  description: "Escape doomscrolling with The Dailicle. One deeply researched, AI-powered essay daily on psychology, philosophy, and startup wisdom. Free, no signup, distraction-free reading for ambitious builders and curious minds.",
+  description: "A weekly essay on the mind, meaning, money, and how to live. Carefully researched, free to read, nothing to sign up for - a new one every Monday.",
   keywords: [
-    "daily essays",
+    "weekly essay",
     "deep reading",
     "distraction-free reading",
     "thoughtful essays",
-    "curated daily content",
-    "AI-generated essays",
-    "personalized learning",
     "long-form articles",
-    "daily wisdom",
     "intellectual reading",
-    "minimalist reading app",
-    "one essay per day",
+    "one essay a week",
     "alternatives to doomscrolling",
     "philosophy essays",
     "psychology essays",
-    "startup wisdom",
-    "deep focus reading",
+    "essays about money",
+    "essays about life",
     "slow web",
     "digital wellbeing",
     "mindful reading"
   ],
-  authors: [{ name: "Lucky Solanki" }],
-  creator: "Lucky Solanki",
+  authors: [{ name: "The Dailicle Desk" }],
+  creator: "The Dailicle",
   publisher: "The Dailicle",
   formatDetection: {
     email: false,
@@ -69,21 +64,21 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://dailicle.com",
     siteName: "The Dailicle",
-    title: "The Dailicle - One Transformative Essay Every Day",
-    description: "Escape doomscrolling with deeply researched essays on psychology, philosophy, and startup wisdom. Free, no signup required.",
+    title: "The Dailicle - One Essay a Week, Written to Be Read Slowly",
+    description: "A weekly essay on the mind, meaning, money, and how to live. Free to read, nothing to sign up for - a new one every Monday.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "The Dailicle - Daily Essays for Curious Minds",
+        alt: "The Dailicle - One Essay a Week",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Dailicle - One Transformative Essay Every Day",
-    description: "Escape doomscrolling with deeply researched essays on psychology, philosophy, and startup wisdom.",
+    title: "The Dailicle - One Essay a Week, Written to Be Read Slowly",
+    description: "A weekly essay on the mind, meaning, money, and how to live. A new one every Monday.",
     images: ["/og-image.png"],
     creator: "@dailicle",
   },
@@ -100,6 +95,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://dailicle.com",
+    types: {
+      "application/rss+xml": [
+        { url: "https://dailicle.com/feed.xml", title: "The Dailicle — weekly essay" },
+      ],
+    },
   },
   verification: {
     google: "google-site-verification-code",
@@ -144,6 +144,20 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${merriweather.variable} ${spaceGrotesk.variable} ${lora.variable} antialiased transition-colors duration-500`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "The Dailicle",
+              url: "https://dailicle.com",
+              logo: "https://dailicle.com/logo.png",
+              description:
+                "A weekly essay on the mind, meaning, money, and how to live. Written to be read slowly.",
+            }),
+          }}
+        />
         <ThemeProvider>
           <Navbar />
           {children}

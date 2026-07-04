@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import type { Metadata } from "next";
 
 // Note: For client components, we'll handle SEO via Next.js metadata in a server wrapper
 // or add the metadata export in a layout.tsx for this route
@@ -11,11 +10,11 @@ export default function ManifestoPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "Why Read Dailicle? A Manifesto for the Slow Web",
-    "description": "A rebellion against the noise of the internet. The philosophy behind one essay per day.",
+    "headline": "Why Read The Dailicle? A Manifesto for the Slow Web",
+    "description": "A rebellion against the noise of the internet. The philosophy behind one essay a week.",
     "author": {
-      "@type": "Person",
-      "name": "Lucky Solanki"
+      "@type": "Organization",
+      "name": "The Dailicle"
     },
     "publisher": {
       "@type": "Organization",
@@ -29,7 +28,7 @@ export default function ManifestoPage() {
       "@type": "WebPage",
       "@id": "https://dailicle.com/manifesto"
     },
-    "articleBody": "The internet was supposed to be a library. Instead, it became a casino. Dailicle is a rebellion against the noise. We publish exactly one essay per day."
+    "articleBody": "The internet was supposed to be a library. Instead, it became a casino. The Dailicle is a rebellion against the noise. We publish exactly one essay a week."
   };
 
   return (
@@ -57,45 +56,58 @@ export default function ManifestoPage() {
             </p>
           </header>
 
-          <div className="prose prose-lg prose-p:text-foreground/80 prose-headings:text-foreground prose-strong:text-foreground mx-auto font-serif leading-relaxed">
+          <div className="prose prose-lg prose-p:text-foreground/80 prose-headings:text-foreground prose-headings:font-display prose-strong:text-foreground mx-auto font-display leading-relaxed">
             <p>
               The internet was supposed to be a library. Instead, it became a casino.
             </p>
             <p>
-              Every day, you are bombarded with infinite scrolls, algorithmic feeds, and clickbait designed to hijack your dopamine receptors. The result is a fragmented mind. We know more, but understand less. We consume more, but taste less.
+              Think about the last hour you spent scrolling. Can you remember one thing from it? The feeds are engineered by some of the smartest people alive to keep your thumb moving, and they are very good at their jobs. What they take is subtle: the evening feels full while the mind stays empty.
             </p>
             <p>
-              <strong>Dailicle is a rebellion against the noise.</strong>
+              <strong>The Dailicle is a rebellion against that.</strong>
             </p>
-            
-            <h3>The Philosophy of One</h3>
+
+            <h3>The philosophy of one</h3>
             <p>
-              We publish exactly one essay per day. Not ten. Not a feed. Just one.
+              We publish exactly one essay a week. Not ten. Not a feed. One, every Monday.
             </p>
             <p>
-              Why? Because scarcity creates value. When you know there is only one thing to read, you stop skimming and start reading. You give it your full attention. And in return, we give you our best work.
+              Scarcity is a form of respect. When there is only one thing to read, you stop skimming and start reading. You give it your full attention, and we give it a full week of care: each essay is chosen from dozens of candidate ideas, researched properly, and written to be finished. Most take ten to fifteen minutes. There is a narration if you would rather listen.
+            </p>
+
+            <h3>What the essays are about</h3>
+            <p>
+              Five strands: psychology, philosophy, perspectives, life, and money. What connects them is a certain kind of idea — a specific, human observation you half-recognize but have never put into words. The worries you inherited from your parents. Why some days vanish and others last forever. What it quietly costs to keep every option open.
+            </p>
+            <p>
+              A good essay here should still be on your mind on Wednesday.
             </p>
 
             <h3>Who is this for?</h3>
             <p>
-              It is for the curious. For the people who still believe that a well-crafted sentence can change the way you see the world. It is for the builders, the thinkers, and the dreamers who are tired of the shallow waters of social media and want to dive deep.
+              The curious. People who still believe a well-crafted sentence can change how you see the world, and people who suspect they would read more if reading felt less like homework. There is no signup, no paywall, and nothing to keep track of — one essay, once a week, free.
             </p>
             <p>
-              If you are looking for &quot;content&quot; to fill the silence, this is not for you. But if you are looking for ideas that will linger in your mind long after you close the tab, welcome home.
+              If you want content to fill the silence, plenty of places will happily oblige. If you want ideas that linger after the tab closes, welcome home.
             </p>
 
-            <h3>Why No Recommendations?</h3>
+            <h3>Who writes it?</h3>
             <p>
-              Recommendation algorithms are designed to keep you on the platform. They are designed for <em>engagement</em>, not <em>enlightenment</em>. We want you to read, think, and then <strong>leave</strong>. Go for a walk. Talk to a friend. Build something.
+              The essays are written and edited at The Dailicle Desk, in one house voice, and held to a single bar: would a careful reader want to read this twice? No bylines chasing attention, no guest posts, no filler weeks.
+            </p>
+
+            <h3>Why no recommendations?</h3>
+            <p>
+              Recommendation algorithms are built for <em>engagement</em>, not <em>enlightenment</em>. We want you to read, think, and then <strong>leave</strong>. Go for a walk. Talk to a friend. Build something.
             </p>
             <p>
-              We give you the raw sources at the bottom of every essay for those who want to go deeper. But we will never trap you in a loop.
+              Sometimes an essay ends with a few pointers for anyone who wants to sit with the idea longer. But we will never trap you in a loop.
             </p>
 
             <hr className="border-foreground/10 my-12" />
 
             <p className="text-center italic text-base">
-              Read slowly. Think deeply.
+              Read slowly. Think deeply. Come back Monday.
             </p>
           </div>
         </motion.div>

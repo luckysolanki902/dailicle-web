@@ -1,0 +1,137 @@
+import clientPromise from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
+
+const DB_NAME = "dailicle";
+const COLLECTION = "essays";
+
+export interface FurtherReadingItem {
+  title: string;
+  url: string;
+}
+
+export interface Essay {
+  _id: string;
+  slug?: string;
+  title: string;
+  hook: string;
+  theme: string;
+  status: "queued" | "published" | "archived";
+  body?: string;
+  word_count: number;
+  reading_minutes: number;
+  issue?: number | null;
+  publish_on?: Date | null;
+  published_at?: Date | null;
+  created_at?: Date;
+  further_reading?: FurtherReadingItem[];
+  /** Relative S3 key for the narration MP3; the client prepends CloudFront. */
+  audio_url?: string;
+  audio_duration_seconds?: number;
+  /** Readable at its URL (indexed links stay alive) but shown in no listing. */
+  unlisted?: boolean;
+}
+
+/** Light projection for lists — never drags the body over the wire. */
+const LIST_PROJECTION = {
+  slug: 1,
+  title: 1,
+  hook: 1,
+  theme: 1,
+  status: 1,
+  reading_minutes: 1,
+  issue: 1,
+  publish_on: 1,
+  published_at: 1,
+} as const;
+
+async function collection() {
+  const client = await clientPromise;
+  return client.db(DB_NAME).collection(COLLECTION);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function serialize(doc: any): Essay {
+  return { ...doc, _id: doc._id.toString() } as Essay;
+}
+
+/** The essay currently live — the latest published one. */
+export async function getThisWeek(): Promise<Essay | null> {
+  const col = await collection();
+  const doc = await col
+    .find({ status: "published" }, { projection: LIST_PROJECTION })
+    .sort({ published_at: -1 })
+    .limit(1)
+    .next();
+  return doc ? serialize(doc) : null;
+}
+
+/**
+ * Next Monday's topic — the oldest queued doc. Title and hook only;
+ * a queued essay has no body and must never leak one.
+ */
+export async function getNextTopic(): Promise<Essay | null> {
+  const col = await collection();
+  const doc = await col
+    .find(
+      { status: "queued" },
+      { projection: { slug: 1, title: 1, hook: 1, theme: 1, status: 1 } }
+    )
+    .sort({ created_at: 1 })
+    .limit(1)
+    .next();
+  return doc ? serialize(doc) : null;
+}
+
+/** Resolve /read/[param] — slug first, legacy ObjectId as fallback. */
+export async function getEssay(param: string): Promise<Essay | null> {
+  const col = await collection();
+
+  let doc = await col.findOne({ slug: param, status: { $ne: "queued" } });
+  if (!doc && ObjectId.isValid(param)) {
+    doc = await col.findOne({
+      _id: new ObjectId(param),
+      status: { $ne: "queued" },
+    });
+  }
+  return doc ? serialize(doc) : null;
+}
+
+/** Current-era essays, newest first. */
+export async function getPublishedEssays(limit = 200): Promise<Essay[]> {
+  const col = await collection();
+  const docs = await col
+    .find({ status: "published" }, { projection: LIST_PROJECTION })
+    .sort({ published_at: -1 })
+    .limit(limit)
+    .toArray();
+  return docs.map(serialize);
+}
+
+/**
+ * The 2025 archive — legacy essays that still meet the bar, newest first.
+ * Unlisted ones stay readable at their URLs but appear in no listing.
+ */
+export async function getArchived2025(): Promise<Essay[]> {
+  const col = await collection();
+  const docs = await col
+    .find(
+      { status: "archived", unlisted: { $ne: true } },
+      { projection: LIST_PROJECTION }
+    )
+    .sort({ published_at: -1 })
+    .toArray();
+  return docs.map(serialize);
+}
+
+/** Everything listed, for the sitemap (unlisted essays are excluded). */
+export async function getAllReadable(): Promise<Essay[]> {
+  const col = await collection();
+  const docs = await col
+    .find(
+      { status: { $in: ["published", "archived"] }, unlisted: { $ne: true } },
+      { projection: { slug: 1, published_at: 1 } }
+    )
+    .sort({ published_at: -1 })
+    .toArray();
+  return docs.map(serialize);
+}

@@ -23,7 +23,7 @@ export function Footer() {
         <div className="text-center md:text-left">
           <h3 className="font-bold text-lg tracking-tight">The Dailicle</h3>
           <p className="text-sm text-foreground/40 mt-2">
-            One essay a day. Nothing else.
+            One essay a week. Nothing else.
           </p>
         </div>
 

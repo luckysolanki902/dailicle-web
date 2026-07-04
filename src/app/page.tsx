@@ -1,18 +1,27 @@
-import { Hero } from "@/components/landing/Hero";
-import { ValueProps } from "@/components/landing/ValueProps";
-import { Sources } from "@/components/landing/Sources";
+import { ThisWeek } from "@/components/landing/ThisWeek";
+import { NextWeek } from "@/components/landing/NextWeek";
+import { Ethos } from "@/components/landing/Ethos";
+import { ReaderWord } from "@/components/landing/ReaderWord";
+import { RecentEssays, EssayCard } from "@/components/landing/RecentEssays";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { getLatestTwoArticles } from "@/lib/articles";
+import { getThisWeek, getNextTopic, getPublishedEssays } from "@/lib/essays";
+import { themeLabel } from "@/lib/themes";
+import { formatDate, nextMonday } from "@/lib/utils";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
-export const revalidate = 360; // Revalidate every 6 minutes
+export const revalidate = 3600; // weekly cadence — hourly revalidation is plenty
+
+const DESCRIPTION =
+  "A weekly essay on the mind, meaning, money, and how to live. Carefully researched, free to read, nothing to sign up for — a new one every Monday.";
 
 export const metadata: Metadata = {
-  title: "The Dailicle - One Transformative Essay Every Day | Deep Reading for Curious Minds",
-  description: "Escape doomscrolling with The Dailicle. One deeply researched, AI-powered essay daily on psychology, philosophy, and startup wisdom. Free, no signup, distraction-free reading for ambitious builders.",
+  title: "The Dailicle — One essay a week, written to be read slowly",
+  description: DESCRIPTION,
   openGraph: {
-    title: "The Dailicle - One Transformative Essay Every Day",
-    description: "Escape doomscrolling with deeply researched essays on psychology, philosophy, and startup wisdom. Published daily at 9 AM.",
+    title: "The Dailicle — One essay a week, written to be read slowly",
+    description: DESCRIPTION,
     url: "https://dailicle.com",
     type: "website",
     images: [
@@ -20,14 +29,14 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "The Dailicle - Daily Essays for Curious Minds",
+        alt: "The Dailicle — one essay a week",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Dailicle - One Transformative Essay Every Day",
-    description: "Escape doomscrolling with deeply researched essays on psychology, philosophy, and startup wisdom.",
+    title: "The Dailicle — One essay a week, written to be read slowly",
+    description: DESCRIPTION,
     images: ["/og-image.png"],
   },
   alternates: {
@@ -36,60 +45,60 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const articles = await getLatestTwoArticles();
-  const latestArticle = articles[0] || null;
-  const previousArticle = articles[1] || null;
+  const [thisWeek, nextTopic, published] = await Promise.all([
+    getThisWeek(),
+    getNextTopic(),
+    getPublishedEssays(5),
+  ]);
 
-  // Fallback if no article found (e.g. DB empty)
-  const todayTopic = latestArticle ? {
-    id: latestArticle._id,
-    title: latestArticle.topic_title,
-    teaser: latestArticle.topic_rationale,
-    readTime: latestArticle.reading_time_minutes,
-    date: latestArticle.date_str,
-    createdAt: latestArticle.date?.toISOString() || new Date().toISOString(),
-  } : {
-    id: "#",
-    title: "No Article Today",
-    teaser: "The ink is dry. Come back tomorrow.",
-    readTime: 0,
-  };
+  const hero = thisWeek
+    ? {
+        href: `/read/${thisWeek.slug || thisWeek._id}`,
+        title: thisWeek.title,
+        hook: thisWeek.hook,
+        themeLabel: themeLabel(thisWeek.theme),
+        issue: thisWeek.issue,
+        dateLabel: formatDate(thisWeek.published_at, "medium"),
+        readingMinutes: thisWeek.reading_minutes,
+      }
+    : null;
 
-  const previousTopic = previousArticle ? {
-    id: previousArticle._id,
-    title: previousArticle.topic_title,
-    teaser: previousArticle.topic_rationale,
-    readTime: previousArticle.reading_time_minutes,
-    date: previousArticle.date_str,
-    createdAt: previousArticle.date?.toISOString() || new Date().toISOString(),
-  } : undefined;
+  const comingMonday = formatDate(nextMonday(), "medium");
 
-  // Structured Data for SEO
+  const tease = nextTopic
+    ? {
+        title: nextTopic.title,
+        themeLabel: themeLabel(nextTopic.theme),
+        dateLabel: comingMonday,
+      }
+    : null;
+
+  // "Keep reading": recent published essays beyond the hero — current era only
+  const cards: EssayCard[] = published
+    .filter((e) => e._id !== thisWeek?._id)
+    .slice(0, 3)
+    .map((e) => ({
+      href: `/read/${e.slug || e._id}`,
+      title: e.title,
+      hook: e.hook,
+      themeLabel: themeLabel(e.theme),
+      readingMinutes: e.reading_minutes,
+    }));
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "The Dailicle",
-    "url": "https://dailicle.com",
-    "description": "One deeply researched essay every day on psychology, philosophy, and startup wisdom.",
-    "publisher": {
+    name: "The Dailicle",
+    url: "https://dailicle.com",
+    description: DESCRIPTION,
+    publisher: {
       "@type": "Organization",
-      "name": "The Dailicle",
-      "logo": {
+      name: "The Dailicle",
+      logo: {
         "@type": "ImageObject",
-        "url": "https://dailicle.com/logo.png"
-      }
+        url: "https://dailicle.com/logo.png",
+      },
     },
-    "potentialAction": {
-      "@type": "ReadAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://dailicle.com/read/{id}",
-        "actionPlatform": [
-          "http://schema.org/DesktopWebPlatform",
-          "http://schema.org/MobileWebPlatform"
-        ]
-      }
-    }
   };
 
   return (
@@ -100,27 +109,32 @@ export default async function Home() {
       />
       <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
         <ThemeSwitcher />
-        <Hero todayTopic={todayTopic} previousTopic={previousTopic} />
-        <Sources />
-        <ValueProps />
-        
-        {/* Footer CTA */}
-        <section className="py-32 px-6 text-center bg-foreground/5">
-          <div className="max-w-2xl mx-auto space-y-6">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">Ready to think deeper?</h2>
-            <p className="text-xl text-foreground/70">
-              Join thousands who start their day with insight.
-              <br />
-              <span className="text-base text-foreground/50">No signup. No spam. Just wisdom.</span>
-            </p>
-            <div className="pt-6">
-              <a 
-                href={`/read/${todayTopic.id}`}
-                className="inline-flex items-center gap-2 px-10 py-5 bg-foreground text-background rounded-full text-lg font-semibold hover:scale-105 transition-transform shadow-lg"
+
+        <ThisWeek essay={hero} upcoming={!hero ? tease : null} />
+        {hero && <NextWeek topic={tease} />}
+        <Ethos />
+        <ReaderWord />
+        <RecentEssays essays={cards} />
+
+        {/* Closing — quiet, honest */}
+        <section className="py-24 px-6 text-center border-t border-foreground/10">
+          <div className="max-w-xl mx-auto space-y-6">
+            <h2 className="font-display text-3xl md:text-4xl tracking-tight text-balance">
+              The next essay arrives Monday.
+              {hero && <span className="block">This week&apos;s is already here.</span>}
+            </h2>
+            <div className="pt-2">
+              <Link
+                href={hero ? hero.href : "/archive"}
+                className="group inline-flex items-center gap-3 px-9 py-4 bg-foreground text-background rounded-full text-base font-medium transition-all hover:shadow-xl hover:-translate-y-0.5"
               >
-                Start Reading Today
-              </a>
+                <span>{hero ? "Start reading" : "Visit the archive"}</span>
+                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+              </Link>
             </div>
+            <p className="text-xs text-foreground/40">
+              Free to read · nothing to sign up for · no ads
+            </p>
           </div>
         </section>
       </main>
