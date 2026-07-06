@@ -1,14 +1,5 @@
-import { ThisWeek } from "@/components/landing/ThisWeek";
-import { NextWeek } from "@/components/landing/NextWeek";
-import { Ethos } from "@/components/landing/Ethos";
-import { ReaderWord } from "@/components/landing/ReaderWord";
-import { RecentEssays, EssayCard } from "@/components/landing/RecentEssays";
-import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { getThisWeek, getNextTopic, getPublishedEssays } from "@/lib/essays";
-import { themeLabel } from "@/lib/themes";
-import { formatDate, nextMonday } from "@/lib/utils";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { HomeClient } from "@/components/landing/HomeClient";
+import { getPublishedCandidates, getQueuedTopics } from "@/lib/essays";
 import type { Metadata } from "next";
 
 export const revalidate = 3600; // weekly cadence — hourly revalidation is plenty
@@ -45,45 +36,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [thisWeek, nextTopic, published] = await Promise.all([
-    getThisWeek(),
-    getNextTopic(),
-    getPublishedEssays(5),
+  const [published, queued] = await Promise.all([
+    getPublishedCandidates(20),
+    getQueuedTopics(5),
   ]);
-
-  const hero = thisWeek
-    ? {
-        href: `/read/${thisWeek.slug || thisWeek._id}`,
-        title: thisWeek.title,
-        hook: thisWeek.hook,
-        themeLabel: themeLabel(thisWeek.theme),
-        issue: thisWeek.issue,
-        dateLabel: formatDate(thisWeek.published_at, "medium"),
-        readingMinutes: thisWeek.reading_minutes,
-      }
-    : null;
-
-  const comingMonday = formatDate(nextMonday(), "medium");
-
-  const tease = nextTopic
-    ? {
-        title: nextTopic.title,
-        themeLabel: themeLabel(nextTopic.theme),
-        dateLabel: comingMonday,
-      }
-    : null;
-
-  // "Keep reading": recent published essays beyond the hero — current era only
-  const cards: EssayCard[] = published
-    .filter((e) => e._id !== thisWeek?._id)
-    .slice(0, 3)
-    .map((e) => ({
-      href: `/read/${e.slug || e._id}`,
-      title: e.title,
-      hook: e.hook,
-      themeLabel: themeLabel(e.theme),
-      readingMinutes: e.reading_minutes,
-    }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -107,37 +63,24 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
-        <ThemeSwitcher />
-
-        <ThisWeek essay={hero} upcoming={!hero ? tease : null} />
-        {hero && <NextWeek topic={tease} />}
-        <Ethos />
-        <ReaderWord />
-        <RecentEssays essays={cards} />
-
-        {/* Closing — quiet, honest */}
-        <section className="py-24 px-6 text-center border-t border-foreground/10">
-          <div className="max-w-xl mx-auto space-y-6">
-            <h2 className="font-display text-3xl md:text-4xl tracking-tight text-balance">
-              The next essay arrives Monday.
-              {hero && <span className="block">This week&apos;s is already here.</span>}
-            </h2>
-            <div className="pt-2">
-              <Link
-                href={hero ? hero.href : "/archive"}
-                className="group inline-flex items-center gap-3 px-9 py-4 bg-foreground text-background rounded-full text-base font-medium transition-all hover:shadow-xl hover:-translate-y-0.5"
-              >
-                <span>{hero ? "Start reading" : "Visit the archive"}</span>
-                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-            <p className="text-xs text-foreground/40">
-              Free to read · nothing to sign up for · no ads
-            </p>
-          </div>
-        </section>
-      </main>
+      <HomeClient
+        published={published.map((essay) => ({
+          _id: essay._id,
+          slug: essay.slug,
+          title: essay.title,
+          hook: essay.hook,
+          theme: essay.theme,
+          reading_minutes: essay.reading_minutes,
+          issue: essay.issue,
+          publish_on: essay.publish_on ? new Date(essay.publish_on).toISOString() : null,
+          published_at: essay.published_at ? new Date(essay.published_at).toISOString() : null,
+        }))}
+        queued={queued.map((topic) => ({
+          _id: topic._id,
+          title: topic.title,
+          theme: topic.theme,
+        }))}
+      />
     </>
   );
 }

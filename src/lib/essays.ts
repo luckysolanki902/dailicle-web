@@ -54,15 +54,21 @@ function serialize(doc: any): Essay {
   return { ...doc, _id: doc._id.toString() } as Essay;
 }
 
-/** The essay currently live — the latest published one. */
-export async function getThisWeek(): Promise<Essay | null> {
+/** Published current-era essays, including pre-published scheduled issues. */
+export async function getPublishedCandidates(limit = 20): Promise<Essay[]> {
   const col = await collection();
-  const doc = await col
-    .find({ status: "published" }, { projection: LIST_PROJECTION })
-    .sort({ published_at: -1 })
-    .limit(1)
-    .next();
-  return doc ? serialize(doc) : null;
+  const docs = await col
+    .find({ status: "published", unlisted: { $ne: true } }, { projection: LIST_PROJECTION })
+    .sort({ publish_on: -1, published_at: -1, created_at: -1 })
+    .limit(limit)
+    .toArray();
+  return docs.map(serialize);
+}
+
+/** The essay currently live from the server's point of view. */
+export async function getThisWeek(): Promise<Essay | null> {
+  const [doc] = await getPublishedCandidates(1);
+  return doc || null;
 }
 
 /**
@@ -70,16 +76,21 @@ export async function getThisWeek(): Promise<Essay | null> {
  * a queued essay has no body and must never leak one.
  */
 export async function getNextTopic(): Promise<Essay | null> {
+  const [doc] = await getQueuedTopics(1);
+  return doc || null;
+}
+
+export async function getQueuedTopics(limit = 10): Promise<Essay[]> {
   const col = await collection();
-  const doc = await col
+  const docs = await col
     .find(
       { status: "queued" },
       { projection: { slug: 1, title: 1, hook: 1, theme: 1, status: 1 } }
     )
     .sort({ created_at: 1 })
-    .limit(1)
-    .next();
-  return doc ? serialize(doc) : null;
+    .limit(limit)
+    .toArray();
+  return docs.map(serialize);
 }
 
 /** Resolve /read/[param] — slug first, legacy ObjectId as fallback. */
@@ -100,8 +111,8 @@ export async function getEssay(param: string): Promise<Essay | null> {
 export async function getPublishedEssays(limit = 200): Promise<Essay[]> {
   const col = await collection();
   const docs = await col
-    .find({ status: "published" }, { projection: LIST_PROJECTION })
-    .sort({ published_at: -1 })
+    .find({ status: "published", unlisted: { $ne: true } }, { projection: LIST_PROJECTION })
+    .sort({ publish_on: -1, published_at: -1 })
     .limit(limit)
     .toArray();
   return docs.map(serialize);

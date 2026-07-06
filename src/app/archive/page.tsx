@@ -72,6 +72,8 @@ function toEntry(essay: Essay): ArchiveEntry {
     theme: essay.theme,
     readingMinutes: essay.reading_minutes,
     dateLabel: formatDate(essay.published_at, "medium"),
+    publishOn: essay.publish_on ? new Date(essay.publish_on).toISOString() : null,
+    publishedAt: essay.published_at ? new Date(essay.published_at).toISOString() : null,
     issue: essay.issue,
   };
 }

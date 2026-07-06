@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ChevronDown, Search, X } from "lucide-react";
 import { THEMES, themeLabel } from "@/lib/themes";
 import { cn } from "@/lib/utils";
+import { isReleasedLocally } from "@/lib/release";
 
 export interface ArchiveEntry {
   href: string;
@@ -14,6 +15,8 @@ export interface ArchiveEntry {
   theme: string;
   readingMinutes: number;
   dateLabel: string;
+  publishOn?: string | null;
+  publishedAt?: string | null;
   issue?: number | null;
 }
 
@@ -74,6 +77,7 @@ function EntryRow({
 }
 
 export function ArchiveList({ current, legacy, initialTheme }: ArchiveListProps) {
+  const [now, setNow] = useState(() => new Date());
   const [query, setQuery] = useState("");
   const [showLegacy, setShowLegacy] = useState(false);
   const [theme, setThemeState] = useState<string | null>(
@@ -91,11 +95,20 @@ export function ArchiveList({ current, legacy, initialTheme }: ArchiveListProps)
     }
   }, []);
 
+  React.useEffect(() => {
+    const id = window.setTimeout(() => setNow(new Date()), 0);
+    return () => window.clearTimeout(id);
+  }, []);
+
   // Chips and search work on the current era only — the 2025 archive sits
   // apart and unfiltered, an option rather than part of the catalogue.
-  const countFor = (slug: string) => current.filter((e) => e.theme === slug).length;
+  const releasedCurrent = current.filter((entry) =>
+    isReleasedLocally({ publish_on: entry.publishOn, published_at: entry.publishedAt }, now)
+  );
 
-  let shown = current;
+  const countFor = (slug: string) => releasedCurrent.filter((e) => e.theme === slug).length;
+
+  let shown = releasedCurrent;
   if (theme) shown = shown.filter((e) => e.theme === theme);
   if (query.trim()) {
     const q = query.trim().toLowerCase();
@@ -140,7 +153,7 @@ export function ArchiveList({ current, legacy, initialTheme }: ArchiveListProps)
                 : "border-foreground/15 text-foreground/60 hover:border-foreground/40 hover:text-foreground"
             )}
           >
-            All <span className="opacity-50">{current.length}</span>
+            All <span className="opacity-50">{releasedCurrent.length}</span>
           </button>
           {THEMES.map((t) => {
             const count = countFor(t.slug);
