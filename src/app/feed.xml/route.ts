@@ -14,10 +14,10 @@ function escapeXml(value: string): string {
 
 /**
  * RSS keeps the publication discoverable by readers, aggregators, and
- * search engines — the natural distribution channel for a weekly essay.
+ * search engines – the natural distribution channel for a weekly essay.
  */
 export async function GET() {
-  // Current era only — the feed is the publication, not the attic.
+  // Current era only – the feed is the publication, not the attic.
   const essays = await getPublishedEssays(60);
 
   const items = essays

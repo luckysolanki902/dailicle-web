@@ -21,8 +21,8 @@ export interface ArchiveEntry {
 }
 
 interface ArchiveListProps {
-  current: ArchiveEntry[]; // the weekly era — the publication proper
-  legacy: ArchiveEntry[]; // the 2025 archive — tucked away, never promoted
+  current: ArchiveEntry[]; // the weekly era – the publication proper
+  legacy: ArchiveEntry[]; // the 2025 archive – tucked away, never promoted
   initialTheme?: string;
 }
 
@@ -100,7 +100,7 @@ export function ArchiveList({ current, legacy, initialTheme }: ArchiveListProps)
     return () => window.clearTimeout(id);
   }, []);
 
-  // Chips and search work on the current era only — the 2025 archive sits
+  // Chips and search work on the current era only – the 2025 archive sits
   // apart and unfiltered, an option rather than part of the catalogue.
   const releasedCurrent = current.filter((entry) =>
     isReleasedLocally({ publish_on: entry.publishOn, published_at: entry.publishedAt }, now)
@@ -188,7 +188,7 @@ export function ArchiveList({ current, legacy, initialTheme }: ArchiveListProps)
       ) : (
         <div className="text-center py-16 space-y-4 mb-10">
           <p className="text-foreground/50 text-sm">
-            Nothing matches{query ? ` “${query}”` : ""} yet — the collection grows
+            Nothing matches{query ? ` “${query}”` : ""} yet – the collection grows
             by one every Monday.
           </p>
           {(query || theme) && (
@@ -206,7 +206,7 @@ export function ArchiveList({ current, legacy, initialTheme }: ArchiveListProps)
         </div>
       )}
 
-      {/* 2025 archive — a closed drawer, not a shelf */}
+      {/* 2025 archive – a closed drawer, not a shelf */}
       {legacy.length > 0 && (
         <section className="border-t border-foreground/10 pt-8">
           <button

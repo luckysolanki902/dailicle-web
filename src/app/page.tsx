@@ -2,16 +2,16 @@ import { HomeClient } from "@/components/landing/HomeClient";
 import { getPublishedCandidates, getQueuedTopics } from "@/lib/essays";
 import type { Metadata } from "next";
 
-export const revalidate = 3600; // weekly cadence — hourly revalidation is plenty
+export const revalidate = 3600; // weekly cadence – hourly revalidation is plenty
 
 const DESCRIPTION =
-  "A weekly essay on the mind, meaning, money, and how to live. Carefully researched, free to read, nothing to sign up for — a new one every Monday.";
+  "A weekly essay on the mind, meaning, money, and how to live. Carefully researched, free to read, nothing to sign up for – a new one every Monday.";
 
 export const metadata: Metadata = {
-  title: "The Dailicle — One essay a week, written to be read slowly",
+  title: "The Dailicle – One essay a week, written to be read slowly",
   description: DESCRIPTION,
   openGraph: {
-    title: "The Dailicle — One essay a week, written to be read slowly",
+    title: "The Dailicle – One essay a week, written to be read slowly",
     description: DESCRIPTION,
     url: "https://dailicle.com",
     type: "website",
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "The Dailicle — one essay a week",
+        alt: "The Dailicle – one essay a week",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Dailicle — One essay a week, written to be read slowly",
+    title: "The Dailicle – One essay a week, written to be read slowly",
     description: DESCRIPTION,
     images: ["/og-image.png"],
   },

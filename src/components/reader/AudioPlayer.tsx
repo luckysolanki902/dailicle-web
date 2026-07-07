@@ -31,7 +31,7 @@ function formatTime(seconds: number) {
 }
 
 /**
- * "Listen instead" — the accessibility path for commuters, tired eyes,
+ * "Listen instead" – the accessibility path for commuters, tired eyes,
  * and people who never would have read 2,500 words but will hear them.
  */
 export function AudioPlayer({ src, estimatedDuration }: AudioPlayerProps) {

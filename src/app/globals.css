@@ -15,7 +15,7 @@
 }
 
 :root {
-  /* Day (default) — warm paper, ink, bronze accent */
+  /* Day (default) – warm paper, ink, bronze accent */
   --background: #fdfcfa;
   --bg-gradient: linear-gradient(180deg, #ffffff 0%, #f7f5f0 100%);
   --foreground: #1c1a17;
@@ -123,7 +123,7 @@ body {
   text-wrap: balance;
 }
 
-/* Editorial display serif — essay titles keep this face in every theme */
+/* Editorial display serif – essay titles keep this face in every theme */
 @utility font-display {
   font-family: var(--font-lora), Georgia, "Times New Roman", serif;
 }

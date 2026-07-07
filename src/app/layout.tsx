@@ -97,7 +97,7 @@ export const metadata: Metadata = {
     canonical: "https://dailicle.com",
     types: {
       "application/rss+xml": [
-        { url: "https://dailicle.com/feed.xml", title: "The Dailicle — weekly essay" },
+        { url: "https://dailicle.com/feed.xml", title: "The Dailicle – weekly essay" },
       ],
     },
   },

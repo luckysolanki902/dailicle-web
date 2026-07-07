@@ -26,7 +26,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 /**
  * The hero, as a front page. Newspaper masthead up top, then the essay
- * itself as the loudest element — people decide to read from a title and
+ * itself as the loudest element – people decide to read from a title and
  * a hook, never from a feature grid. One action, zero friction.
  */
 export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
@@ -130,7 +130,7 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
               </motion.div>
             </>
           ) : (
-            /* Launch state: nothing published yet — tease the first issue */
+            /* Launch state: nothing published yet – tease the first issue */
             <>
               <motion.p
                 initial={{ opacity: 0 }}

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 /**
  * A thin accent line along the top that fills as you read.
- * Progress you can feel is one of the quietest retention devices there is —
+ * Progress you can feel is one of the quietest retention devices there is –
  * finishing becomes visible, and visible things get finished.
  */
 export function ReadingProgress() {

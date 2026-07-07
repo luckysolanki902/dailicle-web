@@ -18,7 +18,7 @@ interface RecentEssaysProps {
 
 /**
  * Depth is proof. A few real titles do the persuading that feature
- * cards can't — and the 2025 collection keeps the shelf from looking bare.
+ * cards can't – and the 2025 collection keeps the shelf from looking bare.
  */
 export function RecentEssays({ essays }: RecentEssaysProps) {
   if (essays.length === 0) return null;

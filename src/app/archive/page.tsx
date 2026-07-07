@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const revalidate = 3600;
 
 const DESCRIPTION =
-  "Every essay we've published — one a week on the mind, meaning, money, and how to live.";
+  "Every essay we've published – one a week on the mind, meaning, money, and how to live.";
 
 export const metadata: Metadata = {
   title: "The Essays - Archive | The Dailicle",

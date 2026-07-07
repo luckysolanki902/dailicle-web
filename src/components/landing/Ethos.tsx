@@ -6,7 +6,7 @@ import { THEMES } from "@/lib/themes";
 
 /**
  * Manifesto-lite: what this is, said plainly, once. Then the five strands.
- * No feature cards, no icons — the promise is restraint, so the section
+ * No feature cards, no icons – the promise is restraint, so the section
  * has to embody it.
  */
 export function Ethos() {
@@ -25,9 +25,9 @@ export function Ethos() {
           </h2>
           <div className="space-y-4 text-base md:text-lg text-foreground/70 leading-relaxed text-left md:text-center">
             <p>
-              Every Monday, The Dailicle takes a single idea — about the mind,
+              Every Monday, The Dailicle takes a single idea – about the mind,
               about meaning, about money, about the odd business of being a
-              person — and follows it carefully, in plain language, at a length
+              person – and follows it carefully, in plain language, at a length
               you can actually finish.
             </p>
             <p>

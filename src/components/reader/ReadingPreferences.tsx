@@ -29,7 +29,7 @@ export function savePrefs(prefs: ReaderPrefs) {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
   } catch {
-    /* private mode etc. — fine */
+    /* private mode etc. – fine */
   }
 }
 
@@ -39,7 +39,7 @@ interface ReadingPreferencesProps {
 }
 
 /**
- * The "Aa" control. Small, discoverable, remembered across visits —
+ * The "Aa" control. Small, discoverable, remembered across visits –
  * comfort settings are a promise that we expect people to actually read.
  */
 export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps) {

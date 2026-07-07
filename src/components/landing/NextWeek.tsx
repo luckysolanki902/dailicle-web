@@ -11,7 +11,7 @@ interface NextWeekProps {
 }
 
 /**
- * The tease. Topic only — the essay doesn't exist yet, and the withheld hook
+ * The tease. Topic only – the essay doesn't exist yet, and the withheld hook
  * is the point. This block also quietly answers "is this site still alive?":
  * a named topic with a date is a heartbeat.
  */

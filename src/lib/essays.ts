@@ -31,7 +31,7 @@ export interface Essay {
   unlisted?: boolean;
 }
 
-/** Light projection for lists — never drags the body over the wire. */
+/** Light projection for lists – never drags the body over the wire. */
 const LIST_PROJECTION = {
   slug: 1,
   title: 1,
@@ -49,9 +49,26 @@ async function collection() {
   return client.db(DB_NAME).collection(COLLECTION);
 }
 
+/** Em dash (—) → en dash (–). Every essay we serve passes through here,
+ *  so this keeps em dashes out of bodies, titles, hooks, meta descriptions,
+ *  and the RSS feed without touching the stored documents. */
+function noEmDash(value: string): string {
+  return value.replace(/—/g, "–");
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function serialize(doc: any): Essay {
-  return { ...doc, _id: doc._id.toString() } as Essay;
+  const essay = { ...doc, _id: doc._id.toString() } as Essay;
+  if (essay.title) essay.title = noEmDash(essay.title);
+  if (essay.hook) essay.hook = noEmDash(essay.hook);
+  if (essay.body) essay.body = noEmDash(essay.body);
+  if (essay.further_reading) {
+    essay.further_reading = essay.further_reading.map((item) => ({
+      ...item,
+      title: noEmDash(item.title),
+    }));
+  }
+  return essay;
 }
 
 /** Published current-era essays, including pre-published scheduled issues. */
@@ -72,7 +89,7 @@ export async function getThisWeek(): Promise<Essay | null> {
 }
 
 /**
- * Next Monday's topic — the oldest queued doc. Title and hook only;
+ * Next Monday's topic – the oldest queued doc. Title and hook only;
  * a queued essay has no body and must never leak one.
  */
 export async function getNextTopic(): Promise<Essay | null> {
@@ -93,7 +110,7 @@ export async function getQueuedTopics(limit = 10): Promise<Essay[]> {
   return docs.map(serialize);
 }
 
-/** Resolve /read/[param] — slug first, legacy ObjectId as fallback. */
+/** Resolve /read/[param] – slug first, legacy ObjectId as fallback. */
 export async function getEssay(param: string): Promise<Essay | null> {
   const col = await collection();
 
@@ -119,7 +136,7 @@ export async function getPublishedEssays(limit = 200): Promise<Essay[]> {
 }
 
 /**
- * The 2025 archive — legacy essays that still meet the bar, newest first.
+ * The 2025 archive – legacy essays that still meet the bar, newest first.
  * Unlisted ones stay readable at their URLs but appear in no listing.
  */
 export async function getArchived2025(): Promise<Essay[]> {

@@ -39,7 +39,7 @@ export interface EssayReaderProps {
     audioUrl?: string;
     audioDuration?: number;
   };
-  /** Next Monday's topic, if one is queued — the reason to come back. */
+  /** Next Monday's topic, if one is queued – the reason to come back. */
   nextTease?: {
     title: string;
     dateLabel: string;
@@ -70,7 +70,7 @@ export function EssayReader({ essay, nextTease }: EssayReaderProps) {
   const getShareUrl = () =>
     typeof window !== "undefined" ? window.location.href : "";
 
-  const shareText = `"${essay.title}" — an essay from The Dailicle`;
+  const shareText = `"${essay.title}" – an essay from The Dailicle`;
 
   const shareOptions = [
     {
@@ -282,7 +282,7 @@ export function EssayReader({ essay, nextTease }: EssayReaderProps) {
           <ReactMarkdown>{essay.body}</ReactMarkdown>
         </div>
 
-        {/* Further reading — quiet, optional, never a dump */}
+        {/* Further reading – quiet, optional, never a dump */}
         {essay.furtherReading && essay.furtherReading.length > 0 && (
           <aside className="mt-16 pt-10 border-t border-foreground/10">
             <p className="text-sm text-foreground/50 italic mb-4">
@@ -305,7 +305,7 @@ export function EssayReader({ essay, nextTease }: EssayReaderProps) {
           </aside>
         )}
 
-        {/* End — the reason to come back */}
+        {/* End – the reason to come back */}
         <footer className="mt-20 pt-12 border-t border-foreground/10 text-center space-y-8">
           {nextTease ? (
             <div className="space-y-2">

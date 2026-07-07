@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Format a stored date for display. Weekly essays go live when the pipeline
- * publishes them — no reveal-time gymnastics, the stored date is the date.
+ * publishes them – no reveal-time gymnastics, the stored date is the date.
  */
 export function formatDate(
   value: Date | string | null | undefined,

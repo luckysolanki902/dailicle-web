@@ -1,5 +1,5 @@
 /**
- * The five strands of The Dailicle. Single source of truth for the UI —
+ * The five strands of The Dailicle. Single source of truth for the UI –
  * mirrors THEMES in the server's essays_repo.py. A clean map of the human
  * condition: your mind, other people, existence, the world, what you chase.
  */

@@ -77,7 +77,7 @@ export default function ManifestoPage() {
 
             <h3>What the essays are about</h3>
             <p>
-              Five strands: psychology, philosophy, perspectives, life, and money. What connects them is a certain kind of idea — a specific, human observation you half-recognize but have never put into words. The worries you inherited from your parents. Why some days vanish and others last forever. What it quietly costs to keep every option open.
+              Five strands: psychology, philosophy, perspectives, life, and money. What connects them is a certain kind of idea – a specific, human observation you half-recognize but have never put into words. The worries you inherited from your parents. Why some days vanish and others last forever. What it quietly costs to keep every option open.
             </p>
             <p>
               A good essay here should still be on your mind on Wednesday.
@@ -85,7 +85,7 @@ export default function ManifestoPage() {
 
             <h3>Who is this for?</h3>
             <p>
-              The curious. People who still believe a well-crafted sentence can change how you see the world, and people who suspect they would read more if reading felt less like homework. There is no signup, no paywall, and nothing to keep track of — one essay, once a week, free.
+              The curious. People who still believe a well-crafted sentence can change how you see the world, and people who suspect they would read more if reading felt less like homework. There is no signup, no paywall, and nothing to keep track of – one essay, once a week, free.
             </p>
             <p>
               If you want content to fill the silence, plenty of places will happily oblige. If you want ideas that linger after the tab closes, welcome home.
