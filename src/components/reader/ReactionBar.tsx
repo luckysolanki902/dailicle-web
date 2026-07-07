@@ -38,7 +38,7 @@ export function ReactionBar({ essayId }: { essayId: string }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-foreground/40">
-        Did this one land for you?
+        Did this essay land for you?
       </p>
       <div className="flex items-center gap-3">
         <button

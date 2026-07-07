@@ -308,10 +308,12 @@ export function EssayReader({ essayId, essay, nextTease }: EssayReaderProps) {
           </aside>
         )}
 
-        {/* End – the reason to come back */}
-        <footer className="mt-20 pt-12 border-t border-foreground/10 text-center space-y-8">
+        {/* End – rate the essay just read, then the reason to come back */}
+        <footer className="mt-20 pt-12 border-t border-foreground/10 text-center space-y-10">
+          <ReactionBar essayId={essayId} />
+
           {nextTease ? (
-            <div className="space-y-2">
+            <div className="space-y-2 pt-10 border-t border-foreground/10">
               <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-accent">
                 Next Monday · {nextTease.dateLabel}
               </p>
@@ -320,11 +322,10 @@ export function EssayReader({ essayId, essay, nextTease }: EssayReaderProps) {
               </p>
             </div>
           ) : (
-            <p className="text-foreground/45 italic text-sm">
+            <p className="text-foreground/45 italic text-sm pt-10 border-t border-foreground/10">
               Thanks for reading. A new essay arrives every Monday.
             </p>
           )}
-          <ReactionBar essayId={essayId} />
           <div>
             <Link
               href="/archive"
