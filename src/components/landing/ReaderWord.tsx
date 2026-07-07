@@ -20,12 +20,14 @@ const NOTES: ReaderNote[] = [
     quote:
       "Just read this and want to thank you for this essay. It gives me a lot to think about – and to talk about with my girlfriend. Looking forward to next week.",
     essay: "The Fear of Dying Before You Become Yourself",
-    attribution: "Michael, Münster, Germany",
+    attribution: "Germany",
+    // Michael, Münster, 
   },
   {
     quote:
       "I only found this site a few days ago, and it’s absolutely incredible. Thank you so much for building this platform and publishing such thoughtful, thought-provoking articles.",
-    attribution: "Su Yang, China",
+    attribution: "China",
+    // Su Yang,
   },
 ];
 
