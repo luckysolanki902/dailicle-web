@@ -1,20 +1,8 @@
 import clientPromise from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
+import { getClientIp, getClientCountry } from "@/lib/request";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function getClientIp(request: NextRequest) {
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  const realIp = request.headers.get("x-real-ip");
-  const vercelForwardedFor = request.headers.get("x-vercel-forwarded-for");
-
-  return (
-    forwardedFor?.split(",")[0]?.trim() ||
-    vercelForwardedFor?.split(",")[0]?.trim() ||
-    realIp ||
-    "unknown"
-  );
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,6 +34,7 @@ export async function POST(request: NextRequest) {
           $set: {
             lastSeenAt: new Date(),
             lastIp: getClientIp(request),
+            lastCountry: getClientCountry(request),
             lastUserAgent: request.headers.get("user-agent") || "unknown",
           },
         }
@@ -60,6 +49,7 @@ export async function POST(request: NextRequest) {
     await subscribers.insertOne({
       email,
       ip: getClientIp(request),
+      country: getClientCountry(request),
       userAgent: request.headers.get("user-agent") || "unknown",
       referer: request.headers.get("referer") || null,
       source: "footer",

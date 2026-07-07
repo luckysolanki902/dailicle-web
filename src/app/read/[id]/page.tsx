@@ -129,6 +129,7 @@ export default async function ReadPage({
       <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
         <ThemeSwitcher />
         <EssayReader
+          essayId={essay._id}
           essay={{
             title: essay.title,
             hook: essay.hook,

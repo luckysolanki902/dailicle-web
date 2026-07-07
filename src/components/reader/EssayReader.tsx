@@ -24,8 +24,11 @@ import {
   savePrefs,
 } from "@/components/reader/ReadingPreferences";
 import { AudioPlayer } from "@/components/reader/AudioPlayer";
+import { ReactionBar } from "@/components/reader/ReactionBar";
 
 export interface EssayReaderProps {
+  /** Canonical essay id, used to key the like/dislike signal. */
+  essayId: string;
   essay: {
     title: string;
     hook?: string;
@@ -51,7 +54,7 @@ const BYLINE = "The Dailicle Desk";
 const SIZE_REM = ["1.125rem", "1.25rem", "1.375rem"];
 const LEADING = ["1.75", "1.9"];
 
-export function EssayReader({ essay, nextTease }: EssayReaderProps) {
+export function EssayReader({ essayId, essay, nextTease }: EssayReaderProps) {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   const [prefs, setPrefs] = useState<ReaderPrefs>(DEFAULT_PREFS);
@@ -321,6 +324,7 @@ export function EssayReader({ essay, nextTease }: EssayReaderProps) {
               Thanks for reading. A new essay arrives every Monday.
             </p>
           )}
+          <ReactionBar essayId={essayId} />
           <div>
             <Link
               href="/archive"
