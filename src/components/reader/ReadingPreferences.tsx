@@ -11,7 +11,7 @@ export interface ReaderPrefs {
   relaxed: boolean; // looser leading + spacing
 }
 
-export const DEFAULT_PREFS: ReaderPrefs = { size: 0, serifBody: false, relaxed: false };
+export const DEFAULT_PREFS: ReaderPrefs = { size: 0, serifBody: true, relaxed: false };
 
 const STORAGE_KEY = "dailicle-reading-prefs";
 

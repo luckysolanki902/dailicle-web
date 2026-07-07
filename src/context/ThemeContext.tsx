@@ -4,6 +4,12 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "wooden" | "light" | "dark" | "space" | "fairytale";
 
+const THEMES: Theme[] = ["wooden", "light", "dark", "space", "fairytale"];
+
+function isTheme(value: string | null): value is Theme {
+  return value !== null && THEMES.includes(value as Theme);
+}
+
 interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -16,13 +22,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check system preference initially if no saved theme
-    const savedTheme = localStorage.getItem("dailicle-theme") as Theme;
-    if (savedTheme && savedTheme !== "wooden") {
-      setTimeout(() => setTheme(savedTheme), 0);
-    }
-    // Default to wooden (Study) if no preference saved, ignoring system preference to enforce brand vibe
-    setTimeout(() => setMounted(true), 0);
+    const t = setTimeout(() => {
+      const savedTheme = localStorage.getItem("dailicle-theme");
+      if (isTheme(savedTheme)) {
+        setTheme(savedTheme);
+      }
+
+      setMounted(true);
+    }, 0);
+
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {

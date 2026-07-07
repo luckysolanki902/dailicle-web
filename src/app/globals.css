@@ -15,23 +15,13 @@
 }
 
 :root {
-  /* Day (default) – warm paper, ink, bronze accent */
-  --background: #fdfcfa;
-  --bg-gradient: linear-gradient(180deg, #ffffff 0%, #f7f5f0 100%);
-  --foreground: #1c1a17;
-  --accent: #a05e1c;
-  --muted: #f1efe9;
-  --font-main: var(--font-inter);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0d0d10;
-    --bg-gradient: linear-gradient(180deg, #0b0b0e 0%, #141419 100%);
-    --foreground: #ecebe8;
-    --accent: #e0b56e;
-    --muted: #1d1d23;
-  }
+  /* Study is the default until a reader chooses another theme. */
+  --background: #f7f1e3;
+  --bg-gradient: linear-gradient(180deg, #f9f4e9 0%, #efe4cd 100%);
+  --foreground: #33261c;
+  --accent: #8a5a2b;
+  --muted: #ede2cb;
+  --font-main: var(--font-merriweather);
 }
 
 /* ------------------------------------------------ Themes */
