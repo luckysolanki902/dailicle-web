@@ -57,6 +57,18 @@ const BYLINE = "The Dailicle Desk";
 const SIZE_REM = ["1.125rem", "1.25rem", "1.375rem"];
 const LEADING = ["1.75", "1.9"];
 
+function returnMessage(releaseAt: Date | null, now = new Date()): string {
+  if (!releaseAt) return "Come back soon.";
+
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  if (releaseAt.getTime() === tomorrow.getTime()) return "Come back tomorrow.";
+
+  return `Come back ${releaseAt.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  })}.`;
+}
+
 export function EssayReader({
   essayId,
   essay,
@@ -90,6 +102,11 @@ export function EssayReader({
   }, [publishOn, publishedAt]);
 
   if (!isReleased) {
+    const releaseAt = localReleaseDate({ publish_on: publishOn, published_at: publishedAt });
+    // Keep server and first-client render identical. Once the browser has
+    // checked its own clock, show the useful local calendar date.
+    const message = isReleased === null ? "Come back soon." : returnMessage(releaseAt);
+
     return (
       <div className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
         <div className="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-6 text-center">
@@ -98,7 +115,7 @@ export function EssayReader({
               The Dailicle
             </p>
             <h1 className="font-display text-4xl tracking-tight">The next essay arrives Monday.</h1>
-            <p className="font-serif text-lg text-foreground/60">Come back at your local midnight.</p>
+            <p className="font-serif text-lg text-foreground/60">{message}</p>
             <Link href="/" className="inline-block pt-3 font-serif text-foreground/70 underline underline-offset-4">
               Back home
             </Link>
