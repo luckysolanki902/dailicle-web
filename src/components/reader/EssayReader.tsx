@@ -25,6 +25,7 @@ import {
 } from "@/components/reader/ReadingPreferences";
 import { AudioPlayer } from "@/components/reader/AudioPlayer";
 import { ReactionBar } from "@/components/reader/ReactionBar";
+import { isReleasedLocally, localReleaseDate } from "@/lib/release";
 
 export interface EssayReaderProps {
   /** Canonical essay id, used to key the like/dislike signal. */
@@ -47,6 +48,8 @@ export interface EssayReaderProps {
     title: string;
     dateLabel: string;
   } | null;
+  publishOn?: string | null;
+  publishedAt?: string | null;
 }
 
 const BYLINE = "The Dailicle Desk";
@@ -54,16 +57,56 @@ const BYLINE = "The Dailicle Desk";
 const SIZE_REM = ["1.125rem", "1.25rem", "1.375rem"];
 const LEADING = ["1.75", "1.9"];
 
-export function EssayReader({ essayId, essay, nextTease }: EssayReaderProps) {
+export function EssayReader({
+  essayId,
+  essay,
+  nextTease,
+  publishOn,
+  publishedAt,
+}: EssayReaderProps) {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   const [prefs, setPrefs] = useState<ReaderPrefs>(DEFAULT_PREFS);
+  // Start closed on the server so a direct reader URL cannot render a
+  // weekend-generated essay before the browser checks its local clock.
+  const [isReleased, setIsReleased] = useState<boolean | null>(null);
 
   useEffect(() => {
     // deferred so hydration completes with defaults before stored prefs apply
     const t = setTimeout(() => setPrefs(loadPrefs()), 0);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    const release = { publish_on: publishOn, published_at: publishedAt };
+    const checkRelease = () => setIsReleased(isReleasedLocally(release));
+    checkRelease();
+
+    const releaseAt = localReleaseDate(release);
+    if (!releaseAt || releaseAt.getTime() <= Date.now()) return;
+
+    const timer = window.setTimeout(checkRelease, releaseAt.getTime() - Date.now());
+    return () => window.clearTimeout(timer);
+  }, [publishOn, publishedAt]);
+
+  if (!isReleased) {
+    return (
+      <div className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
+        <div className="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-6 text-center">
+          <div className="space-y-4">
+            <p className="font-sans text-xs uppercase tracking-[0.2em] text-foreground/50">
+              The Dailicle
+            </p>
+            <h1 className="font-display text-4xl tracking-tight">The next essay arrives Monday.</h1>
+            <p className="font-serif text-lg text-foreground/60">Come back at your local midnight.</p>
+            <Link href="/" className="inline-block pt-3 font-serif text-foreground/70 underline underline-offset-4">
+              Back home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const updatePrefs = (next: ReaderPrefs) => {
     setPrefs(next);

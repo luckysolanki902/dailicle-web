@@ -151,6 +151,8 @@ export default async function ReadPage({
                 }
               : null
           }
+          publishOn={essay.publish_on ? new Date(essay.publish_on).toISOString() : null}
+          publishedAt={essay.published_at ? new Date(essay.published_at).toISOString() : null}
         />
       </main>
     </>
