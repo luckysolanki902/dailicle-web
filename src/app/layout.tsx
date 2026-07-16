@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Merriweather, Space_Grotesk, Lora } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { SupportProvider } from "@/components/support/SupportProvider";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import { Analytics } from "@vercel/analytics/next";
@@ -159,10 +160,12 @@ export default function RootLayout({
           }}
         />
         <ThemeProvider>
-          <Navbar />
-          {children}
-          <Footer />
-          <Analytics />
+          <SupportProvider>
+            <Navbar />
+            {children}
+            <Footer />
+            <Analytics />
+          </SupportProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
+import { SupportButton } from "@/components/support/SupportButton";
 import {
   CheckCircle2,
   Loader2,
@@ -176,6 +177,7 @@ export function Footer() {
             <Link href="/archive" className="hover:text-foreground transition-colors">Archive</Link>
             <Link href="/manifesto" className="hover:text-foreground transition-colors">Why Read?</Link>
             <Link href="/feedback" className="hover:text-foreground transition-colors">Feedback</Link>
+            <SupportButton source="footer" className="hover:text-foreground" />
           </nav>
 
           {/* Mobile Theme Switcher */}

@@ -1,0 +1,403 @@
+"use client";
+
+import React, { useCallback, useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, Heart, Loader2, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { SupportSource } from "./SupportProvider";
+
+type TierId = "t1" | "t2" | "t3";
+
+interface Config {
+  currency: string;
+  symbol: string;
+  presets: Record<TierId, number>;
+  min: number;
+  max: number;
+}
+
+// Minimal typing for the Razorpay Checkout global loaded from their CDN.
+interface RazorpayInstance {
+  open: () => void;
+  on: (event: string, cb: (resp: unknown) => void) => void;
+}
+interface RazorpayOptions {
+  key: string;
+  order_id: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  image?: string;
+  theme?: { color?: string; backdrop_color?: string };
+  handler: (resp: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  }) => void;
+  modal?: { ondismiss?: () => void };
+}
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayOptions) => RazorpayInstance;
+  }
+}
+
+const CHECKOUT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+
+function loadCheckout(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") return resolve(false);
+    if (window.Razorpay) return resolve(true);
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[src="${CHECKOUT_SRC}"]`
+    );
+    if (existing) {
+      existing.addEventListener("load", () => resolve(true));
+      existing.addEventListener("error", () => resolve(false));
+      return;
+    }
+    const s = document.createElement("script");
+    s.src = CHECKOUT_SRC;
+    s.async = true;
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+}
+
+function readAccent(): string {
+  if (typeof window === "undefined") return "#8a5a2b";
+  const v = getComputedStyle(document.body).getPropertyValue("--accent").trim();
+  return v || "#8a5a2b";
+}
+
+type Status = "idle" | "processing" | "success" | "error";
+
+const TIER_LABELS: Record<TierId, string> = {
+  t1: "A coffee",
+  t2: "A quiet patron",
+  t3: "A believer",
+};
+
+export function SupportDialog({
+  isOpen,
+  source,
+  onClose,
+  onSupported,
+}: {
+  isOpen: boolean;
+  source: SupportSource;
+  onClose: () => void;
+  onSupported: () => void;
+}) {
+  const [config, setConfig] = useState<Config | null>(null);
+  const [selected, setSelected] = useState<TierId | "custom">("t1");
+  const [custom, setCustom] = useState("");
+  const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState("");
+
+  // Fetch pricing the first time the dialog is opened.
+  useEffect(() => {
+    if (!isOpen || config) return;
+    let cancelled = false;
+    fetch("/api/support/config")
+      .then((r) => r.json())
+      .then((c: Config) => {
+        if (!cancelled) setConfig(c);
+      })
+      .catch(() => {
+        if (!cancelled)
+          setConfig({
+            currency: "USD",
+            symbol: "$",
+            presets: { t1: 5, t2: 50, t3: 500 },
+            min: 1,
+            max: 10000,
+          });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, config]);
+
+  // Reset transient state whenever the dialog closes.
+  useEffect(() => {
+    if (!isOpen) {
+      const t = setTimeout(() => {
+        setStatus("idle");
+        setError("");
+      }, 250);
+      return () => clearTimeout(t);
+    }
+  }, [isOpen]);
+
+  // Lock body scroll while open.
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen]);
+
+  const pay = useCallback(async () => {
+    if (!config || status === "processing") return;
+    setStatus("processing");
+    setError("");
+
+    const payload: { tier?: TierId; amount?: number; source: string } = {
+      source,
+    };
+    if (selected === "custom") {
+      const n = Number(custom);
+      if (!Number.isFinite(n) || n < config.min) {
+        setStatus("error");
+        setError(`Enter at least ${config.symbol}${config.min}.`);
+        return;
+      }
+      payload.amount = n;
+    } else {
+      payload.tier = selected;
+    }
+
+    try {
+      const scriptOk = await loadCheckout();
+      if (!scriptOk || !window.Razorpay) {
+        throw new Error("Could not load the secure checkout.");
+      }
+
+      const orderRes = await fetch("/api/support/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const order = await orderRes.json();
+      if (!orderRes.ok) {
+        throw new Error(order?.message || "Could not start the payment.");
+      }
+
+      const rzp = new window.Razorpay({
+        key: order.keyId,
+        order_id: order.orderId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "The Dailicle",
+        description: "Keep the desk lit — thank you.",
+        theme: { color: readAccent() },
+        handler: async (resp) => {
+          try {
+            const verifyRes = await fetch("/api/support/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(resp),
+            });
+            if (!verifyRes.ok) throw new Error("verify failed");
+            setStatus("success");
+            onSupported();
+          } catch {
+            // Payment likely succeeded; the webhook will still record it.
+            setStatus("success");
+            onSupported();
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setStatus("idle");
+          },
+        },
+      });
+      rzp.open();
+    } catch (err) {
+      setStatus("error");
+      setError(
+        err instanceof Error ? err.message : "Something went wrong. Try again."
+      );
+    }
+  }, [config, status, selected, custom, source, onSupported]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center"
+          aria-modal="true"
+          role="dialog"
+        >
+          {/* Scrim */}
+          <div
+            className="absolute inset-0 bg-black/45 backdrop-blur-sm"
+            onClick={onClose}
+          />
+
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 24, scale: 0.98 }}
+            transition={{ type: "spring", damping: 26, stiffness: 260 }}
+            className="relative w-full max-w-md overflow-hidden rounded-3xl border border-foreground/10 bg-background text-foreground shadow-[0_40px_120px_-20px_rgba(0,0,0,0.55)]"
+          >
+            {/* Soft accent wash at the top */}
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-32"
+              style={{
+                background:
+                  "linear-gradient(to bottom, color-mix(in srgb, var(--accent) 14%, transparent), transparent)",
+              }}
+            />
+
+            <button
+              onClick={onClose}
+              className="absolute right-4 top-4 z-10 rounded-full p-1.5 text-foreground/40 transition-colors hover:bg-foreground/5 hover:text-foreground"
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="relative px-7 pb-7 pt-9">
+              {status === "success" ? (
+                <div className="flex flex-col items-center gap-4 py-6 text-center">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent">
+                    <Check size={26} />
+                  </div>
+                  <h2 className="font-display text-2xl tracking-tight">
+                    Thank you, truly.
+                  </h2>
+                  <p className="max-w-xs font-serif text-foreground/60">
+                    The desk stays lit a little longer because of you. The essays
+                    will keep coming — same as always, free for everyone.
+                  </p>
+                  <button
+                    onClick={onClose}
+                    className="mt-2 rounded-full bg-foreground px-6 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90"
+                  >
+                    Back to reading
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2 text-accent">
+                    <Heart size={16} className="fill-current" />
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em]">
+                      The Dailicle
+                    </span>
+                  </div>
+
+                  <h2 className="mt-4 font-display text-2xl leading-snug tracking-tight text-balance">
+                    Everything here is free. It can stay that way.
+                  </h2>
+                  <p className="mt-2 font-serif text-[15px] leading-relaxed text-foreground/60">
+                    No paywall, no ads, nothing to sign up for — just one essay a
+                    week, written slowly. If it&apos;s ever made you pause, you can
+                    help keep it going. Only if you want to.
+                  </p>
+
+                  {/* Tiers */}
+                  <div className="mt-6 grid grid-cols-3 gap-2.5">
+                    {(["t1", "t2", "t3"] as TierId[]).map((tier) => {
+                      const active = selected === tier;
+                      return (
+                        <button
+                          key={tier}
+                          onClick={() => setSelected(tier)}
+                          className={cn(
+                            "group flex flex-col items-center gap-1 rounded-2xl border px-2 py-4 transition-all",
+                            active
+                              ? "border-accent bg-accent/10 shadow-[0_0_0_1px_var(--accent)]"
+                              : "border-foreground/10 hover:border-foreground/25"
+                          )}
+                        >
+                          <span className="font-display text-lg tracking-tight">
+                            {config ? (
+                              <>
+                                {config.symbol}
+                                {config.presets[tier]}
+                              </>
+                            ) : (
+                              <span className="opacity-30">···</span>
+                            )}
+                          </span>
+                          <span
+                            className={cn(
+                              "text-[10px] uppercase tracking-wide",
+                              active ? "text-accent" : "text-foreground/40"
+                            )}
+                          >
+                            {TIER_LABELS[tier]}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Custom amount */}
+                  <button
+                    onClick={() => setSelected("custom")}
+                    className={cn(
+                      "mt-2.5 flex w-full items-center gap-2 rounded-2xl border px-4 py-3 transition-all",
+                      selected === "custom"
+                        ? "border-accent bg-accent/10"
+                        : "border-foreground/10 hover:border-foreground/25"
+                    )}
+                  >
+                    <span className="text-sm text-foreground/50">
+                      {config?.symbol}
+                    </span>
+                    <input
+                      inputMode="numeric"
+                      value={custom}
+                      onFocus={() => setSelected("custom")}
+                      onChange={(e) =>
+                        setCustom(e.target.value.replace(/[^0-9]/g, ""))
+                      }
+                      placeholder="Another amount"
+                      className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/35"
+                    />
+                  </button>
+
+                  {error && (
+                    <p className="mt-3 text-center text-xs text-red-500">
+                      {error}
+                    </p>
+                  )}
+
+                  <button
+                    onClick={pay}
+                    disabled={status === "processing" || !config}
+                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {status === "processing" ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Opening secure checkout…
+                      </>
+                    ) : (
+                      <>Support The Dailicle</>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={onClose}
+                    className="mt-3 w-full text-center text-xs text-foreground/40 transition-colors hover:text-foreground/70"
+                  >
+                    Maybe another time
+                  </button>
+
+                  <p className="mt-4 text-center text-[11px] text-foreground/35">
+                    Secure payment by Razorpay · a one-time thank-you, not a
+                    subscription
+                  </p>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

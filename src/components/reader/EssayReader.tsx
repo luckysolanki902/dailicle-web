@@ -25,6 +25,7 @@ import {
 } from "@/components/reader/ReadingPreferences";
 import { AudioPlayer } from "@/components/reader/AudioPlayer";
 import { ReactionBar } from "@/components/reader/ReactionBar";
+import { ReadingSupportTrigger } from "@/components/support/ReadingSupportTrigger";
 import { isReleasedLocally, localReleaseDate } from "@/lib/release";
 
 export interface EssayReaderProps {
@@ -199,6 +200,7 @@ export function EssayReader({
   return (
     <article className="min-h-screen py-12 md:py-20 px-4 md:px-6 overflow-x-hidden">
       <ReadingProgress />
+      <ReadingSupportTrigger />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

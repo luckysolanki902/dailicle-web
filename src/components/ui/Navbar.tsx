@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { SupportButton } from "@/components/support/SupportButton";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -34,6 +35,10 @@ export function Navbar() {
             <span className="absolute -bottom-1 left-0 w-0 h-px bg-foreground transition-all group-hover:w-full" />
           </Link>
         ))}
+        <SupportButton
+          source="navbar"
+          className="text-sm font-medium text-foreground/40 hover:text-foreground"
+        />
       </div>
     </motion.nav>
   );
