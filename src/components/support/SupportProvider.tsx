@@ -20,7 +20,8 @@ interface SupportContextValue {
 
 const SupportContext = createContext<SupportContextValue | undefined>(undefined);
 
-const SUPPORTED_KEY = "dailicle:supported";
+/** Set to "1" once the reader has supported (persisted per device). */
+export const SUPPORTED_KEY = "dailicle:supported";
 
 export function SupportProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);

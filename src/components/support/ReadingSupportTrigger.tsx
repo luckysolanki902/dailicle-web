@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSupport } from "./SupportProvider";
+import { useSupport, SUPPORTED_KEY } from "./SupportProvider";
 
 /**
  * Opens the support dialog once, after ~3 minutes of genuine reading — the point
@@ -15,13 +15,17 @@ const PROMPTED_KEY = "dailicle:supportPromptedAt";
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
 export function ReadingSupportTrigger() {
-  const { open, hasSupported, isOpen } = useSupport();
+  const { open, isOpen } = useSupport();
 
   useEffect(() => {
-    if (hasSupported) return;
-
-    // Respect a recent prompt so returning readers aren't nagged.
+    // Read the "already paid" flag straight from localStorage rather than the
+    // context value: this effect runs once on mount and the context's
+    // hasSupported flips to true a tick later, so a paid reader could otherwise
+    // still arm the timer. A supporter must NEVER see the auto dialog again.
     try {
+      if (localStorage.getItem(SUPPORTED_KEY) === "1") return;
+
+      // Respect a recent prompt so returning readers aren't nagged.
       const last = Number(localStorage.getItem(PROMPTED_KEY) || 0);
       if (last && Date.now() - last < ONE_DAY) return;
     } catch {
@@ -57,7 +61,7 @@ export function ReadingSupportTrigger() {
     }, 5000);
 
     return () => window.clearInterval(interval);
-    // Intentionally run once per mount; open/hasSupported are stable enough.
+    // Intentionally run once per mount; open/isOpen are stable enough.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
