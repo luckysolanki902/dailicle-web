@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, Heart, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -91,6 +92,7 @@ export function SupportDialog({
   onClose: () => void;
   onSupported: () => void;
 }) {
+  const router = useRouter();
   const [config, setConfig] = useState<Config | null>(null);
   const [selected, setSelected] = useState<TierId | "custom">("t1");
   const [custom, setCustom] = useState("");
@@ -187,20 +189,20 @@ export function SupportDialog({
         description: "Keep the desk lit — thank you.",
         theme: { color: readAccent() },
         handler: async (resp) => {
+          onSupported();
+          // Confirm to the server (the webhook is a redundant safety net if
+          // this fails), then send the reader to the thank-you page.
           try {
-            const verifyRes = await fetch("/api/support/verify", {
+            await fetch("/api/support/verify", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(resp),
             });
-            if (!verifyRes.ok) throw new Error("verify failed");
-            setStatus("success");
-            onSupported();
           } catch {
-            // Payment likely succeeded; the webhook will still record it.
-            setStatus("success");
-            onSupported();
+            // Payment likely still succeeded; the webhook records it.
           }
+          setStatus("success");
+          router.push("/thank-you");
         },
         modal: {
           ondismiss: () => {
