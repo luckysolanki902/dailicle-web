@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { bumpVisit, markRouteEntered, track } from "@/lib/analytics";
 
@@ -11,6 +11,8 @@ import { bumpVisit, markRouteEntered, track } from "@/lib/analytics";
  */
 export function AnalyticsProvider() {
   const pathname = usePathname();
+  // gtag's config already sends the first page_view; only emit on client nav.
+  const firstLoad = useRef(true);
 
   useEffect(() => {
     bumpVisit();
@@ -18,6 +20,10 @@ export function AnalyticsProvider() {
 
   useEffect(() => {
     markRouteEntered();
+    if (firstLoad.current) {
+      firstLoad.current = false;
+      return;
+    }
     track("page_view", { page_path: pathname });
   }, [pathname]);
 
