@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyCheckoutSignature, fetchPayment } from "@/lib/razorpay";
-import { supportersCollection, notifyOwnerOfPayment } from "@/lib/supporters";
+import {
+  supportersCollection,
+  notifyOwnerOfPayment,
+  reportPaymentToGa,
+} from "@/lib/supporters";
 
 export const runtime = "nodejs";
 
@@ -81,6 +85,9 @@ export async function POST(request: NextRequest) {
         contact: (payment.contact as string) || null,
       });
     }
+
+    // Authoritative conversion to GA4 (once per order; webhook is the backup).
+    await reportPaymentToGa(orderId);
 
     return NextResponse.json({ success: true });
   } catch (error) {

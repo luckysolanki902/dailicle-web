@@ -6,6 +6,7 @@ import { SupportProvider } from "@/components/support/SupportProvider";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import { Analytics } from "@vercel/analytics/next";
+import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -179,6 +180,7 @@ export default function RootLayout({
             {children}
             <Footer />
             <Analytics />
+            <AnalyticsProvider />
           </SupportProvider>
         </ThemeProvider>
       </body>

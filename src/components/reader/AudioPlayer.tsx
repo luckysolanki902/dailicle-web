@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Pause, Play, Volume2, X } from "lucide-react";
+import { track, getCurrentEssay } from "@/lib/analytics";
 
 interface AudioPlayerProps {
   /** Relative S3 key (audio/2026/07/xxx.mp3) or full URL. */
@@ -51,6 +52,7 @@ export function AudioPlayer({ src, estimatedDuration }: AudioPlayerProps) {
     const onEnd = () => {
       setPlaying(false);
       setCurrentTime(0);
+      track("audio_complete", { essay_id: getCurrentEssay()?.id, category: getCurrentEssay()?.category });
     };
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("loadedmetadata", onMeta);
@@ -74,6 +76,10 @@ export function AudioPlayer({ src, estimatedDuration }: AudioPlayerProps) {
 
   const start = () => {
     setVisible(true);
+    track("audio_play", {
+      essay_id: getCurrentEssay()?.id,
+      category: getCurrentEssay()?.category,
+    });
     setTimeout(() => {
       audioRef.current?.play();
       setPlaying(true);

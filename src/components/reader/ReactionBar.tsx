@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { track, getCurrentEssay } from "@/lib/analytics";
 
 /**
  * A deliberately quiet like/dislike. No counts, no crowd — just a private
@@ -28,6 +29,13 @@ export function ReactionBar({ essayId }: { essayId: string }) {
   const vote = (choice: 1 | -1) => {
     const next = value === choice ? 0 : choice; // toggle off if unchanged
     setValue(next);
+    if (next !== 0) {
+      track("reaction", {
+        essay_id: essayId,
+        reaction: next === 1 ? "up" : "down",
+        category: getCurrentEssay()?.category,
+      });
+    }
     fetch("/api/reaction", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

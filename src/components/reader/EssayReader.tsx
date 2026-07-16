@@ -27,6 +27,12 @@ import { AudioPlayer } from "@/components/reader/AudioPlayer";
 import { ReactionBar } from "@/components/reader/ReactionBar";
 import { ReadingSupportTrigger } from "@/components/support/ReadingSupportTrigger";
 import { isReleasedLocally, localReleaseDate } from "@/lib/release";
+import {
+  track,
+  clarityTag,
+  markEssayRead,
+  setCurrentEssay,
+} from "@/lib/analytics";
 
 export interface EssayReaderProps {
   /** Canonical essay id, used to key the like/dislike signal. */
@@ -38,6 +44,8 @@ export interface EssayReaderProps {
     dateLabel: string;
     readingMinutes: number;
     themeLabel: string;
+    /** Category slug (psychology | relationships | philosophy | society | money). */
+    category?: string;
     issue?: number | null;
     archived?: boolean;
     furtherReading?: { title: string; url: string }[];
@@ -90,6 +98,119 @@ export function EssayReader({
     return () => clearTimeout(t);
   }, []);
 
+  // Reading funnel: view -> scroll milestones -> engaged time -> complete.
+  useEffect(() => {
+    if (isReleased !== true) return;
+
+    const category = essay.category || "unknown";
+    const base = {
+      essay_id: essayId,
+      essay_title: essay.title,
+      category,
+      category_label: essay.themeLabel,
+      issue: essay.issue ?? undefined,
+      reading_minutes: essay.readingMinutes,
+      is_archived: !!essay.archived,
+    };
+
+    // Let the globally-mounted support dialog attribute itself to this essay.
+    setCurrentEssay({
+      id: essayId,
+      category,
+      categoryLabel: essay.themeLabel,
+      title: essay.title,
+    });
+    markEssayRead(essayId);
+    clarityTag("category", category);
+    clarityTag("last_essay", essay.title);
+    track("essay_view", base);
+
+    const milestones = [25, 50, 75, 100] as const;
+    const hit = new Set<number>();
+    let maxScroll = 0;
+    let activeMs = 0;
+    let lastTick = Date.now();
+    let completed = false;
+    let flushed = false;
+
+    const markComplete = () => {
+      if (completed) return;
+      completed = true;
+      clarityTag("read_complete", "true");
+      track("read_complete", {
+        ...base,
+        active_seconds: Math.round(activeMs / 1000),
+      });
+    };
+
+    const onScroll = () => {
+      const doc = document.documentElement;
+      const total = doc.scrollHeight - window.innerHeight;
+      const pct =
+        total > 0 ? Math.min(100, Math.round((window.scrollY / total) * 100)) : 100;
+      if (pct > maxScroll) maxScroll = pct;
+      for (const m of milestones) {
+        if (pct >= m && !hit.has(m)) {
+          hit.add(m);
+          track("read_progress", { ...base, percent: m });
+          if (m === 100) markComplete();
+        }
+      }
+    };
+
+    const timer = window.setInterval(() => {
+      const now = Date.now();
+      if (document.visibilityState === "visible") activeMs += now - lastTick;
+      lastTick = now;
+      // Genuine read of most of the estimated time also counts as complete.
+      if (
+        !completed &&
+        essay.readingMinutes > 0 &&
+        activeMs >= essay.readingMinutes * 60 * 1000 * 0.6
+      ) {
+        markComplete();
+      }
+    }, 2000);
+
+    // A single engaged_time event carrying the final totals, sent once.
+    const flush = () => {
+      if (flushed) return;
+      flushed = true;
+      track("engaged_time", {
+        ...base,
+        active_seconds: Math.round(activeMs / 1000),
+        max_scroll: maxScroll,
+        completed,
+      });
+    };
+    const onHide = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", flush);
+    onScroll();
+
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", flush);
+      flush();
+      setCurrentEssay(null);
+    };
+  }, [
+    isReleased,
+    essayId,
+    essay.category,
+    essay.title,
+    essay.themeLabel,
+    essay.issue,
+    essay.readingMinutes,
+    essay.archived,
+  ]);
+
   useEffect(() => {
     const release = { publish_on: publishOn, published_at: publishedAt };
     const checkRelease = () => setIsReleased(isReleasedLocally(release));
@@ -136,11 +257,20 @@ export function EssayReader({
 
   const shareText = `"${essay.title}" – an essay from The Dailicle`;
 
+  const trackShare = (channel: string) =>
+    track("share_click", {
+      channel,
+      essay_id: essayId,
+      essay_title: essay.title,
+      category: essay.category || "unknown",
+    });
+
   const shareOptions = [
     {
       name: "Twitter",
       icon: Twitter,
       action: () => {
+        trackShare("twitter");
         window.open(
           `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(getShareUrl())}`,
           "_blank",
@@ -152,6 +282,7 @@ export function EssayReader({
       name: "LinkedIn",
       icon: Linkedin,
       action: () => {
+        trackShare("linkedin");
         window.open(
           `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getShareUrl())}`,
           "_blank",
@@ -163,6 +294,7 @@ export function EssayReader({
       name: "WhatsApp",
       icon: MessageCircle,
       action: () => {
+        trackShare("whatsapp");
         window.open(
           `https://wa.me/?text=${encodeURIComponent(`${shareText}\n\n${getShareUrl()}`)}`,
           "_blank",
@@ -174,6 +306,7 @@ export function EssayReader({
       name: "Copy Link",
       icon: copied ? Check : Link2,
       action: async () => {
+        trackShare("copy_link");
         await navigator.clipboard.writeText(getShareUrl());
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -184,6 +317,7 @@ export function EssayReader({
   const handleNativeShare = async () => {
     if (navigator.share) {
       try {
+        trackShare("native");
         await navigator.share({
           title: essay.title,
           text: shareText,

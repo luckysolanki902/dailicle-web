@@ -15,6 +15,7 @@ import {
   TreeDeciduous,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { track } from "@/lib/analytics";
 
 type SubscribeStatus = "idle" | "submitting" | "success" | "already" | "error";
 
@@ -73,6 +74,7 @@ export function Footer() {
 
       if (response.ok) {
         window.localStorage.setItem("dailicle:subscriberEmail", normalizedEmail);
+        track("subscribe", { result: "new" });
         setSubscribeState({
           email: normalizedEmail,
           status: "success",
@@ -82,6 +84,7 @@ export function Footer() {
       }
 
       if (response.status === 409) {
+        track("subscribe", { result: "already" });
         window.localStorage.setItem("dailicle:subscriberEmail", normalizedEmail);
         setSubscribeState({
           email: normalizedEmail,

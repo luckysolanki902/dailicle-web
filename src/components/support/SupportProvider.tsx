@@ -7,6 +7,13 @@ import React, {
   useState,
 } from "react";
 import { SupportDialog } from "./SupportDialog";
+import {
+  track,
+  getCurrentEssay,
+  getTimeOnPageSec,
+  getSessionEssayCount,
+  getVisitCount,
+} from "@/lib/analytics";
 
 export type SupportSource = "navbar" | "footer" | "reader" | "dialog";
 
@@ -36,10 +43,28 @@ export function SupportProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const open = useCallback((src: SupportSource = "dialog") => {
-    setSource(src);
-    setIsOpen(true);
-  }, []);
+  const open = useCallback(
+    (src: SupportSource = "dialog") => {
+      setSource(src);
+      setIsOpen(true);
+
+      const essay = getCurrentEssay();
+      track("support_dialog_open", {
+        source: src,
+        // The reading trigger is the only "reader" caller and is automatic.
+        trigger_type: src === "reader" ? "auto" : "click",
+        page_path:
+          typeof window !== "undefined" ? window.location.pathname : undefined,
+        essay_id: essay?.id,
+        category: essay?.category,
+        time_on_page_sec: getTimeOnPageSec(),
+        essays_read_session: getSessionEssayCount(),
+        visit_count: getVisitCount(),
+        has_supported_before: hasSupported,
+      });
+    },
+    [hasSupported]
+  );
 
   const close = useCallback(() => setIsOpen(false), []);
 

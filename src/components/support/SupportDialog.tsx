@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check, Heart, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SupportSource } from "./SupportProvider";
+import { track, getGaClientId, getCurrentEssay } from "@/lib/analytics";
 
 type TierId = "t1" | "t2" | "t3";
 
@@ -149,8 +150,18 @@ export function SupportDialog({
     setStatus("processing");
     setError("");
 
-    const payload: { tier?: TierId; amount?: number; source: string } = {
+    const essay = getCurrentEssay();
+    const payload: {
+      tier?: TierId;
+      amount?: number;
+      source: string;
+      gaClientId?: string;
+      essayId?: string;
+      category?: string;
+    } = {
       source,
+      essayId: essay?.id,
+      category: essay?.category,
     };
     if (selected === "custom") {
       const n = Number(custom);
@@ -164,7 +175,19 @@ export function SupportDialog({
       payload.tier = selected;
     }
 
+    track("support_checkout_start", {
+      source,
+      tier: payload.tier,
+      amount: payload.amount,
+      category: essay?.category,
+      essay_id: essay?.id,
+    });
+
     try {
+      // Stitch the eventual server-side "verified payment" event to this
+      // browser session; best-effort, never blocks checkout.
+      payload.gaClientId = (await getGaClientId()) || undefined;
+
       const scriptOk = await loadCheckout();
       if (!scriptOk || !window.Razorpay) {
         throw new Error("Could not load the secure checkout.");
@@ -190,6 +213,15 @@ export function SupportDialog({
         theme: { color: readAccent() },
         handler: async (resp) => {
           onSupported();
+          track("support_payment_success", {
+            source,
+            tier: payload.tier,
+            amount: payload.amount,
+            currency: order.currency,
+            order_id: order.orderId,
+            category: essay?.category,
+            essay_id: essay?.id,
+          });
           // Confirm to the server (the webhook is a redundant safety net if
           // this fails), then send the reader to the thank-you page.
           try {
@@ -207,10 +239,20 @@ export function SupportDialog({
         modal: {
           ondismiss: () => {
             setStatus("idle");
+            track("support_checkout_dismissed", {
+              source,
+              tier: payload.tier,
+              amount: payload.amount,
+            });
           },
         },
       });
       rzp.open();
+      track("support_checkout_opened", {
+        source,
+        tier: payload.tier,
+        amount: payload.amount,
+      });
     } catch (err) {
       setStatus("error");
       setError(
@@ -218,6 +260,19 @@ export function SupportDialog({
       );
     }
   }, [config, status, selected, custom, source, onSupported]);
+
+  const chooseTier = useCallback(
+    (tier: TierId | "custom") => {
+      setSelected(tier);
+      track("support_tier_select", {
+        source,
+        tier,
+        amount:
+          tier === "custom" ? Number(custom) || undefined : config?.presets[tier],
+      });
+    },
+    [source, custom, config]
+  );
 
   return (
     <AnimatePresence>
@@ -306,7 +361,7 @@ export function SupportDialog({
                       return (
                         <button
                           key={tier}
-                          onClick={() => setSelected(tier)}
+                          onClick={() => chooseTier(tier)}
                           className={cn(
                             "group flex flex-col items-center gap-1 rounded-2xl border px-2 py-4 transition-all",
                             active
@@ -339,7 +394,7 @@ export function SupportDialog({
 
                   {/* Custom amount */}
                   <button
-                    onClick={() => setSelected("custom")}
+                    onClick={() => chooseTier("custom")}
                     className={cn(
                       "mt-2.5 flex w-full items-center gap-2 rounded-2xl border px-4 py-3 transition-all",
                       selected === "custom"

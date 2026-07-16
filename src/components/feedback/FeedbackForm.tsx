@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, CheckCircle, Loader2 } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 export function FeedbackForm() {
   const [message, setMessage] = useState("");
@@ -23,6 +24,7 @@ export function FeedbackForm() {
       });
 
       if (res.ok) {
+        track("feedback_submit", { has_identity: !!identity.trim() });
         setStatus("success");
         setMessage("");
         setIdentity("");

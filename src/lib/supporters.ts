@@ -1,6 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import nodemailer from "nodemailer";
 import type { Collection, Document } from "mongodb";
+import { gaConfigured, sendServerEvent } from "@/lib/ga-server";
 
 /**
  * Persistence + owner-notification for the optional support flow. Every payment
@@ -16,6 +17,49 @@ export async function supportersCollection(): Promise<Collection<Document>> {
   await col.createIndex({ orderId: 1 }, { unique: true });
   await col.createIndex({ paymentId: 1 }, { sparse: true });
   return col;
+}
+
+/**
+ * Record a *verified* payment to GA4 server-side, exactly once per order. This
+ * is the authoritative conversion — it survives ad-blockers and closed tabs,
+ * where the browser's `support_payment_success` event would be lost. Stitched
+ * to the reader's GA session by the client id captured at checkout. Guarded by
+ * an atomic `gaReported` flag so verify + webhook can both call it safely.
+ */
+export async function reportPaymentToGa(orderId: string): Promise<void> {
+  if (!gaConfigured() || !orderId) return;
+  try {
+    const col = await supportersCollection();
+    // Claim the report: only the first caller flips the flag and proceeds.
+    // Driver v7 returns the (updated) document directly, or null if no match.
+    const doc = await col.findOneAndUpdate(
+      { orderId, gaReported: { $ne: true } },
+      { $set: { gaReported: true } },
+      { returnDocument: "after" }
+    );
+    if (!doc || !doc.gaClientId) return;
+
+    const subunits =
+      typeof doc.amountCaptured === "number"
+        ? doc.amountCaptured
+        : typeof doc.amount === "number"
+          ? doc.amount
+          : 0;
+
+    await sendServerEvent(String(doc.gaClientId), "support_payment_verified", {
+      value: subunits / 100,
+      currency:
+        (doc.currencyCaptured as string) || (doc.currency as string) || "INR",
+      source: (doc.source as string) || "unknown",
+      tier: (doc.tier as string) || undefined,
+      method: (doc.method as string) || undefined,
+      country: (doc.country as string) || undefined,
+      category: (doc.category as string) || undefined,
+      essay_id: (doc.essayId as string) || undefined,
+    });
+  } catch (err) {
+    console.error("reportPaymentToGa failed:", err);
+  }
 }
 
 function money(subunits: unknown, currency: unknown): string {

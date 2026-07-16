@@ -26,7 +26,14 @@ export async function POST(request: NextRequest) {
       tier?: unknown;
       amount?: unknown;
       source?: unknown;
+      gaClientId?: unknown;
+      essayId?: unknown;
+      category?: unknown;
     } | null;
+
+    // Small helper: keep only sane, length-capped strings for analytics fields.
+    const str = (v: unknown, max = 128): string | null =>
+      typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null;
 
     const country = getClientCountry(request);
     const cfg = priceConfigFor(country);
@@ -85,6 +92,9 @@ export async function POST(request: NextRequest) {
           receipt,
           status: "created",
           updatedAt: now,
+          gaClientId: str(body?.gaClientId),
+          essayId: str(body?.essayId),
+          category: str(body?.category, 32),
         },
       },
       { upsert: true }

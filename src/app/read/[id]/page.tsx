@@ -137,6 +137,7 @@ export default async function ReadPage({
             dateLabel: formatDate(essay.published_at, "medium"),
             readingMinutes: essay.reading_minutes,
             themeLabel: themeLabel(essay.theme),
+            category: essay.theme,
             issue: essay.issue,
             archived: essay.status === "archived",
             furtherReading: essay.further_reading,
