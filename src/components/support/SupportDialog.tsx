@@ -95,7 +95,7 @@ export function SupportDialog({
 }) {
   const router = useRouter();
   const [config, setConfig] = useState<Config | null>(null);
-  const [selected, setSelected] = useState<TierId | "custom">("t1");
+  const [selected, setSelected] = useState<TierId | "custom">("t2");
   const [custom, setCustom] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -114,7 +114,7 @@ export function SupportDialog({
           setConfig({
             currency: "USD",
             symbol: "$",
-            presets: { t1: 5, t2: 50, t3: 500 },
+            presets: { t1: 3, t2: 5, t3: 15 },
             min: 1,
             max: 10000,
           });

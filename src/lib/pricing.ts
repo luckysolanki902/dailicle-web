@@ -6,8 +6,8 @@
  * that to a currency + subunit amount here, based on the reader's country as
  * reported by Vercel's edge geolocation header (which the browser cannot forge).
  *
- * India sees INR (₹99 / ₹499 / ₹599). Everyone else sees USD ($5 / $50 / $500).
- * The first tier is the gentle default the reader is shown.
+ * India sees INR (₹49 / ₹99 / ₹249). Everyone else sees USD ($3 / $5 / $15).
+ * The middle tier is the gentle default the reader is shown.
  */
 
 export type TierId = "t1" | "t2" | "t3";
@@ -25,7 +25,7 @@ export interface PriceConfig {
 const INDIA: PriceConfig = {
   currency: "INR",
   symbol: "₹",
-  presets: { t1: 99, t2: 499, t3: 599 },
+  presets: { t1: 49, t2: 99, t3: 249 },
   min: 10,
   max: 500000,
 };
@@ -33,7 +33,7 @@ const INDIA: PriceConfig = {
 const REST: PriceConfig = {
   currency: "USD",
   symbol: "$",
-  presets: { t1: 5, t2: 50, t3: 500 },
+  presets: { t1: 3, t2: 5, t3: 15 },
   min: 1,
   max: 10000,
 };
