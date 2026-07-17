@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ThisWeek } from "@/components/landing/ThisWeek";
 import { NextWeek } from "@/components/landing/NextWeek";
 import { Ethos } from "@/components/landing/Ethos";
+import { ReadersByCountry } from "@/components/landing/ReadersByCountry";
 import { ReaderWord } from "@/components/landing/ReaderWord";
 import { RecentEssays, EssayCard } from "@/components/landing/RecentEssays";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
@@ -124,6 +125,7 @@ export function HomeClient({ published, queued }: HomeClientProps) {
       <ThisWeek essay={hero} upcoming={!hero ? tease : null} />
       {hero && <NextWeek topic={tease} />}
       <Ethos />
+      <ReadersByCountry />
       <ReaderWord />
       <RecentEssays essays={cards} />
 
