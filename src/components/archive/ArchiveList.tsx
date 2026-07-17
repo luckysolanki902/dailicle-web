@@ -23,7 +23,6 @@ export interface ArchiveEntry {
 interface ArchiveListProps {
   current: ArchiveEntry[]; // the weekly era – the publication proper
   legacy: ArchiveEntry[]; // the 2025 archive – tucked away, never promoted
-  initialTheme?: string;
 }
 
 function EntryRow({
@@ -76,13 +75,11 @@ function EntryRow({
   );
 }
 
-export function ArchiveList({ current, legacy, initialTheme }: ArchiveListProps) {
+export function ArchiveList({ current, legacy }: ArchiveListProps) {
   const [now, setNow] = useState(() => new Date());
   const [query, setQuery] = useState("");
   const [showLegacy, setShowLegacy] = useState(false);
-  const [theme, setThemeState] = useState<string | null>(
-    initialTheme && THEMES.some((t) => t.slug === initialTheme) ? initialTheme : null
-  );
+  const [theme, setThemeState] = useState<string | null>(null);
 
   // Keep the URL shareable without triggering a navigation.
   const setTheme = useCallback((slug: string | null) => {
@@ -95,8 +92,15 @@ export function ArchiveList({ current, legacy, initialTheme }: ArchiveListProps)
     }
   }, []);
 
+  // Read the shared ?theme= from the URL on the client so the page itself
+  // stays statically rendered (reading searchParams on the server would opt
+  // the whole route into dynamic rendering on every request).
   React.useEffect(() => {
     const id = window.setTimeout(() => setNow(new Date()), 0);
+    const urlTheme = new URLSearchParams(window.location.search).get("theme");
+    if (urlTheme && THEMES.some((t) => t.slug === urlTheme)) {
+      setThemeState(urlTheme);
+    }
     return () => window.clearTimeout(id);
   }, []);
 

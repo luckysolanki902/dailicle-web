@@ -48,7 +48,6 @@ export async function POST(request: NextRequest) {
 
     const ipHash = hashIp(getClientIp(request));
     const col = await reactions();
-    await col.createIndex({ essayId: 1, ipHash: 1 }, { unique: true });
 
     // 0 means the visitor toggled their vote back off.
     if (value === 0) {

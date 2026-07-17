@@ -152,6 +152,11 @@ export async function GET(request: NextRequest) {
     {
       width: 1200,
       height: 630,
+      headers: {
+        // OG art is deterministic per essay (title/category/minimal), so let
+        // the CDN serve it forever instead of re-rasterizing on every crawl.
+        "Cache-Control": "public, immutable, no-transform, max-age=31536000",
+      },
     }
   );
 }

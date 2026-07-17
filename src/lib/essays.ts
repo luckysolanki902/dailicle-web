@@ -1,5 +1,6 @@
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { unstable_cache } from "next/cache";
 
 const DB_NAME = "dailicle";
 const COLLECTION = "essays";
@@ -91,11 +92,19 @@ export async function getThisWeek(): Promise<Essay | null> {
 /**
  * Next Monday's topic – the oldest queued doc. Title and hook only;
  * a queued essay has no body and must never leak one.
+ *
+ * The value is identical for every reader, so it's cached across requests
+ * (day-long window) instead of hitting Mongo on each /read render. It shifts
+ * at most weekly, so staleness is a non-issue.
  */
-export async function getNextTopic(): Promise<Essay | null> {
-  const [doc] = await getQueuedTopics(1);
-  return doc || null;
-}
+export const getNextTopic = unstable_cache(
+  async (): Promise<Essay | null> => {
+    const [doc] = await getQueuedTopics(1);
+    return doc || null;
+  },
+  ["next-topic"],
+  { revalidate: 86400, tags: ["next-topic"] }
+);
 
 export async function getQueuedTopics(limit = 10): Promise<Essay[]> {
   const col = await collection();

@@ -4,7 +4,9 @@ import { getPublishedEssays, getArchived2025, Essay } from "@/lib/essays";
 import { formatDate } from "@/lib/utils";
 import type { Metadata } from "next";
 
-export const revalidate = 3600;
+// The archive listing only changes when a new essay ships (weekly), so a
+// day-long revalidate window is plenty and keeps background renders cheap.
+export const revalidate = 86400;
 
 const DESCRIPTION =
   "Every essay we've published – one a week on the mind, meaning, money, and how to live.";
@@ -78,12 +80,7 @@ function toEntry(essay: Essay): ArchiveEntry {
   };
 }
 
-export default async function ArchivePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ theme?: string }>;
-}) {
-  const { theme } = await searchParams;
+export default async function ArchivePage() {
   const [published, archived] = await Promise.all([
     getPublishedEssays(),
     getArchived2025(),
@@ -122,7 +119,6 @@ export default async function ArchivePage({
         <ArchiveList
           current={published.map(toEntry)}
           legacy={archived.map(toEntry)}
-          initialTheme={theme}
         />
       </main>
     </>

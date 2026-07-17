@@ -1,12 +1,28 @@
 import { EssayReader } from "@/components/reader/EssayReader";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { getEssay, getNextTopic } from "@/lib/essays";
+import { getEssay, getNextTopic, getAllReadable } from "@/lib/essays";
 import { themeLabel } from "@/lib/themes";
 import { formatDate, nextMonday } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-export const revalidate = 3600;
+// Essays change at most weekly, so there's no reason to revalidate hourly.
+// A day-long window keeps background regeneration (and its CPU) ~24x lower;
+// the admin can still force an update via on-demand revalidation.
+export const revalidate = 86400;
+
+/**
+ * Prebuild every listed essay so the hottest route serves from the CDN
+ * instead of rendering on demand. dynamicParams stays on (the default), so
+ * unlisted essays and legacy ObjectId URLs still render on first request and
+ * then cache via ISR.
+ */
+export async function generateStaticParams() {
+  const essays = await getAllReadable();
+  return essays
+    .filter((essay) => essay.slug)
+    .map((essay) => ({ id: essay.slug as string }));
+}
 
 export async function generateMetadata({
   params,
