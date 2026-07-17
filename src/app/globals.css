@@ -87,6 +87,28 @@ body {
   background: color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
+/*
+  Theme-based focus rings. The browser default is an off-brand blue; instead we
+  tint the ring with the current theme's --accent. Only :focus-visible (keyboard
+  / assistive focus) shows it, so mouse clicks stay clean. Outline follows each
+  element's own border-radius, so pills and cards get a matching rounded ring.
+*/
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 65%, transparent);
+  outline-offset: 3px;
+}
+
+/* Soft accent glow on focused fields for a gentler, on-theme feel. */
+input:focus-visible,
+textarea:focus-visible {
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
 /* Dark theme prose readability */
 .theme-dark .prose,
 .theme-space .prose {
