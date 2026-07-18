@@ -18,6 +18,12 @@ export interface ArchiveEntry {
   publishOn?: string | null;
   publishedAt?: string | null;
   issue?: number | null;
+  /**
+   * Whether the entry is released, decided on the server. The release calendar
+   * is the reader's LOCAL calendar (see lib/release), so the client must not
+   * recompute it during hydration – it replays this value first, then updates.
+   */
+  initialReleased?: boolean;
 }
 
 interface ArchiveListProps {
@@ -76,7 +82,7 @@ function EntryRow({
 }
 
 export function ArchiveList({ current, legacy }: ArchiveListProps) {
-  const [now, setNow] = useState(() => new Date());
+  const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [showLegacy, setShowLegacy] = useState(false);
   const [theme, setThemeState] = useState<string | null>(null);
@@ -96,7 +102,7 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
   // stays statically rendered (reading searchParams on the server would opt
   // the whole route into dynamic rendering on every request).
   React.useEffect(() => {
-    const id = window.setTimeout(() => setNow(new Date()), 0);
+    const id = window.setTimeout(() => setMounted(true), 0);
     const urlTheme = new URLSearchParams(window.location.search).get("theme");
     if (urlTheme && THEMES.some((t) => t.slug === urlTheme)) {
       setThemeState(urlTheme);
@@ -106,8 +112,15 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
 
   // Chips and search work on the current era only – the 2025 archive sits
   // apart and unfiltered, an option rather than part of the catalogue.
+  // Before mount, replay the server's release decision so hydration matches;
+  // afterwards, recompute against the reader's own local clock.
   const releasedCurrent = current.filter((entry) =>
-    isReleasedLocally({ publish_on: entry.publishOn, published_at: entry.publishedAt }, now)
+    mounted
+      ? isReleasedLocally(
+          { publish_on: entry.publishOn, published_at: entry.publishedAt },
+          new Date()
+        )
+      : entry.initialReleased ?? true
   );
 
   const countFor = (slug: string) => releasedCurrent.filter((e) => e.theme === slug).length;

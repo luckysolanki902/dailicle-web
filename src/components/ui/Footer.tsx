@@ -204,7 +204,7 @@ export function Footer() {
             })}
           </div>
 
-          <div className="text-xs text-foreground/20">
+          <div className="text-xs text-foreground/20" suppressHydrationWarning>
             © {new Date().getFullYear()}
           </div>
         </div>

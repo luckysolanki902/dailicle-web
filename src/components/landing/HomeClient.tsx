@@ -8,115 +8,41 @@ import { NextWeek } from "@/components/landing/NextWeek";
 import { Ethos } from "@/components/landing/Ethos";
 import { ReadersByCountry } from "@/components/landing/ReadersByCountry";
 import { ReaderWord } from "@/components/landing/ReaderWord";
-import { RecentEssays, EssayCard } from "@/components/landing/RecentEssays";
+import { RecentEssays } from "@/components/landing/RecentEssays";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { formatDate } from "@/lib/utils";
-import { themeLabel } from "@/lib/themes";
 import {
-  isReleasedLocally,
-  localReleaseDate,
-  nextMondayAfter,
-  releaseSourceDate,
-  thisOrNextMonday,
-} from "@/lib/release";
-
-interface LandingEssay {
-  _id: string;
-  slug?: string;
-  title: string;
-  hook: string;
-  theme: string;
-  reading_minutes: number;
-  issue?: number | null;
-  publish_on?: string | null;
-  published_at?: string | null;
-}
-
-interface QueuedTopic {
-  _id: string;
-  title: string;
-  theme: string;
-}
+  buildHomeView,
+  type HomeView,
+  type LandingEssay,
+  type QueuedTopic,
+} from "@/lib/home-view";
 
 interface HomeClientProps {
   published: LandingEssay[];
   queued: QueuedTopic[];
+  /**
+   * The view computed on the server. The release calendar is the reader's
+   * LOCAL calendar and the page is cached, so recomputing it during hydration
+   * would diverge from the server HTML (React #418). Render this server view
+   * verbatim on the first client render, then recompute with the local clock.
+   */
+  initialView: HomeView;
 }
 
-function hrefFor(essay: LandingEssay): string {
-  return `/read/${essay.slug || essay._id}`;
-}
+export function HomeClient({ published, queued, initialView }: HomeClientProps) {
+  const [mounted, setMounted] = useState(false);
 
-function sortByReleaseAsc(a: LandingEssay, b: LandingEssay): number {
-  return (releaseSourceDate(a)?.getTime() || 0) - (releaseSourceDate(b)?.getTime() || 0);
-}
-
-function sortByReleaseDesc(a: LandingEssay, b: LandingEssay): number {
-  return sortByReleaseAsc(b, a);
-}
-
-export function HomeClient({ published, queued }: HomeClientProps) {
-  const [now, setNow] = useState(() => new Date());
-
+  // Deferred so hydration completes against the server view before the local
+  // clock takes over (matches the pattern used across the reader).
   useEffect(() => {
-    const id = window.setTimeout(() => setNow(new Date()), 0);
+    const id = window.setTimeout(() => setMounted(true), 0);
     return () => window.clearTimeout(id);
   }, []);
 
-  const { hero, tease, cards } = useMemo(() => {
-    const released = published
-      .filter((essay) => isReleasedLocally(essay, now))
-      .sort(sortByReleaseDesc);
-
-    const unreleased = published
-      .filter((essay) => !isReleasedLocally(essay, now))
-      .sort(sortByReleaseAsc);
-
-    const thisWeek = released[0] || null;
-    const nextPublished = unreleased[0] || null;
-    const nextQueued = queued[0] || null;
-
-    const heroData = thisWeek
-      ? {
-          href: hrefFor(thisWeek),
-          title: thisWeek.title,
-          hook: thisWeek.hook,
-          themeLabel: themeLabel(thisWeek.theme),
-          issue: thisWeek.issue,
-          dateLabel: formatDate(releaseSourceDate(thisWeek), "medium"),
-          readingMinutes: thisWeek.reading_minutes,
-        }
-      : null;
-
-    const nextPublishedRelease = nextPublished ? localReleaseDate(nextPublished) : null;
-    const fallbackDate = heroData ? nextMondayAfter(now) : thisOrNextMonday(now);
-    const teaseData = nextPublished
-      ? {
-          title: nextPublished.title,
-          themeLabel: themeLabel(nextPublished.theme),
-          dateLabel: formatDate(nextPublishedRelease, "medium"),
-        }
-      : nextQueued
-        ? {
-            title: nextQueued.title,
-            themeLabel: themeLabel(nextQueued.theme),
-            dateLabel: formatDate(fallbackDate, "medium"),
-          }
-        : null;
-
-    const recentCards: EssayCard[] = released
-      .filter((essay) => essay._id !== thisWeek?._id)
-      .slice(0, 3)
-      .map((essay) => ({
-        href: hrefFor(essay),
-        title: essay.title,
-        hook: essay.hook,
-        themeLabel: themeLabel(essay.theme),
-        readingMinutes: essay.reading_minutes,
-      }));
-
-    return { hero: heroData, tease: teaseData, cards: recentCards };
-  }, [now, published, queued]);
+  const { hero, tease, cards } = useMemo(
+    () => (mounted ? buildHomeView(published, queued, new Date()) : initialView),
+    [mounted, published, queued, initialView]
+  );
 
   return (
     <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">

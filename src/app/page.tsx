@@ -1,5 +1,6 @@
 import { HomeClient } from "@/components/landing/HomeClient";
 import { getPublishedCandidates, getQueuedTopics } from "@/lib/essays";
+import { buildHomeView, type LandingEssay, type QueuedTopic } from "@/lib/home-view";
 import type { Metadata } from "next";
 
 export const revalidate = 3600; // weekly cadence – hourly revalidation is plenty
@@ -41,6 +42,28 @@ export default async function Home() {
     getQueuedTopics(5),
   ]);
 
+  const landingEssays: LandingEssay[] = published.map((essay) => ({
+    _id: essay._id,
+    slug: essay.slug,
+    title: essay.title,
+    hook: essay.hook,
+    theme: essay.theme,
+    reading_minutes: essay.reading_minutes,
+    issue: essay.issue,
+    publish_on: essay.publish_on ? new Date(essay.publish_on).toISOString() : null,
+    published_at: essay.published_at ? new Date(essay.published_at).toISOString() : null,
+  }));
+
+  const queuedTopics: QueuedTopic[] = queued.map((topic) => ({
+    _id: topic._id,
+    title: topic.title,
+    theme: topic.theme,
+  }));
+
+  // Compute the time/timezone-dependent view once on the server so the client
+  // can replay it verbatim on first render (see HomeClient / lib/home-view).
+  const initialView = buildHomeView(landingEssays, queuedTopics, new Date());
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -64,22 +87,9 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <HomeClient
-        published={published.map((essay) => ({
-          _id: essay._id,
-          slug: essay.slug,
-          title: essay.title,
-          hook: essay.hook,
-          theme: essay.theme,
-          reading_minutes: essay.reading_minutes,
-          issue: essay.issue,
-          publish_on: essay.publish_on ? new Date(essay.publish_on).toISOString() : null,
-          published_at: essay.published_at ? new Date(essay.published_at).toISOString() : null,
-        }))}
-        queued={queued.map((topic) => ({
-          _id: topic._id,
-          title: topic.title,
-          theme: topic.theme,
-        }))}
+        published={landingEssays}
+        queued={queuedTopics}
+        initialView={initialView}
       />
     </>
   );
