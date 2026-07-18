@@ -50,7 +50,7 @@ async function collection() {
   return client.db(DB_NAME).collection(COLLECTION);
 }
 
-/** Em dash (—) → en dash (–). Every essay we serve passes through here,
+/** Em dash → en dash. Every essay we serve passes through here,
  *  so this keeps em dashes out of bodies, titles, hooks, meta descriptions,
  *  and the RSS feed without touching the stored documents. */
 function noEmDash(value: string): string {

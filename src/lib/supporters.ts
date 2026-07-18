@@ -6,7 +6,7 @@ import { gaConfigured, sendServerEvent } from "@/lib/ga-server";
 /**
  * Persistence + owner-notification for the optional support flow. Every payment
  * is recorded in detail in the `supporters` collection (amount, currency,
- * country, timing, method, contact Razorpay gives us — we never ask the reader
+ * country, timing, method, contact Razorpay gives us we never ask the reader
  * for a name). The owner is emailed once, when a payment is confirmed captured.
  */
 
@@ -21,7 +21,7 @@ export async function supportersCollection(): Promise<Collection<Document>> {
 
 /**
  * Record a *verified* payment to GA4 server-side, exactly once per order. This
- * is the authoritative conversion — it survives ad-blockers and closed tabs,
+ * is the authoritative conversion it survives ad-blockers and closed tabs,
  * where the browser's `support_payment_success` event would be lost. Stitched
  * to the reader's GA session by the client id captured at checkout. Guarded by
  * an atomic `gaReported` flag so verify + webhook can both call it safely.
@@ -101,17 +101,17 @@ export async function notifyOwnerOfPayment(record: {
     await transporter.sendMail({
       from: user,
       to: "luckysolanki902@gmail.com",
-      subject: `💛 New support — ${money(record.amount, record.currency)} — The Dailicle`,
+      subject: `💛 New support - ${money(record.amount, record.currency)} - The Dailicle`,
       html: `
         <h2>Someone supported The Dailicle</h2>
         <table style="border-collapse:collapse;font-family:system-ui,sans-serif;font-size:14px">
           <tr><td style="padding:4px 12px 4px 0;color:#666">Amount</td><td><strong>${money(record.amount, record.currency)}</strong></td></tr>
           <tr><td style="padding:4px 12px 4px 0;color:#666">Country</td><td>${record.country || "unknown"}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;color:#666">Method</td><td>${record.method || "—"}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;color:#666">Contact</td><td>${record.email || record.contact || "—"}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;color:#666">Where</td><td>${record.source || "—"}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:#666">Method</td><td>${record.method || "-"}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:#666">Contact</td><td>${record.email || record.contact || "-"}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:#666">Where</td><td>${record.source || "-"}</td></tr>
           <tr><td style="padding:4px 12px 4px 0;color:#666">Time (IST)</td><td>${when}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;color:#666">Payment id</td><td>${record.paymentId || "—"}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:#666">Payment id</td><td>${record.paymentId || "-"}</td></tr>
           <tr><td style="padding:4px 12px 4px 0;color:#666">Order id</td><td>${record.orderId}</td></tr>
         </table>
       `,

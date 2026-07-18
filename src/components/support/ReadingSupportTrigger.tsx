@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useSupport, SUPPORTED_KEY } from "./SupportProvider";
 
 /**
- * Opens the support dialog once, after ~3 minutes of genuine reading — the point
+ * Opens the support dialog once, after ~3 minutes of genuine reading the point
  * where a reader has actually gotten something from the essay. It is gentle by
  * design: shown at most once per day, never if the reader has already supported,
  * and the timer only advances while the tab is visible so a backgrounded tab

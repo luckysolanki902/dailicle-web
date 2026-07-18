@@ -3,7 +3,7 @@ import crypto from "crypto";
 /**
  * Thin, dependency-free Razorpay helpers. We talk to the REST API directly with
  * Basic auth rather than pulling the SDK, and do all signature verification with
- * Node's crypto. Everything here is server-only — secrets never leave the box.
+ * Node's crypto. Everything here is server-only secrets never leave the box.
  */
 
 const KEY_ID = process.env.RAZORPAY_KEY_ID;

@@ -6,7 +6,7 @@ import { useSupport, type SupportSource } from "./SupportProvider";
 
 /**
  * A quiet "Support" affordance for the navbar and footer. Deliberately understated
- * — a small heart and a word — so it reads as an invitation, not a pitch.
+ * a small heart and a word so it reads as an invitation, not a pitch.
  */
 export function SupportButton({
   source,

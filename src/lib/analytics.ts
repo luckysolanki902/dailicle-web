@@ -91,7 +91,7 @@ export function getGaClientId(timeoutMs = 1000): Promise<string | null> {
 }
 
 /* --------------------------------------------------------------------------
- * Session / visit context — used to answer "after how many visits and how much
+ * Session / visit context used to answer "after how many visits and how much
  * time did they open the dialog / pay?" All best-effort, all client-only.
  * ------------------------------------------------------------------------ */
 
@@ -159,7 +159,7 @@ export function getSessionEssayCount(): number {
 }
 
 /* --------------------------------------------------------------------------
- * Current-essay pointer — lets the globally-mounted support dialog know which
+ * Current-essay pointer lets the globally-mounted support dialog know which
  * essay (and category) was on screen when it opened, without prop-drilling.
  * ------------------------------------------------------------------------ */
 

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 
 /**
- * Where the desk is read. A quiet, ranked bar chart — no numbers, just the
+ * Where the desk is read. A quiet, ranked bar chart no numbers, just the
  * ordering and relative bar lengths, so a glance tells you who reads most and
  * least. Bars use a perceptual (sqrt) scale of each country's share: strictly
  * order-preserving, but it keeps the long tail visible instead of collapsing

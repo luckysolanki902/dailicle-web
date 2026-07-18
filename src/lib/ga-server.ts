@@ -1,6 +1,6 @@
 /**
  * Server-side GA4 via the Measurement Protocol. Used to record events that must
- * not be lost to ad-blockers or a closed tab — above all, a *verified* payment.
+ * not be lost to ad-blockers or a closed tab above all, a *verified* payment.
  * Stitched to the reader's browser session by the GA client id captured at
  * checkout time. A pure no-op until GA_MEASUREMENT_ID + GA_API_SECRET are set,
  * so it is always safe to call.

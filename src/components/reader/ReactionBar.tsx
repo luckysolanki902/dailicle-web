@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { track, getCurrentEssay } from "@/lib/analytics";
 
 /**
- * A deliberately quiet like/dislike. No counts, no crowd — just a private
+ * A deliberately quiet like/dislike. No counts, no crowd just a private
  * nudge that tells us whether an essay landed. One vote per visitor (deduped
  * server-side by IP); tapping the same choice again clears it.
  */

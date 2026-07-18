@@ -6,7 +6,7 @@ import { Heart } from "lucide-react";
 
 /**
  * Where a reader lands after a successful support payment. Deliberately quiet
- * and warm — a moment of gratitude, not a receipt. Theme-aware via the same CSS
+ * and warm a moment of gratitude, not a receipt. Theme-aware via the same CSS
  * variables (--background / --foreground / --accent) the rest of the site uses.
  */
 export default function ThankYouPage() {
@@ -86,7 +86,7 @@ export default function ThankYouPage() {
           className="mx-auto mt-6 max-w-md font-serif text-lg leading-relaxed text-foreground/60"
         >
           Because of you, the desk stays lit a little longer. The essays will keep
-          arriving every Monday — slow, careful, and free for everyone, exactly as
+          arriving every Monday, slow, careful, and free for everyone, exactly as
           they were before.
         </motion.p>
 

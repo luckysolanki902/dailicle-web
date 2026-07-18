@@ -209,7 +209,7 @@ export function SupportDialog({
         amount: order.amount,
         currency: order.currency,
         name: "The Dailicle",
-        description: "Keep the desk lit — thank you.",
+        description: "Keep the desk lit, thank you.",
         theme: { color: readAccent() },
         handler: async (resp) => {
           onSupported();
@@ -327,7 +327,7 @@ export function SupportDialog({
                   </h2>
                   <p className="max-w-xs font-serif text-foreground/60">
                     The desk stays lit a little longer because of you. The essays
-                    will keep coming — same as always, free for everyone.
+                    will keep coming same as always, free for everyone.
                   </p>
                   <button
                     onClick={onClose}
@@ -349,7 +349,7 @@ export function SupportDialog({
                     Everything here is free. It can stay that way.
                   </h2>
                   <p className="mt-2 font-serif text-[15px] leading-relaxed text-foreground/60">
-                    No paywall, no ads, nothing to sign up for — just one essay a
+                    No paywall, no ads, nothing to sign up for just one essay a
                     week, written slowly. If it&apos;s ever made you pause, you can
                     help keep it going. Only if you want to.
                   </p>
