@@ -1,6 +1,12 @@
 import { EssayReader } from "@/components/reader/EssayReader";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { getEssay, getNextTopic, getAllReadable, essayBannerUrl } from "@/lib/essays";
+import {
+  getEssay,
+  getNextTopic,
+  getAllReadable,
+  essayBannerUrl,
+  essayBannerInfo,
+} from "@/lib/essays";
 import { themeLabel } from "@/lib/themes";
 import { formatDate, nextMonday } from "@/lib/utils";
 import { notFound } from "next/navigation";
@@ -164,7 +170,8 @@ export default async function ReadPage({
             furtherReading: essay.further_reading,
             audioUrl: essay.audio_url,
             audioDuration: essay.audio_duration_seconds,
-            bannerUrl: essayBannerUrl(essay),
+            bannerUrl: essayBannerInfo(essay)?.url ?? null,
+            bannerTransparent: essayBannerInfo(essay)?.transparent ?? false,
           }}
           nextTease={
             nextTopic

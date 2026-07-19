@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { ParallaxBanner } from "@/components/ui/ParallaxBanner";
+import { EssayBanner } from "@/components/ui/EssayBanner";
 
 interface ThisWeekProps {
   essay: {
@@ -15,6 +15,7 @@ interface ThisWeekProps {
     dateLabel: string;
     readingMinutes: number;
     bannerUrl?: string | null;
+    bannerTransparent?: boolean;
   } | null;
   /** Shown when nothing is published yet: tease the first issue instead. */
   upcoming?: {
@@ -56,15 +57,22 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
         <div className="rule-fade h-px w-full" aria-hidden />
       </motion.header>
 
-      {/* Full-bleed banner illustration, woven into the page */}
+      {/* Banner illustration — contained to body width, edges faded into the
+          page so it sits within the first view and merges on every theme */}
       {essay?.bannerUrl && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, ease }}
-          className="relative left-1/2 z-0 mt-6 w-screen -translate-x-1/2 md:mt-8"
+          className="z-0 mx-auto mt-4 w-full max-w-2xl md:mt-6"
         >
-          <ParallaxBanner src={essay.bannerUrl} alt={essay.title} />
+          <EssayBanner
+            src={essay.bannerUrl}
+            alt={essay.title}
+            transparent={essay.bannerTransparent}
+            priority
+            sizes="(max-width: 768px) 100vw, 640px"
+          />
         </motion.div>
       )}
 

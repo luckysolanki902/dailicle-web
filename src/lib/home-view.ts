@@ -20,6 +20,7 @@ export interface LandingEssay {
   published_at?: string | null;
   /** Resolved CDN banner URL, if the essay has an enabled banner. */
   bannerUrl?: string | null;
+  bannerTransparent?: boolean;
 }
 
 export interface QueuedTopic {
@@ -37,6 +38,7 @@ export interface HeroCard {
   dateLabel: string;
   readingMinutes: number;
   bannerUrl?: string | null;
+  bannerTransparent?: boolean;
 }
 
 export interface TeaseCard {
@@ -107,6 +109,7 @@ export function buildHomeView(
         dateLabel: formatDate(releaseSourceDate(thisWeek), "medium"),
         readingMinutes: thisWeek.reading_minutes,
         bannerUrl: thisWeek.bannerUrl ?? null,
+        bannerTransparent: thisWeek.bannerTransparent ?? false,
       }
     : null;
 

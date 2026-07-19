@@ -19,6 +19,8 @@ export interface BannerImage {
   width?: number;
   height?: number;
   created_at?: Date;
+  /** PNG has a transparent background → render the subject directly on the page. */
+  transparent?: boolean;
 }
 
 /** CDN origin for banner images (CloudFront). Server-side only. */
@@ -35,16 +37,31 @@ export function bannerImageUrl(key: string | undefined | null): string | null {
  * back to the first available image. Returns null when banners are off or none
  * exist, so callers render the plain (bannerless) layout unchanged.
  */
-export function essayBannerUrl(essay: {
+interface HasBanner {
   banner_enabled?: boolean;
   banner_image_id?: string | null;
   banner_images?: BannerImage[];
-}): string | null {
+}
+
+function chosenBanner(essay: HasBanner): BannerImage | null {
   if (!essay.banner_enabled) return null;
   const images = essay.banner_images || [];
   if (images.length === 0) return null;
-  const chosen = images.find((i) => i.id === essay.banner_image_id) || images[0];
-  return bannerImageUrl(chosen?.key);
+  return images.find((i) => i.id === essay.banner_image_id) || images[0];
+}
+
+export function essayBannerUrl(essay: HasBanner): string | null {
+  return bannerImageUrl(chosenBanner(essay)?.key);
+}
+
+/** URL plus whether the image has a transparent background (render flat on page). */
+export function essayBannerInfo(
+  essay: HasBanner
+): { url: string; transparent: boolean } | null {
+  const chosen = chosenBanner(essay);
+  const url = bannerImageUrl(chosen?.key);
+  if (!url) return null;
+  return { url, transparent: !!chosen?.transparent };
 }
 
 export interface Essay {

@@ -1,5 +1,5 @@
 import { HomeClient } from "@/components/landing/HomeClient";
-import { getPublishedCandidates, getQueuedTopics, essayBannerUrl } from "@/lib/essays";
+import { getPublishedCandidates, getQueuedTopics, essayBannerInfo } from "@/lib/essays";
 import { buildHomeView, type LandingEssay, type QueuedTopic } from "@/lib/home-view";
 import type { Metadata } from "next";
 
@@ -52,7 +52,8 @@ export default async function Home() {
     issue: essay.issue,
     publish_on: essay.publish_on ? new Date(essay.publish_on).toISOString() : null,
     published_at: essay.published_at ? new Date(essay.published_at).toISOString() : null,
-    bannerUrl: essayBannerUrl(essay),
+    bannerUrl: essayBannerInfo(essay)?.url ?? null,
+    bannerTransparent: essayBannerInfo(essay)?.transparent ?? false,
   }));
 
   const queuedTopics: QueuedTopic[] = queued.map((topic) => ({

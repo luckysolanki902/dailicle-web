@@ -24,7 +24,7 @@ import {
   savePrefs,
 } from "@/components/reader/ReadingPreferences";
 import { AudioPlayer } from "@/components/reader/AudioPlayer";
-import { ParallaxBanner } from "@/components/ui/ParallaxBanner";
+import { EssayBanner } from "@/components/ui/EssayBanner";
 import { ReactionBar } from "@/components/reader/ReactionBar";
 import { ReadingSupportTrigger } from "@/components/support/ReadingSupportTrigger";
 import { isReleasedLocally, localReleaseDate } from "@/lib/release";
@@ -54,6 +54,8 @@ export interface EssayReaderProps {
     audioDuration?: number;
     /** Editorial banner illustration, already resolved to a full CDN URL. */
     bannerUrl?: string | null;
+    /** Whether the banner image has a transparent background. */
+    bannerTransparent?: boolean;
   };
   /** Next Monday's topic, if one is queued – the reason to come back. */
   nextTease?: {
@@ -422,15 +424,22 @@ export function EssayReader({
           </div>
         </div>
 
-        {/* Full-bleed banner illustration */}
+        {/* Banner illustration — contained to the reading column, edges faded
+            into the page so it merges seamlessly on every theme */}
         {essay.bannerUrl && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.9, ease: "easeOut" }}
-            className="relative left-1/2 mb-10 w-screen -translate-x-1/2 md:mb-12"
+            className="mb-8 md:mb-10"
           >
-            <ParallaxBanner src={essay.bannerUrl} alt={essay.title} />
+            <EssayBanner
+              src={essay.bannerUrl}
+              alt={essay.title}
+              transparent={essay.bannerTransparent}
+              priority
+              sizes="(max-width: 768px) 100vw, 640px"
+            />
           </motion.div>
         )}
 
