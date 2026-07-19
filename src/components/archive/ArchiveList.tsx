@@ -7,6 +7,7 @@ import { ChevronDown, Search, X } from "lucide-react";
 import { THEMES, themeLabel } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 import { isReleasedLocally } from "@/lib/release";
+import { EssayBanner } from "@/components/ui/EssayBanner";
 
 export interface ArchiveEntry {
   href: string;
@@ -18,6 +19,8 @@ export interface ArchiveEntry {
   publishOn?: string | null;
   publishedAt?: string | null;
   issue?: number | null;
+  /** Resolved CDN banner URL, if the essay has an enabled banner. */
+  bannerUrl?: string | null;
   /**
    * Whether the entry is released, decided on the server. The release calendar
    * is the reader's LOCAL calendar (see lib/release), so the client must not
@@ -50,31 +53,44 @@ function EntryRow({
       <Link
         href={entry.href}
         className={cn(
-          "group block py-6 border-b border-foreground/10 hover:bg-foreground/[0.03] transition-colors -mx-4 px-4 rounded-lg",
+          "group flex items-start gap-4 py-6 border-b border-foreground/10 hover:bg-foreground/[0.03] transition-colors -mx-4 px-4 rounded-lg",
           muted && "py-4 opacity-75 hover:opacity-100"
         )}
       >
-        <p className="text-[10px] font-semibold tracking-[0.18em] uppercase mb-1.5">
-          <span className={muted ? "text-foreground/45" : "text-accent"}>
-            {themeLabel(entry.theme)}
-          </span>
-          <span className="text-foreground/40 font-medium">
-            {entry.issue ? ` · Issue ${entry.issue}` : ""} · {entry.dateLabel} ·{" "}
-            {entry.readingMinutes} min
-          </span>
-        </p>
-        <h3
-          className={cn(
-            "font-display leading-snug tracking-tight group-hover:underline decoration-foreground/25 underline-offset-4",
-            muted ? "text-base md:text-lg text-foreground/80" : "text-lg md:text-xl"
-          )}
-        >
-          {entry.title}
-        </h3>
-        {!muted && entry.hook && (
-          <p className="mt-1.5 text-sm text-foreground/55 leading-relaxed line-clamp-2">
-            {entry.hook}
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-semibold tracking-[0.18em] uppercase mb-1.5">
+            <span className={muted ? "text-foreground/45" : "text-accent"}>
+              {themeLabel(entry.theme)}
+            </span>
+            <span className="text-foreground/40 font-medium">
+              {entry.issue ? ` · Issue ${entry.issue}` : ""} · {entry.dateLabel} ·{" "}
+              {entry.readingMinutes} min
+            </span>
           </p>
+          <h3
+            className={cn(
+              "font-display leading-snug tracking-tight group-hover:underline decoration-foreground/25 underline-offset-4",
+              muted ? "text-base md:text-lg text-foreground/80" : "text-lg md:text-xl"
+            )}
+          >
+            {entry.title}
+          </h3>
+          {!muted && entry.hook && (
+            <p className="mt-1.5 text-sm text-foreground/55 leading-relaxed line-clamp-2">
+              {entry.hook}
+            </p>
+          )}
+        </div>
+        {!muted && entry.bannerUrl && (
+          <div className="hidden shrink-0 sm:block sm:w-32 md:w-40">
+            <EssayBanner
+              src={entry.bannerUrl}
+              alt={entry.title}
+              rounded="rounded-lg"
+              sizes="160px"
+              className="transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+          </div>
         )}
       </Link>
     </motion.div>

@@ -10,6 +10,43 @@ export interface FurtherReadingItem {
   url: string;
 }
 
+export interface BannerImage {
+  id: string;
+  /** Relative S3 key, e.g. dailicle/banners/<essayId>/<uuid>.png. */
+  key: string;
+  prompt?: string | null;
+  model?: string | null;
+  width?: number;
+  height?: number;
+  created_at?: Date;
+}
+
+/** CDN origin for banner images (CloudFront). Server-side only. */
+const CDN_BASE = (process.env.CDN_BASE_URL || "").replace(/\/+$/, "");
+
+/** Absolute CDN URL for a stored banner key, or null if CDN is unconfigured. */
+export function bannerImageUrl(key: string | undefined | null): string | null {
+  if (!key || !CDN_BASE) return null;
+  return `${CDN_BASE}/${key.replace(/^\/+/, "")}`;
+}
+
+/**
+ * The banner URL to show for an essay: the enabled + selected image, falling
+ * back to the first available image. Returns null when banners are off or none
+ * exist, so callers render the plain (bannerless) layout unchanged.
+ */
+export function essayBannerUrl(essay: {
+  banner_enabled?: boolean;
+  banner_image_id?: string | null;
+  banner_images?: BannerImage[];
+}): string | null {
+  if (!essay.banner_enabled) return null;
+  const images = essay.banner_images || [];
+  if (images.length === 0) return null;
+  const chosen = images.find((i) => i.id === essay.banner_image_id) || images[0];
+  return bannerImageUrl(chosen?.key);
+}
+
 export interface Essay {
   _id: string;
   slug?: string;
@@ -30,6 +67,10 @@ export interface Essay {
   audio_duration_seconds?: number;
   /** Readable at its URL (indexed links stay alive) but shown in no listing. */
   unlisted?: boolean;
+  /** Editorial banner illustration (opt-in per essay). */
+  banner_enabled?: boolean;
+  banner_image_id?: string | null;
+  banner_images?: BannerImage[];
 }
 
 /** Light projection for lists – never drags the body over the wire. */
@@ -43,6 +84,9 @@ const LIST_PROJECTION = {
   issue: 1,
   publish_on: 1,
   published_at: 1,
+  banner_enabled: 1,
+  banner_image_id: 1,
+  banner_images: 1,
 } as const;
 
 async function collection() {

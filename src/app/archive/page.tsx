@@ -1,6 +1,6 @@
 import { ArchiveList, ArchiveEntry } from "@/components/archive/ArchiveList";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { getPublishedEssays, getArchived2025, Essay } from "@/lib/essays";
+import { getPublishedEssays, getArchived2025, essayBannerUrl, Essay } from "@/lib/essays";
 import { formatDate } from "@/lib/utils";
 import { isReleasedLocally } from "@/lib/release";
 import type { Metadata } from "next";
@@ -78,6 +78,7 @@ function toEntry(essay: Essay, now: Date): ArchiveEntry {
     publishOn: essay.publish_on ? new Date(essay.publish_on).toISOString() : null,
     publishedAt: essay.published_at ? new Date(essay.published_at).toISOString() : null,
     issue: essay.issue,
+    bannerUrl: essayBannerUrl(essay),
     initialReleased: isReleasedLocally(
       { publish_on: essay.publish_on, published_at: essay.published_at },
       now

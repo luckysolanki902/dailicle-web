@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { EssayBanner } from "@/components/ui/EssayBanner";
 
 interface ThisWeekProps {
   essay: {
@@ -13,6 +14,7 @@ interface ThisWeekProps {
     issue?: number | null;
     dateLabel: string;
     readingMinutes: number;
+    bannerUrl?: string | null;
   } | null;
   /** Shown when nothing is published yet: tease the first issue instead. */
   upcoming?: {
@@ -59,6 +61,22 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
         <div className="max-w-3xl mx-auto w-full text-center space-y-9 py-16">
           {essay ? (
             <>
+              {essay.bannerUrl && (
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.15, ease }}
+                  className="mx-auto max-w-2xl"
+                >
+                  <EssayBanner
+                    src={essay.bannerUrl}
+                    alt={essay.title}
+                    priority
+                    sizes="(max-width: 768px) 100vw, 672px"
+                    className="shadow-[0_30px_60px_-35px_rgba(0,0,0,0.55)]"
+                  />
+                </motion.div>
+              )}
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

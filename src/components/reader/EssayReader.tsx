@@ -24,6 +24,7 @@ import {
   savePrefs,
 } from "@/components/reader/ReadingPreferences";
 import { AudioPlayer } from "@/components/reader/AudioPlayer";
+import { EssayBanner } from "@/components/ui/EssayBanner";
 import { ReactionBar } from "@/components/reader/ReactionBar";
 import { ReadingSupportTrigger } from "@/components/support/ReadingSupportTrigger";
 import { isReleasedLocally, localReleaseDate } from "@/lib/release";
@@ -51,6 +52,8 @@ export interface EssayReaderProps {
     furtherReading?: { title: string; url: string }[];
     audioUrl?: string;
     audioDuration?: number;
+    /** Editorial banner illustration, already resolved to a full CDN URL. */
+    bannerUrl?: string | null;
   };
   /** Next Monday's topic, if one is queued – the reason to come back. */
   nextTease?: {
@@ -418,6 +421,24 @@ export function EssayReader({
             </div>
           </div>
         </div>
+
+        {/* Banner illustration */}
+        {essay.bannerUrl && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="mb-12"
+          >
+            <EssayBanner
+              src={essay.bannerUrl}
+              alt={essay.title}
+              priority
+              sizes="(max-width: 768px) 100vw, 672px"
+              className="shadow-[0_20px_50px_-30px_rgba(0,0,0,0.5)]"
+            />
+          </motion.div>
+        )}
 
         {/* Header */}
         <header className="mb-14 space-y-5 text-center">
