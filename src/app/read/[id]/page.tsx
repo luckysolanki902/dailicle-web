@@ -43,10 +43,23 @@ export async function generateMetadata({
   const description = (essay.hook ||
     `An essay from The Dailicle. A ${essay.reading_minutes}-minute read.`).slice(0, 160);
 
+  // Prefer the essay's own banner illustration for social cards; fall back to
+  // the dynamically-rendered OG card when the essay has no banner.
+  const banner = essayBannerUrl(essay);
   const ogImageUrl = new URL("https://dailicle.com/api/og");
   ogImageUrl.searchParams.set("title", essay.title);
   ogImageUrl.searchParams.set("category", themeLabel(essay.theme));
   ogImageUrl.searchParams.set("minimal", "true");
+
+  const ogImage = banner
+    ? { url: banner, width: 2560, height: 1024, alt: essay.title, type: "image/png" }
+    : {
+        url: ogImageUrl.toString(),
+        width: 1200,
+        height: 630,
+        alt: essay.title,
+        type: "image/png",
+      };
 
   return {
     title: `${essay.title} - The Dailicle`,
@@ -70,22 +83,14 @@ export async function generateMetadata({
       publishedTime: formatDate(essay.published_at, "iso"),
       authors: ["The Dailicle Desk"],
       section: themeLabel(essay.theme),
-      images: [
-        {
-          url: ogImageUrl.toString(),
-          width: 1200,
-          height: 630,
-          alt: essay.title,
-          type: "image/png",
-        },
-      ],
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       site: "@dailicle",
       title: `${essay.title} | The Dailicle`,
       description,
-      images: { url: ogImageUrl.toString(), alt: essay.title },
+      images: { url: ogImage.url, alt: essay.title },
     },
     alternates: {
       canonical: `https://dailicle.com${canonicalPath}`,

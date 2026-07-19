@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { EssayBanner } from "@/components/ui/EssayBanner";
+import { ParallaxBanner } from "@/components/ui/ParallaxBanner";
 
 interface ThisWeekProps {
   essay: {
@@ -56,27 +56,23 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
         <div className="rule-fade h-px w-full" aria-hidden />
       </motion.header>
 
+      {/* Full-bleed banner illustration, woven into the page */}
+      {essay?.bannerUrl && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, ease }}
+          className="relative left-1/2 z-0 mt-6 w-screen -translate-x-1/2 md:mt-8"
+        >
+          <ParallaxBanner src={essay.bannerUrl} alt={essay.title} />
+        </motion.div>
+      )}
+
       {/* The essay */}
       <div className="flex-1 flex items-center w-full z-10">
         <div className="max-w-3xl mx-auto w-full text-center space-y-9 py-16">
           {essay ? (
             <>
-              {essay.bannerUrl && (
-                <motion.div
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.15, ease }}
-                  className="mx-auto max-w-2xl"
-                >
-                  <EssayBanner
-                    src={essay.bannerUrl}
-                    alt={essay.title}
-                    priority
-                    sizes="(max-width: 768px) 100vw, 672px"
-                    className="shadow-[0_30px_60px_-35px_rgba(0,0,0,0.55)]"
-                  />
-                </motion.div>
-              )}
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

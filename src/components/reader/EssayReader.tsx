@@ -24,7 +24,7 @@ import {
   savePrefs,
 } from "@/components/reader/ReadingPreferences";
 import { AudioPlayer } from "@/components/reader/AudioPlayer";
-import { EssayBanner } from "@/components/ui/EssayBanner";
+import { ParallaxBanner } from "@/components/ui/ParallaxBanner";
 import { ReactionBar } from "@/components/reader/ReactionBar";
 import { ReadingSupportTrigger } from "@/components/support/ReadingSupportTrigger";
 import { isReleasedLocally, localReleaseDate } from "@/lib/release";
@@ -422,21 +422,15 @@ export function EssayReader({
           </div>
         </div>
 
-        {/* Banner illustration */}
+        {/* Full-bleed banner illustration */}
         {essay.bannerUrl && (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="mb-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+            className="relative left-1/2 mb-10 w-screen -translate-x-1/2 md:mb-12"
           >
-            <EssayBanner
-              src={essay.bannerUrl}
-              alt={essay.title}
-              priority
-              sizes="(max-width: 768px) 100vw, 672px"
-              className="shadow-[0_20px_50px_-30px_rgba(0,0,0,0.5)]"
-            />
+            <ParallaxBanner src={essay.bannerUrl} alt={essay.title} />
           </motion.div>
         )}
 
