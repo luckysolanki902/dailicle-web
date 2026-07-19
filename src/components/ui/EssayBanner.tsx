@@ -40,6 +40,7 @@ export function EssayBanner({
           fill
           sizes={sizes}
           priority={priority}
+          style={{opacity: 0.8}}
           className="object-contain [filter:drop-shadow(0_12px_22px_rgba(0,0,0,0.16))]"
         />
       </div>
