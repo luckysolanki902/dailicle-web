@@ -13,8 +13,10 @@ import {
   MessageCircle,
   X,
 } from "lucide-react";
-import Link from "next/link";
+import { LocalizedLink as Link } from "@/i18n/Link";
 import { cn } from "@/lib/utils";
+import { useT } from "@/i18n/I18nProvider";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { ReadingProgress } from "@/components/reader/ReadingProgress";
 import {
   ReadingPreferences,
@@ -38,6 +40,12 @@ import {
 export interface EssayReaderProps {
   /** Canonical essay id, used to key the like/dislike signal. */
   essayId: string;
+  /** English slug – the switcher swaps only the locale, not the slug. */
+  slug?: string;
+  /** Current locale (for analytics / display). */
+  locale?: string;
+  /** True when the shown body is a translation, not the English original. */
+  isTranslated?: boolean;
   essay: {
     title: string;
     hook?: string;
@@ -71,25 +79,31 @@ const BYLINE = "The Dailicle Desk";
 const SIZE_REM = ["1.125rem", "1.25rem", "1.375rem"];
 const LEADING = ["1.75", "1.9"];
 
-function returnMessage(releaseAt: Date | null, now = new Date()): string {
-  if (!releaseAt) return "Come back soon.";
+function returnMessage(
+  releaseAt: Date | null,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+  locale: string,
+  now = new Date()
+): string {
+  if (!releaseAt) return t("reader.comeBackSoon");
 
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-  if (releaseAt.getTime() === tomorrow.getTime()) return "Come back tomorrow.";
+  if (releaseAt.getTime() === tomorrow.getTime()) return t("reader.comeBackTomorrow");
 
-  return `Come back ${releaseAt.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-  })}.`;
+  return t("reader.comeBackOn", {
+    date: releaseAt.toLocaleDateString(locale, { month: "long", day: "numeric" }),
+  });
 }
 
 export function EssayReader({
   essayId,
+  locale = "en",
   essay,
   nextTease,
   publishOn,
   publishedAt,
 }: EssayReaderProps) {
+  const t = useT();
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   const [prefs, setPrefs] = useState<ReaderPrefs>(DEFAULT_PREFS);
@@ -232,19 +246,20 @@ export function EssayReader({
     const releaseAt = localReleaseDate({ publish_on: publishOn, published_at: publishedAt });
     // Keep server and first-client render identical. Once the browser has
     // checked its own clock, show the useful local calendar date.
-    const message = isReleased === null ? "Come back soon." : returnMessage(releaseAt);
+    const message =
+      isReleased === null ? t("reader.comeBackSoon") : returnMessage(releaseAt, t, locale);
 
     return (
       <div className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
         <div className="mx-auto flex min-h-screen max-w-2xl items-center justify-center px-6 text-center">
           <div className="space-y-4">
             <p className="font-sans text-xs uppercase tracking-[0.2em] text-foreground/50">
-              The Dailicle
+              {t("common.siteName")}
             </p>
-            <h1 className="font-display text-4xl tracking-tight">The next essay arrives Monday.</h1>
+            <h1 className="font-display text-4xl tracking-tight">{t("reader.notReleased")}</h1>
             <p className="font-serif text-lg text-foreground/60">{message}</p>
             <Link href="/" className="inline-block pt-3 font-serif text-foreground/70 underline underline-offset-4">
-              Back home
+              {t("common.backHome")}
             </Link>
           </div>
         </div>
@@ -260,7 +275,7 @@ export function EssayReader({
   const getShareUrl = () =>
     typeof window !== "undefined" ? window.location.href : "";
 
-  const shareText = `"${essay.title}" – an essay from The Dailicle`;
+  const shareText = t("reader.shareText", { title: essay.title });
 
   const trackShare = (channel: string) =>
     track("share_click", {
@@ -357,16 +372,17 @@ export function EssayReader({
           </Link>
 
           <div className="flex items-center gap-1">
+            <LanguageSwitcher variant="toolbar" align="right" />
             <ReadingPreferences prefs={prefs} onChange={updatePrefs} />
 
             <div className="relative">
               <button
                 onClick={handleNativeShare}
                 className="inline-flex items-center gap-2 text-sm text-foreground/40 hover:text-foreground transition-colors p-2 rounded-lg hover:bg-foreground/5"
-                aria-label="Share essay"
+                aria-label={t("reader.shareAria")}
               >
                 <Share2 size={18} />
-                <span className="hidden sm:inline">Share</span>
+                <span className="hidden sm:inline">{t("reader.share")}</span>
               </button>
 
               <AnimatePresence>
@@ -389,7 +405,7 @@ export function EssayReader({
                       <div className="p-2">
                         <div className="flex items-center justify-between px-3 py-2 border-b border-foreground/10 mb-2">
                           <span className="text-xs font-medium text-foreground/50">
-                            Share this essay
+                            {t("reader.shareThisEssay")}
                           </span>
                           <button
                             onClick={() => setShowShareMenu(false)}
@@ -409,8 +425,10 @@ export function EssayReader({
                           >
                             <option.icon size={16} />
                             <span>
-                              {option.name === "Copy Link" && copied
-                                ? "Copied!"
+                              {option.name === "Copy Link"
+                                ? copied
+                                  ? t("reader.copied")
+                                  : t("reader.copyLink")
                                 : option.name}
                             </span>
                           </button>
@@ -448,10 +466,10 @@ export function EssayReader({
           <p className="text-[11px] font-semibold tracking-[0.2em] uppercase">
             <span className={essay.archived ? "text-foreground/45" : "text-accent"}>
               {essay.archived
-                ? "From the 2025 archive"
+                ? t("reader.fromArchive")
                 : essay.issue
-                  ? `Issue ${essay.issue}`
-                  : "The Dailicle"}
+                  ? t("reader.issue", { issue: essay.issue })
+                  : t("common.siteName")}
             </span>
             <span className="text-foreground/40 font-medium">
               {" · "}
@@ -470,7 +488,11 @@ export function EssayReader({
           )}
 
           <p className="text-xs text-foreground/45 pt-1">
-            By {BYLINE} · {essay.dateLabel} · {essay.readingMinutes} min read
+            {t("reader.by", {
+              author: BYLINE,
+              date: essay.dateLabel,
+              minutes: essay.readingMinutes,
+            })}
           </p>
 
           {essay.audioUrl && (
@@ -509,7 +531,7 @@ export function EssayReader({
         {essay.furtherReading && essay.furtherReading.length > 0 && (
           <aside className="mt-16 pt-10 border-t border-foreground/10">
             <p className="text-sm text-foreground/50 italic mb-4">
-              If you want to sit with this longer:
+              {t("reader.furtherReadingIntro")}
             </p>
             <ul className="space-y-2">
               {essay.furtherReading.map((item, i) => (
@@ -535,7 +557,7 @@ export function EssayReader({
           {nextTease ? (
             <div className="space-y-2 pt-10 border-t border-foreground/10">
               <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-accent">
-                Next Monday · {nextTease.dateLabel}
+                {t("reader.nextMonday", { date: nextTease.dateLabel })}
               </p>
               <p className="font-display text-xl md:text-2xl tracking-tight text-balance">
                 {nextTease.title}
@@ -543,7 +565,7 @@ export function EssayReader({
             </div>
           ) : (
             <p className="text-foreground/45 italic text-sm pt-10 border-t border-foreground/10">
-              Thanks for reading. A new essay arrives every Monday.
+              {t("reader.thanksReading")}
             </p>
           )}
           <div>
@@ -551,7 +573,7 @@ export function EssayReader({
               href="/archive"
               className="text-sm font-medium border-b border-foreground/20 pb-0.5 hover:border-accent hover:text-foreground transition-colors"
             >
-              Read more essays
+              {t("reader.readMore")}
             </Link>
           </div>
         </footer>

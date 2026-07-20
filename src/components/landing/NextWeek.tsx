@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useT } from "@/i18n/I18nProvider";
 
 interface NextWeekProps {
   topic: {
@@ -16,6 +17,7 @@ interface NextWeekProps {
  * a named topic with a date is a heartbeat.
  */
 export function NextWeek({ topic }: NextWeekProps) {
+  const t = useT();
   if (!topic) return null;
 
   return (
@@ -29,7 +31,7 @@ export function NextWeek({ topic }: NextWeekProps) {
       >
         <div className="border border-foreground/10 rounded-2xl px-8 py-7 text-center space-y-3 bg-foreground/[0.03]">
           <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-accent">
-            Next Monday · {topic.dateLabel}
+            {t("home.nextWeek.label", { date: topic.dateLabel })}
           </p>
           <h2 className="font-display text-2xl md:text-[1.75rem] leading-snug tracking-tight text-balance">
             {topic.title}

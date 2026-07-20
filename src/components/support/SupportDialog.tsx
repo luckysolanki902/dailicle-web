@@ -97,8 +97,11 @@ export function SupportDialog({
   const [config, setConfig] = useState<Config | null>(null);
   const [selected, setSelected] = useState<TierId | "custom">("t2");
   const [custom, setCustom] = useState("");
+  const [message, setMessage] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+
+  const MESSAGE_MAX = 500;
 
   // Fetch pricing the first time the dialog is opened.
   useEffect(() => {
@@ -130,6 +133,7 @@ export function SupportDialog({
       const t = setTimeout(() => {
         setStatus("idle");
         setError("");
+        setMessage("");
       }, 250);
       return () => clearTimeout(t);
     }
@@ -158,10 +162,12 @@ export function SupportDialog({
       gaClientId?: string;
       essayId?: string;
       category?: string;
+      message?: string;
     } = {
       source,
       essayId: essay?.id,
       category: essay?.category,
+      message: message.trim() || undefined,
     };
     if (selected === "custom") {
       const n = Number(custom);
@@ -416,6 +422,24 @@ export function SupportDialog({
                       className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/35"
                     />
                   </button>
+
+                  {/* Optional note to the writer */}
+                  <div className="mt-2.5">
+                    <textarea
+                      value={message}
+                      onChange={(e) =>
+                        setMessage(e.target.value.slice(0, MESSAGE_MAX))
+                      }
+                      rows={2}
+                      placeholder="Leave a note, if you'd like (optional)"
+                      className="w-full resize-none rounded-2xl border border-foreground/10 bg-transparent px-4 py-3 text-sm outline-none transition-colors placeholder:text-foreground/35 focus:border-foreground/25"
+                    />
+                    {message.trim() && (
+                      <p className="mt-1 pr-1 text-right text-[10px] text-foreground/30">
+                        {message.length}/{MESSAGE_MAX}
+                      </p>
+                    )}
+                  </div>
 
                   {error && (
                     <p className="mt-3 text-center text-xs text-red-500">

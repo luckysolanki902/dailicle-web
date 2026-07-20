@@ -1,0 +1,184 @@
+{
+  "common": {
+    "siteName": "The Dailicle",
+    "tagline": "Haftada bir deneme. Başka bir şey yok.",
+    "oneEssayAWeek": "Haftada bir deneme · yavaşça oku",
+    "backHome": "Ana sayfaya dön",
+    "readAnother": "Başka bir deneme oku"
+  },
+  "nav": {
+    "home": "Ana Sayfa",
+    "archive": "Arşiv",
+    "manifesto": "Neden Okumalı?",
+    "feedback": "Geri Bildirim",
+    "support": "Destek"
+  },
+  "footer": {
+    "tagline": "Haftada bir deneme. Başka bir şey yok.",
+    "subscribeLabel": "Güncellemeler için abone ol",
+    "subscribePlaceholder": "you@example.com",
+    "subscribeHint": "Yeni bir deneme geldiğinde sessiz bir not.",
+    "subscribeAria": "Güncellemeler için abone ol",
+    "success": "Abone olundu. Pazartesi görüşürüz.",
+    "already": "Bu e-posta ile zaten abone oldunuz.",
+    "error": "Abone olamadı. Lütfen tekrar deneyin.",
+    "onList": "Listedesiniz.",
+    "language": "Dil",
+    "themes": {
+      "light": "Gündüz",
+      "dark": "Gece",
+      "wooden": "Çalışma",
+      "space": "Boşluk",
+      "fairytale": "Rüya"
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "The Dailicle – Haftada bir deneme, yavaşça okunmak için yazılmış",
+      "description": "Zihin, anlam, para ve nasıl yaşanacağı üzerine haftalık bir deneme. Dikkatlice araştırılmış, ücretsiz okunabilir, kaydolmak için hiçbir şey yok – her Pazartesi yeni bir tane."
+    },
+    "thisWeek": {
+      "issue": "Sayı {issue}",
+      "thisWeek": "Bu hafta",
+      "readCta": "Bu haftanın denemesini oku",
+      "readingLine": "{minutes} dk okuma · ücretsiz · kaydolmak için hiçbir şey yok",
+      "orArchive": "ya da arşivden başlayın",
+      "firstIssue": "İlk sayı · {theme} · {date} geliyor",
+      "betweenIssues": "Sayılar arasında",
+      "onItsWay": "Bir sonraki deneme yolda.",
+      "browseWhileWaiting": "Beklerken arşivi gez"
+    },
+    "nextWeek": {
+      "label": "Gelecek Pazartesi · {date}"
+    },
+    "ethos": {
+      "title": "Haftada bir deneme. Başka bir şey yok.",
+      "p1": "Her Pazartesi, The Dailicle tek bir fikri – zihin hakkında, anlam hakkında, para hakkında, insan olmanın tuhaf işleyişi hakkında – alır ve dikkatlice takip eder, sade bir dille, gerçekten bitirebileceğiniz bir uzunlukta.",
+      "p2": "Burada bir akış yok ve kaydolmak için hiçbir şey yok. Denemeyi okursunuz, sekmeyi kapatırsınız ve biraz şansla fikir, haftanın geri kalanında peşinizi bırakmaz.",
+      "whyLink": "Neden bu şekilde yayımlıyoruz",
+      "strandsLabel": "Beş dal"
+    },
+    "readers": {
+      "eyebrow": "Dünya genelinde oku",
+      "title": "Sessizce, düşündüğünden daha fazla yerde",
+      "footnote": "ve daha birçok ülkede sessiz okuyucular."
+    },
+    "recent": {
+      "title": "Okumaya devam et",
+      "browseAll": "Tüm denemeleri göz at",
+      "minutes": "{minutes} dk"
+    },
+    "closing": {
+      "title": "Bir sonraki deneme Pazartesi geliyor.",
+      "thisWeekHere": "Bu haftanınki zaten burada.",
+      "startReading": "Okumaya başla",
+      "visitArchive": "Arşivi ziyaret et",
+      "free": "Okumak ücretsiz · kaydolmak yok · reklam yok"
+    }
+  },
+  "archive": {
+    "meta": {
+      "title": "Denemeler - Arşiv | The Dailicle",
+      "description": "Yayımladığımız her deneme – haftada bir zihin, anlam, para ve nasıl yaşanacağı üzerine."
+    },
+    "title": "Denemeler",
+    "subtitle": "Her hafta bir, her Pazartesi. Bir dal seç veya en üstten başla.",
+    "searchPlaceholder": "Denemeleri ara…",
+    "all": "Hepsi",
+    "issue": "Sayı {issue}",
+    "minutes": "{minutes} dk",
+    "noMatch": "Henüz eşleşen yok – koleksiyon her Pazartesi bir tane artıyor.",
+    "noMatchQuery": "Henüz “{query}” ile eşleşen yok – koleksiyon her Pazartesi bir tane artıyor.",
+    "clearFilters": "Filtreleri temizle",
+    "legacyToggle": "2025'ten önce, haftalık dönemden önce ({count})"
+  },
+  "themes": {
+    "psychology": "Psikoloji",
+    "relationships": "İlişkiler",
+    "philosophy": "Felsefe",
+    "society": "Toplum",
+    "money": "Para"
+  },
+  "reader": {
+    "allEssays": "Tüm denemeler",
+    "share": "Paylaş",
+    "shareThisEssay": "Bu denemeyi paylaş",
+    "shareAria": "Denemeyi paylaş",
+    "shareText": "\"{title}\" – The Dailicle'den bir deneme",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "copyLink": "Bağlantıyı kopyala",
+    "language": "Dil",
+    "languageAria": "Dili değiştir",
+    "copied": "Kopyalandı!",
+    "listen": "Dinle",
+    "playNarration": "Anlatımı başlat",
+    "pauseNarration": "Anlatımı duraklat",
+    "stopPlayer": "Oyuncuyu durdur ve kapat",
+    "notReleased": "Bir sonraki deneme Pazartesi geliyor.",
+    "comeBackSoon": "Yakında geri dön.",
+    "comeBackTomorrow": "Yarın geri dön.",
+    "comeBackOn": "{date} tarihinde geri dön.",
+    "fromArchive": "2025 arşivinden",
+    "issue": "Sayı {issue}",
+    "by": "Yazan: {author} · {date} · {minutes} dk okuma",
+    "furtherReadingIntro": "Bunu daha uzun süre düşünmek istersen:",
+    "nextMonday": "Gelecek Pazartesi · {date}",
+    "thanksReading": "Okuduğunuz için teşekkürler. Her Pazartesi yeni bir deneme geliyor.",
+    "readMore": "Daha fazla deneme oku",
+    "byline": "The Dailicle Masası"
+  },
+  "manifesto": {
+    "meta": {
+      "title": "Neden The Dailicle'ı Okumalıyım? Yavaş Web İçin Bir Manifesto",
+      "description": "İnternetin gürültüsüne karşı bir isyan. Haftada bir deneme felsefesi."
+    },
+    "title": "Neden Dailicle'ı Okumalıyım?",
+    "subtitle": "Yavaş web için bir manifesto.",
+    "p_library": "İnternet bir kütüphane olmalıydı. Bunun yerine, bir kumarhane haline geldi.",
+    "p_scroll": "Son bir saatinizi kaydırarak geçirdiğinizi düşünün. Ondan bir şey hatırlıyor musunuz? Akışlar, parmağınızı hareket ettirmek için en zeki insanların mühendislik yaptığı şekilde tasarlandı ve işlerinde çok iyiler. Aldıkları şey ince: akşam dolu hissedilirken zihin boş kalır.",
+    "p_rebellion": "The Dailicle buna karşı bir isyan.",
+    "h_one": "Birinin felsefesi",
+    "p_one_1": "Her hafta tam olarak bir deneme yayımlıyoruz. On değil. Bir akış değil. Her Pazartesi bir tane.",
+    "p_one_2": "Kıtlık, bir saygı biçimidir. Okuyacak sadece bir şey olduğunda, göz gezdirmeyi bırakır ve okumaya başlarsınız. Tam dikkatini verirsiniz ve biz de ona bir hafta boyunca özen gösteririz: her deneme, onlarca aday fikirden seçilir, düzgün bir şekilde araştırılır ve tamamlanacak şekilde yazılır. Çoğu on ila on beş dakika sürer. Dinlemek isterseniz bir anlatım da var.",
+    "h_about": "Denemeler ne hakkında",
+    "p_about_1": "Beş konu: psikoloji, felsefe, bakış açıları, yaşam ve para. Onları bağlayan şey, belirli bir tür fikir - yarı tanıdık ama asla kelimelere dökmediğiniz spesifik, insani bir gözlem. Ebeveynlerinizden miras aldığınız endişeler. Neden bazı günler kaybolur ve diğerleri sonsuza dek sürer. Her seçeneği açık tutmanın sessiz maliyeti.",
+    "p_about_2": "Buradaki iyi bir deneme, Çarşamba günü aklınızda kalmalıdır.",
+    "h_who": "Bu kime yönelik?",
+    "p_who_1": "Meraklılara. İyi bir cümlenin dünyayı görme şeklinizi değiştirebileceğine inanan insanlara ve okumak ödev gibi hissettirmediğinde daha fazla okuyacaklarını düşünenlere. Kayıt yok, ödeme duvarı yok ve takip etmeniz gereken hiçbir şey yok - haftada bir, bir deneme, ücretsiz.",
+    "p_who_2": "Eğer sessizliği dolduracak içerik istiyorsanız, birçok yer bunu memnuniyetle sağlar. Eğer sekme kapandıktan sonra akılda kalan fikirler istiyorsanız, hoş geldiniz.",
+    "h_writes": "Bunu kim yazıyor?",
+    "p_writes": "Denemeler, The Dailicle Masası'nda, tek bir sesle yazılır ve düzenlenir ve tek bir ölçüte tabi tutulur: dikkatli bir okuyucu bunu iki kez okumak ister mi? Dikkat çekmek için yazar isimleri yok, misafir yazılar yok, dolgu haftaları yok.",
+    "h_recs": "Neden öneri yok?",
+    "p_recs_1": "Öneri algoritmaları etkileşim için, aydınlanma için değil, oluşturulmuştur. Sizi okumaya, düşünmeye ve sonra ayrılmaya teşvik etmek istiyoruz. Dışarıda yürüyüş yapın. Bir arkadaşla konuşun. Bir şey inşa edin.",
+    "p_recs_2": "Bazen bir deneme, fikri daha uzun süre düşünmek isteyenler için birkaç ipucu ile sona erer. Ama sizi asla bir döngüye sokmayacağız.",
+    "closing": "Yavaş okuyun. Derin düşünün. Pazartesi geri dönün."
+  },
+  "feedback": {
+    "meta": {
+      "title": "Geri Bildirim",
+      "description": "The Dailicle'ın geleceğini şekillendirmeye yardımcı olun. Düşüncelerinizi, fikirlerinizi paylaşın veya sadece merhaba deyin."
+    },
+    "title": "Geri Bildirim",
+    "subtitle": "Dailicle'ın geleceğini şekillendirmemize yardımcı olun.",
+    "preferEmail": "E-posta tercih mi ediyorsunuz? Doğrudan ulaşın:",
+    "form": {
+      "messageLabel": "Mesajınız",
+      "messagePlaceholder": "Aklınızda ne var? Geri bildirim, fikirler veya sadece merhaba.",
+      "identityLabel": "Siz kimsiniz?",
+      "optional": "(Opsiyonel)",
+      "identityPlaceholder": "İsim, Twitter veya E-posta",
+      "send": "Mesaj Gönder",
+      "successTitle": "Mesaj Alındı",
+      "successBody": "Düşünceleriniz için teşekkür ederiz.",
+      "error": "Bir şeyler yanlış gitti. Lütfen tekrar deneyin."
+    }
+  },
+  "thankYou": {
+    "eyebrow": "The Dailicle",
+    "title": "Teşekkür ederiz, gerçekten.",
+    "body": "Sizin sayenizde masa biraz daha aydınlık kalıyor. Denemeler her Pazartesi, yavaş, dikkatli ve herkes için ücretsiz olarak, tam olarak önceki gibi gelmeye devam edecek.",
+    "note": "Bunu yapmak zorunda değildiniz. Bu yüzden bu kadar anlamlı."
+  }
+}

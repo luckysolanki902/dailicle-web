@@ -85,7 +85,8 @@ function sortByReleaseDesc(a: LandingEssay, b: LandingEssay): number {
 export function buildHomeView(
   published: LandingEssay[],
   queued: QueuedTopic[],
-  now: Date
+  now: Date,
+  labelFor: (theme: string) => string = themeLabel
 ): HomeView {
   const released = published
     .filter((essay) => isReleasedLocally(essay, now))
@@ -104,7 +105,7 @@ export function buildHomeView(
         href: hrefFor(thisWeek),
         title: thisWeek.title,
         hook: thisWeek.hook,
-        themeLabel: themeLabel(thisWeek.theme),
+        themeLabel: labelFor(thisWeek.theme),
         issue: thisWeek.issue,
         dateLabel: formatDate(releaseSourceDate(thisWeek), "medium"),
         readingMinutes: thisWeek.reading_minutes,
@@ -118,13 +119,13 @@ export function buildHomeView(
   const tease: TeaseCard | null = nextPublished
     ? {
         title: nextPublished.title,
-        themeLabel: themeLabel(nextPublished.theme),
+        themeLabel: labelFor(nextPublished.theme),
         dateLabel: formatDate(nextPublishedRelease, "medium"),
       }
     : nextQueued
       ? {
           title: nextQueued.title,
-          themeLabel: themeLabel(nextQueued.theme),
+          themeLabel: labelFor(nextQueued.theme),
           dateLabel: formatDate(fallbackDate, "medium"),
         }
       : null;
@@ -136,7 +137,7 @@ export function buildHomeView(
       href: hrefFor(essay),
       title: essay.title,
       hook: essay.hook,
-      themeLabel: themeLabel(essay.theme),
+      themeLabel: labelFor(essay.theme),
       readingMinutes: essay.reading_minutes,
     }));
 

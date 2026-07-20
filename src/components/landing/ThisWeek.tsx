@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import Link from "next/link";
+import { LocalizedLink as Link } from "@/i18n/Link";
 import { EssayBanner } from "@/components/ui/EssayBanner";
+import { useT } from "@/i18n/I18nProvider";
 
 interface ThisWeekProps {
   essay: {
@@ -33,6 +34,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
  * a hook, never from a feature grid. One action, zero friction.
  */
 export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
+  const t = useT();
   return (
     <section className="relative min-h-[96vh] flex flex-col items-center px-6 overflow-hidden">
       {/* Accent-tinted glow from the top, like light on a desk */}
@@ -48,10 +50,10 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
         <div className="rule-fade h-px w-full" aria-hidden />
         <div className="space-y-1.5 py-1">
           <p className="font-display text-2xl md:text-[1.7rem] tracking-[0.08em] uppercase">
-            The Dailicle
+            {t("common.siteName")}
           </p>
           <p className="text-[11px] tracking-[0.28em] uppercase text-foreground/45">
-            One essay a week &middot; read slowly
+            {t("common.oneEssayAWeek")}
           </p>
         </div>
         <div className="rule-fade h-px w-full" aria-hidden />
@@ -87,7 +89,9 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
                 transition={{ duration: 0.6, delay: 0.25 }}
                 className="text-xs font-semibold tracking-[0.22em] uppercase text-accent"
               >
-                {essay.issue ? `Issue ${essay.issue}` : "This week"}
+                {essay.issue
+                  ? t("home.thisWeek.issue", { issue: essay.issue })
+                  : t("home.thisWeek.thisWeek")}
                 <span className="text-foreground/35 font-medium">
                   {"  ·  "}
                   {essay.themeLabel}
@@ -134,20 +138,20 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
                   href={essay.href}
                   className="group inline-flex items-center gap-3 px-9 py-4 bg-foreground text-background rounded-full text-base md:text-lg font-medium shadow-lg shadow-foreground/10 transition-all duration-300 hover:shadow-xl hover:shadow-foreground/20 hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  <span>Read this week&apos;s essay</span>
+                  <span>{t("home.thisWeek.readCta")}</span>
                   <ArrowRight
                     size={19}
                     className="transition-transform duration-300 group-hover:translate-x-1.5"
                   />
                 </Link>
                 <p className="text-xs text-foreground/45">
-                  {essay.readingMinutes} min read · free · nothing to sign up for
+                  {t("home.thisWeek.readingLine", { minutes: essay.readingMinutes })}
                 </p>
                 <Link
                   href="/archive"
                   className="mt-2 text-sm text-foreground/40 hover:text-foreground transition-colors border-b border-transparent hover:border-foreground/40 pb-0.5"
                 >
-                  or start in the archive
+                  {t("home.thisWeek.orArchive")}
                 </Link>
               </motion.div>
             </>
@@ -161,8 +165,11 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
                 className="text-xs font-semibold tracking-[0.22em] uppercase text-accent"
               >
                 {upcoming
-                  ? `First issue · ${upcoming.themeLabel} · arriving ${upcoming.dateLabel}`
-                  : "Between issues"}
+                  ? t("home.thisWeek.firstIssue", {
+                      theme: upcoming.themeLabel,
+                      date: upcoming.dateLabel,
+                    })
+                  : t("home.thisWeek.betweenIssues")}
               </motion.p>
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
@@ -170,7 +177,7 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
                 transition={{ duration: 0.9, delay: 0.35, ease }}
                 className="font-display text-[2.4rem] md:text-6xl leading-[1.06] tracking-tight text-balance"
               >
-                {upcoming ? upcoming.title : "The next essay is on its way."}
+                {upcoming ? upcoming.title : t("home.thisWeek.onItsWay")}
               </motion.h1>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -181,7 +188,7 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
                   href="/archive"
                   className="group inline-flex items-center gap-3 px-9 py-4 bg-foreground text-background rounded-full text-base font-medium shadow-lg shadow-foreground/10 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
                 >
-                  <span>Browse the archive while you wait</span>
+                  <span>{t("home.thisWeek.browseWhileWaiting")}</span>
                   <ArrowRight
                     size={18}
                     className="transition-transform duration-300 group-hover:translate-x-1.5"

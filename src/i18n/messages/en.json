@@ -1,0 +1,184 @@
+{
+  "common": {
+    "siteName": "The Dailicle",
+    "tagline": "One essay a week. Nothing else.",
+    "oneEssayAWeek": "One essay a week · read slowly",
+    "backHome": "Back home",
+    "readAnother": "Read another essay"
+  },
+  "nav": {
+    "home": "Home",
+    "archive": "Archive",
+    "manifesto": "Why Read?",
+    "feedback": "Feedback",
+    "support": "Support"
+  },
+  "footer": {
+    "tagline": "One essay a week. Nothing else.",
+    "subscribeLabel": "Subscribe for updates",
+    "subscribePlaceholder": "you@example.com",
+    "subscribeHint": "A quiet note when a new essay lands.",
+    "subscribeAria": "Subscribe for updates",
+    "success": "Subscribed. See you on Monday.",
+    "already": "Already subscribed with this email.",
+    "error": "Could not subscribe. Please try again.",
+    "onList": "You are on the list.",
+    "language": "Language",
+    "themes": {
+      "light": "Day",
+      "dark": "Night",
+      "wooden": "Study",
+      "space": "Void",
+      "fairytale": "Dream"
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "The Dailicle – One essay a week, written to be read slowly",
+      "description": "A weekly essay on the mind, meaning, money, and how to live. Carefully researched, free to read, nothing to sign up for – a new one every Monday."
+    },
+    "thisWeek": {
+      "issue": "Issue {issue}",
+      "thisWeek": "This week",
+      "readCta": "Read this week's essay",
+      "readingLine": "{minutes} min read · free · nothing to sign up for",
+      "orArchive": "or start in the archive",
+      "firstIssue": "First issue · {theme} · arriving {date}",
+      "betweenIssues": "Between issues",
+      "onItsWay": "The next essay is on its way.",
+      "browseWhileWaiting": "Browse the archive while you wait"
+    },
+    "nextWeek": {
+      "label": "Next Monday · {date}"
+    },
+    "ethos": {
+      "title": "One essay a week. Nothing else.",
+      "p1": "Every Monday, The Dailicle takes a single idea – about the mind, about meaning, about money, about the odd business of being a person – and follows it carefully, in plain language, at a length you can actually finish.",
+      "p2": "There is no feed here and nothing to sign up for. You read the essay, you close the tab, and with a little luck the idea follows you around for the rest of the week.",
+      "whyLink": "Why we publish this way",
+      "strandsLabel": "The five strands"
+    },
+    "readers": {
+      "eyebrow": "Read around the world",
+      "title": "Quietly, in more places than you'd think",
+      "footnote": "and quiet readers in dozens more countries."
+    },
+    "recent": {
+      "title": "Keep reading",
+      "browseAll": "Browse all the essays",
+      "minutes": "{minutes} min"
+    },
+    "closing": {
+      "title": "The next essay arrives Monday.",
+      "thisWeekHere": "This week's is already here.",
+      "startReading": "Start reading",
+      "visitArchive": "Visit the archive",
+      "free": "Free to read · nothing to sign up for · no ads"
+    }
+  },
+  "archive": {
+    "meta": {
+      "title": "The Essays - Archive | The Dailicle",
+      "description": "Every essay we've published – one a week on the mind, meaning, money, and how to live."
+    },
+    "title": "The essays",
+    "subtitle": "One a week, every Monday. Choose a strand or just start at the top.",
+    "searchPlaceholder": "Search the essays…",
+    "all": "All",
+    "issue": "Issue {issue}",
+    "minutes": "{minutes} min",
+    "noMatch": "Nothing matches yet – the collection grows by one every Monday.",
+    "noMatchQuery": "Nothing matches “{query}” yet – the collection grows by one every Monday.",
+    "clearFilters": "Clear filters",
+    "legacyToggle": "From 2025, before the weekly era ({count})"
+  },
+  "themes": {
+    "psychology": "Psychology",
+    "relationships": "Relationships",
+    "philosophy": "Philosophy",
+    "society": "Society",
+    "money": "Money"
+  },
+  "reader": {
+    "allEssays": "All essays",
+    "share": "Share",
+    "shareThisEssay": "Share this essay",
+    "shareAria": "Share essay",
+    "shareText": "\"{title}\" – an essay from The Dailicle",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "copyLink": "Copy Link",
+    "language": "Language",
+    "languageAria": "Change language",
+    "copied": "Copied!",
+    "listen": "Listen",
+    "playNarration": "Play narration",
+    "pauseNarration": "Pause narration",
+    "stopPlayer": "Stop and close player",
+    "notReleased": "The next essay arrives Monday.",
+    "comeBackSoon": "Come back soon.",
+    "comeBackTomorrow": "Come back tomorrow.",
+    "comeBackOn": "Come back {date}.",
+    "fromArchive": "From the 2025 archive",
+    "issue": "Issue {issue}",
+    "by": "By {author} · {date} · {minutes} min read",
+    "furtherReadingIntro": "If you want to sit with this longer:",
+    "nextMonday": "Next Monday · {date}",
+    "thanksReading": "Thanks for reading. A new essay arrives every Monday.",
+    "readMore": "Read more essays",
+    "byline": "The Dailicle Desk"
+  },
+  "manifesto": {
+    "meta": {
+      "title": "Why Read The Dailicle? A Manifesto for the Slow Web",
+      "description": "A rebellion against the noise of the internet. The philosophy behind one essay a week."
+    },
+    "title": "Why Read Dailicle?",
+    "subtitle": "A manifesto for the slow web.",
+    "p_library": "The internet was supposed to be a library. Instead, it became a casino.",
+    "p_scroll": "Think about the last hour you spent scrolling. Can you remember one thing from it? The feeds are engineered by some of the smartest people alive to keep your thumb moving, and they are very good at their jobs. What they take is subtle: the evening feels full while the mind stays empty.",
+    "p_rebellion": "The Dailicle is a rebellion against that.",
+    "h_one": "The philosophy of one",
+    "p_one_1": "We publish exactly one essay a week. Not ten. Not a feed. One, every Monday.",
+    "p_one_2": "Scarcity is a form of respect. When there is only one thing to read, you stop skimming and start reading. You give it your full attention, and we give it a full week of care: each essay is chosen from dozens of candidate ideas, researched properly, and written to be finished. Most take ten to fifteen minutes. There is a narration if you would rather listen.",
+    "h_about": "What the essays are about",
+    "p_about_1": "Five strands: psychology, philosophy, perspectives, life, and money. What connects them is a certain kind of idea – a specific, human observation you half-recognize but have never put into words. The worries you inherited from your parents. Why some days vanish and others last forever. What it quietly costs to keep every option open.",
+    "p_about_2": "A good essay here should still be on your mind on Wednesday.",
+    "h_who": "Who is this for?",
+    "p_who_1": "The curious. People who still believe a well-crafted sentence can change how you see the world, and people who suspect they would read more if reading felt less like homework. There is no signup, no paywall, and nothing to keep track of – one essay, once a week, free.",
+    "p_who_2": "If you want content to fill the silence, plenty of places will happily oblige. If you want ideas that linger after the tab closes, welcome home.",
+    "h_writes": "Who writes it?",
+    "p_writes": "The essays are written and edited at The Dailicle Desk, in one house voice, and held to a single bar: would a careful reader want to read this twice? No bylines chasing attention, no guest posts, no filler weeks.",
+    "h_recs": "Why no recommendations?",
+    "p_recs_1": "Recommendation algorithms are built for engagement, not enlightenment. We want you to read, think, and then leave. Go for a walk. Talk to a friend. Build something.",
+    "p_recs_2": "Sometimes an essay ends with a few pointers for anyone who wants to sit with the idea longer. But we will never trap you in a loop.",
+    "closing": "Read slowly. Think deeply. Come back Monday."
+  },
+  "feedback": {
+    "meta": {
+      "title": "Feedback",
+      "description": "Help shape the future of The Dailicle. Share your thoughts, ideas, or just say hello."
+    },
+    "title": "Feedback",
+    "subtitle": "Help us shape the future of Dailicle.",
+    "preferEmail": "Prefer email? Reach out directly:",
+    "form": {
+      "messageLabel": "Your Message",
+      "messagePlaceholder": "What's on your mind? Feedback, ideas, or just hello.",
+      "identityLabel": "Who are you?",
+      "optional": "(Optional)",
+      "identityPlaceholder": "Name, Twitter, or Email",
+      "send": "Send Message",
+      "successTitle": "Message Received",
+      "successBody": "Thank you for your thoughts.",
+      "error": "Something went wrong. Please try again."
+    }
+  },
+  "thankYou": {
+    "eyebrow": "The Dailicle",
+    "title": "Thank you, truly.",
+    "body": "Because of you, the desk stays lit a little longer. The essays will keep arriving every Monday, slow, careful, and free for everyone, exactly as they were before.",
+    "note": "You didn't have to. That's exactly why it means so much."
+  }
+}

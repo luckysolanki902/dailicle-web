@@ -2,12 +2,13 @@
 
 import React, { useCallback, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
+import { LocalizedLink as Link } from "@/i18n/Link";
 import { ChevronDown, Search, X } from "lucide-react";
-import { THEMES, themeLabel } from "@/lib/themes";
+import { THEMES, makeThemeLabel } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 import { isReleasedLocally } from "@/lib/release";
 import { EssayBanner } from "@/components/ui/EssayBanner";
+import { useT } from "@/i18n/I18nProvider";
 
 export interface ArchiveEntry {
   href: string;
@@ -43,6 +44,8 @@ function EntryRow({
   index: number;
   muted?: boolean;
 }) {
+  const t = useT();
+  const label = makeThemeLabel(t);
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -60,11 +63,11 @@ function EntryRow({
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-semibold tracking-[0.18em] uppercase mb-1.5">
             <span className={muted ? "text-foreground/45" : "text-accent"}>
-              {themeLabel(entry.theme)}
+              {label(entry.theme)}
             </span>
             <span className="text-foreground/40 font-medium">
-              {entry.issue ? ` · Issue ${entry.issue}` : ""} · {entry.dateLabel} ·{" "}
-              {entry.readingMinutes} min
+              {entry.issue ? ` · ${t("archive.issue", { issue: entry.issue })}` : ""} ·{" "}
+              {entry.dateLabel} · {t("archive.minutes", { minutes: entry.readingMinutes })}
             </span>
           </p>
           <h3
@@ -98,6 +101,8 @@ function EntryRow({
 }
 
 export function ArchiveList({ current, legacy }: ArchiveListProps) {
+  const t = useT();
+  const label = makeThemeLabel(t);
   const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [showLegacy, setShowLegacy] = useState(false);
@@ -120,7 +125,7 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
   React.useEffect(() => {
     const id = window.setTimeout(() => setMounted(true), 0);
     const urlTheme = new URLSearchParams(window.location.search).get("theme");
-    if (urlTheme && THEMES.some((t) => t.slug === urlTheme)) {
+    if (urlTheme && THEMES.some((th) => th.slug === urlTheme)) {
       setThemeState(urlTheme);
     }
     return () => window.clearTimeout(id);
@@ -154,10 +159,8 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
     <div className="max-w-2xl mx-auto px-6 py-24">
       {/* Header */}
       <header className="mb-12 space-y-5 text-center">
-        <h1 className="font-display text-4xl md:text-5xl tracking-tight">The essays</h1>
-        <p className="text-foreground/55 text-base">
-          One a week, every Monday. Choose a strand or just start at the top.
-        </p>
+        <h1 className="font-display text-4xl md:text-5xl tracking-tight">{t("archive.title")}</h1>
+        <p className="text-foreground/55 text-base">{t("archive.subtitle")}</p>
       </header>
 
       {/* Controls */}
@@ -171,7 +174,7 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search the essays…"
+            placeholder={t("archive.searchPlaceholder")}
             className="w-full pl-11 pr-4 py-3 rounded-xl bg-foreground/5 border border-foreground/10 focus:border-accent/60 focus:outline-none text-sm placeholder:text-foreground/35 transition-colors"
           />
         </div>
@@ -186,25 +189,25 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
                 : "border-foreground/15 text-foreground/60 hover:border-foreground/40 hover:text-foreground"
             )}
           >
-            All <span className="opacity-50">{releasedCurrent.length}</span>
+            {t("archive.all")} <span className="opacity-50">{releasedCurrent.length}</span>
           </button>
-          {THEMES.map((t) => {
-            const count = countFor(t.slug);
+          {THEMES.map((th) => {
+            const count = countFor(th.slug);
             return (
               <button
-                key={t.slug}
-                onClick={() => setTheme(theme === t.slug ? null : t.slug)}
+                key={th.slug}
+                onClick={() => setTheme(theme === th.slug ? null : th.slug)}
                 disabled={count === 0}
                 className={cn(
                   "px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors",
-                  theme === t.slug
+                  theme === th.slug
                     ? "bg-foreground text-background border-foreground"
                     : count === 0
                       ? "border-foreground/10 text-foreground/25 cursor-not-allowed"
                       : "border-foreground/15 text-foreground/60 hover:border-foreground/40 hover:text-foreground"
                 )}
               >
-                {t.label} <span className="opacity-50">{count}</span>
+                {label(th.slug)} <span className="opacity-50">{count}</span>
               </button>
             );
           })}
@@ -221,8 +224,7 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
       ) : (
         <div className="text-center py-16 space-y-4 mb-10">
           <p className="text-foreground/50 text-sm">
-            Nothing matches{query ? ` “${query}”` : ""} yet – the collection grows
-            by one every Monday.
+            {query ? t("archive.noMatchQuery", { query }) : t("archive.noMatch")}
           </p>
           {(query || theme) && (
             <button
@@ -233,7 +235,7 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
               className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline underline-offset-4"
             >
               <X size={14} />
-              Clear filters
+              {t("archive.clearFilters")}
             </button>
           )}
         </div>
@@ -248,7 +250,7 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
             aria-expanded={showLegacy}
           >
             <span className="text-xs font-medium tracking-[0.18em] uppercase text-foreground/40 group-hover:text-foreground/60 transition-colors">
-              From 2025, before the weekly era ({legacy.length})
+              {t("archive.legacyToggle", { count: legacy.length })}
             </span>
             <ChevronDown
               size={16}

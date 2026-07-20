@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useT } from "@/i18n/I18nProvider";
 
 /**
  * Where the desk is read. A quiet, ranked bar chart no numbers, just the
@@ -16,8 +17,9 @@ interface Country {
   share: number;
 }
 
-// Top readerships, already sorted high → low.
-const COUNTRIES: Country[] = [
+// Fallback readerships (already sorted high → low), used only when live GA data
+// is unavailable so the section never renders empty.
+const FALLBACK: Country[] = [
   { name: "United States", flag: "🇺🇸", share: 41.1 },
   { name: "United Kingdom", flag: "🇬🇧", share: 6.42 },
   { name: "Germany", flag: "🇩🇪", share: 5.48 },
@@ -32,28 +34,30 @@ const COUNTRIES: Country[] = [
   { name: "Spain", flag: "🇪🇸", share: 1.48 },
 ];
 
-const MAX = COUNTRIES[0].share;
-
 /** Perceptual width in %, order-preserving, with a floor so bars stay visible. */
-function barWidth(share: number): number {
-  return Math.max(7, Math.round(Math.sqrt(share / MAX) * 100));
+function barWidth(share: number, max: number): number {
+  return Math.max(7, Math.round(Math.sqrt(share / max) * 100));
 }
 
-export function ReadersByCountry() {
+export function ReadersByCountry({ countries }: { countries?: Country[] }) {
+  const t = useT();
+  const data = countries && countries.length > 0 ? countries : FALLBACK;
+  const max = data[0].share;
+
   return (
     <section className="px-6 py-24">
       <div className="mx-auto max-w-2xl">
         <div className="mb-10 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">
-            Read around the world
+            {t("home.readers.eyebrow")}
           </p>
           <h2 className="mt-3 font-display text-2xl tracking-tight text-balance md:text-3xl">
-            Quietly, in more places than you&apos;d think
+            {t("home.readers.title")}
           </h2>
         </div>
 
         <div className="space-y-3">
-          {COUNTRIES.map((c, i) => (
+          {data.map((c, i) => (
             <motion.div
               key={c.name}
               initial={{ opacity: 0 }}
@@ -76,7 +80,7 @@ export function ReadersByCountry() {
                       "linear-gradient(90deg, color-mix(in srgb, var(--accent) 45%, transparent), var(--accent))",
                   }}
                   initial={{ width: 0 }}
-                  whileInView={{ width: `${barWidth(c.share)}%` }}
+                  whileInView={{ width: `${barWidth(c.share, max)}%` }}
                   viewport={{ once: true, margin: "-60px" }}
                   transition={{ duration: 1, delay: 0.1 + i * 0.05, ease: "easeOut" }}
                 />
@@ -86,7 +90,7 @@ export function ReadersByCountry() {
         </div>
 
         <p className="mt-8 text-center text-xs italic text-foreground/35">
-          and quiet readers in dozens more countries.
+          {t("home.readers.footnote")}
         </p>
       </div>
     </section>

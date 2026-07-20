@@ -24,3 +24,20 @@ export function themeLabel(slug: string | undefined): string {
   if (known) return known.label;
   return slug.charAt(0).toUpperCase() + slug.slice(1);
 }
+
+/**
+ * Build a locale-aware theme labeller from a translator `t`. Uses the
+ * "themes.<slug>" catalog key, falling back to the English label when the key
+ * is missing (e.g. retired legacy strands). Works with both the server and
+ * client `t`.
+ */
+export function makeThemeLabel(
+  t: (key: string) => string
+): (slug: string | undefined) => string {
+  return (slug) => {
+    if (!slug) return themeLabel(slug);
+    const key = `themes.${slug}`;
+    const translated = t(key);
+    return translated === key ? themeLabel(slug) : translated;
+  };
+}

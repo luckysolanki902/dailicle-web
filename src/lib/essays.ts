@@ -4,6 +4,8 @@ import { unstable_cache } from "next/cache";
 
 const DB_NAME = "dailicle";
 const COLLECTION = "essays";
+/** One document per (essay, language); written by the server pipeline. */
+const TRANSLATIONS = "essay_translations";
 
 export interface FurtherReadingItem {
   title: string;
@@ -219,6 +221,94 @@ export async function getArchived2025(): Promise<Essay[]> {
     .sort({ published_at: -1 })
     .toArray();
   return docs.map(serialize);
+}
+
+// ------------------------------------------------------------ translations
+
+export interface EssayTranslation {
+  essayId: string;
+  lang: string;
+  title: string;
+  hook: string;
+  body: string;
+  meta_description: string;
+}
+
+async function translationsCollection() {
+  const client = await clientPromise;
+  return client.db(DB_NAME).collection(TRANSLATIONS);
+}
+
+const TRANSLATION_PROJECTION = {
+  essayId: 1,
+  lang: 1,
+  title: 1,
+  hook: 1,
+  body: 1,
+  meta_description: 1,
+} as const;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function serializeTranslation(doc: any): EssayTranslation {
+  return {
+    essayId: doc.essayId,
+    lang: doc.lang,
+    title: doc.title ? noEmDash(doc.title) : "",
+    hook: doc.hook ? noEmDash(doc.hook) : "",
+    body: doc.body ? noEmDash(doc.body) : "",
+    meta_description: doc.meta_description ? noEmDash(doc.meta_description) : "",
+  };
+}
+
+/** One essay's translation for a language, or null (caller falls back to English). */
+export async function getEssayTranslation(
+  essayId: string,
+  lang: string
+): Promise<EssayTranslation | null> {
+  if (lang === "en") return null;
+  const col = await translationsCollection();
+  const doc = await col.findOne(
+    { essayId, lang },
+    { projection: TRANSLATION_PROJECTION }
+  );
+  return doc ? serializeTranslation(doc) : null;
+}
+
+/** Translations for many essays at once (lists) → map keyed by essayId. */
+export async function getTranslationsMap(
+  essayIds: string[],
+  lang: string
+): Promise<Map<string, EssayTranslation>> {
+  const map = new Map<string, EssayTranslation>();
+  if (lang === "en" || essayIds.length === 0) return map;
+  const col = await translationsCollection();
+  const docs = await col
+    .find({ essayId: { $in: essayIds }, lang }, { projection: TRANSLATION_PROJECTION })
+    .toArray();
+  for (const doc of docs) {
+    const t = serializeTranslation(doc);
+    map.set(t.essayId, t);
+  }
+  return map;
+}
+
+/**
+ * Overlay a translation onto an English essay. Title/hook/body switch to the
+ * translated text; everything else (slug, dates, banner, audio) stays. When the
+ * translation is null (missing or English), the essay is returned untouched, so
+ * the site always degrades gracefully to English.
+ */
+export function localizeEssay(
+  essay: Essay,
+  translation: EssayTranslation | null
+): Essay {
+  if (!translation) return essay;
+  return {
+    ...essay,
+    title: translation.title || essay.title,
+    hook: translation.hook || essay.hook,
+    body: translation.body || essay.body,
+  };
 }
 
 /** Everything listed, for the sitemap (unlisted essays are excluded). */

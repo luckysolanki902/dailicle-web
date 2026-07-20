@@ -1,0 +1,184 @@
+{
+  "common": {
+    "siteName": "The Dailicle",
+    "tagline": "Un saggio a settimana. Nient'altro.",
+    "oneEssayAWeek": "Un saggio a settimana · leggi lentamente",
+    "backHome": "Torna a casa",
+    "readAnother": "Leggi un altro saggio"
+  },
+  "nav": {
+    "home": "Home",
+    "archive": "Archivio",
+    "manifesto": "Perché leggere?",
+    "feedback": "Feedback",
+    "support": "Supporto"
+  },
+  "footer": {
+    "tagline": "Un saggio a settimana. Nient'altro.",
+    "subscribeLabel": "Iscriviti per aggiornamenti",
+    "subscribePlaceholder": "tuo@example.com",
+    "subscribeHint": "Una nota silenziosa quando un nuovo saggio arriva.",
+    "subscribeAria": "Iscriviti per aggiornamenti",
+    "success": "Iscritto. Ci vediamo lunedì.",
+    "already": "Già iscritto con questa email.",
+    "error": "Impossibile iscriversi. Riprova.",
+    "onList": "Sei nella lista.",
+    "language": "Lingua",
+    "themes": {
+      "light": "Giorno",
+      "dark": "Notte",
+      "wooden": "Studio",
+      "space": "Vuoto",
+      "fairytale": "Sogno"
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "The Dailicle – Un saggio a settimana, scritto per essere letto lentamente",
+      "description": "Un saggio settimanale sulla mente, il significato, il denaro e come vivere. Ricercato con cura, gratuito da leggere, niente da cui iscriversi – uno nuovo ogni lunedì."
+    },
+    "thisWeek": {
+      "issue": "Numero {issue}",
+      "thisWeek": "Questa settimana",
+      "readCta": "Leggi il saggio di questa settimana",
+      "readingLine": "{minutes} min di lettura · gratuito · niente da cui iscriversi",
+      "orArchive": "o inizia nell'archivio",
+      "firstIssue": "Primo numero · {theme} · in arrivo {date}",
+      "betweenIssues": "Tra i numeri",
+      "onItsWay": "Il prossimo saggio è in arrivo.",
+      "browseWhileWaiting": "Sfoglia l'archivio mentre aspetti"
+    },
+    "nextWeek": {
+      "label": "Prossimo lunedì · {date}"
+    },
+    "ethos": {
+      "title": "Un saggio a settimana. Nient'altro.",
+      "p1": "Ogni lunedì, The Dailicle prende un'idea singola – sulla mente, sul significato, sul denaro, sull'insolita faccenda di essere una persona – e la segue con attenzione, in linguaggio semplice, a una lunghezza che puoi effettivamente finire.",
+      "p2": "Non c'è nessun feed qui e niente da cui iscriversi. Leggi il saggio, chiudi la scheda, e con un po' di fortuna l'idea ti seguirà per il resto della settimana.",
+      "whyLink": "Perché pubblichiamo in questo modo",
+      "strandsLabel": "I cinque filoni"
+    },
+    "readers": {
+      "eyebrow": "Leggi in tutto il mondo",
+      "title": "Silenziosamente, in più posti di quanto pensi",
+      "footnote": "e lettori silenziosi in dozzine di altri paesi."
+    },
+    "recent": {
+      "title": "Continua a leggere",
+      "browseAll": "Sfoglia tutti i saggi",
+      "minutes": "{minutes} min"
+    },
+    "closing": {
+      "title": "Il prossimo saggio arriva lunedì.",
+      "thisWeekHere": "Quello di questa settimana è già qui.",
+      "startReading": "Inizia a leggere",
+      "visitArchive": "Visita l'archivio",
+      "free": "Gratuito da leggere · niente registrazione · nessuna pubblicità"
+    }
+  },
+  "archive": {
+    "meta": {
+      "title": "I Saggi - Archivio | The Dailicle",
+      "description": "Ogni saggio che abbiamo pubblicato – uno a settimana sulla mente, il significato, il denaro e come vivere."
+    },
+    "title": "I saggi",
+    "subtitle": "Uno a settimana, ogni lunedì. Scegli un filone o inizia dall'inizio.",
+    "searchPlaceholder": "Cerca i saggi…",
+    "all": "Tutti",
+    "issue": "Numero {issue}",
+    "minutes": "{minutes} min",
+    "noMatch": "Niente corrisponde ancora – la collezione cresce di uno ogni lunedì.",
+    "noMatchQuery": "Niente corrisponde a “{query}” ancora – la collezione cresce di uno ogni lunedì.",
+    "clearFilters": "Cancella filtri",
+    "legacyToggle": "Dal 2025, prima dell'era settimanale ({count})"
+  },
+  "themes": {
+    "psychology": "Psicologia",
+    "relationships": "Relazioni",
+    "philosophy": "Filosofia",
+    "society": "Società",
+    "money": "Denaro"
+  },
+  "reader": {
+    "allEssays": "Tutti i saggi",
+    "share": "Condividi",
+    "shareThisEssay": "Condividi questo saggio",
+    "shareAria": "Condividi saggio",
+    "shareText": "\"{title}\" – un saggio di The Dailicle",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "copyLink": "Copia link",
+    "language": "Lingua",
+    "languageAria": "Cambia lingua",
+    "copied": "Copiato!",
+    "listen": "Ascolta",
+    "playNarration": "Riproduci narrazione",
+    "pauseNarration": "Pausa narrazione",
+    "stopPlayer": "Ferma e chiudi il lettore",
+    "notReleased": "Il prossimo saggio arriva lunedì.",
+    "comeBackSoon": "Torna presto.",
+    "comeBackTomorrow": "Torna domani.",
+    "comeBackOn": "Torna il {date}.",
+    "fromArchive": "Dall'archivio 2025",
+    "issue": "Numero {issue}",
+    "by": "Di {author} · {date} · {minutes} min di lettura",
+    "furtherReadingIntro": "Se vuoi riflettere su questo più a lungo:",
+    "nextMonday": "Prossimo lunedì · {date}",
+    "thanksReading": "Grazie per aver letto. Un nuovo saggio arriva ogni lunedì.",
+    "readMore": "Leggi altri saggi",
+    "byline": "La redazione di The Dailicle"
+  },
+  "manifesto": {
+    "meta": {
+      "title": "Perché leggere The Dailicle? Un manifesto per il web lento",
+      "description": "Una ribellione contro il rumore di internet. La filosofia dietro un saggio a settimana."
+    },
+    "title": "Perché leggere Dailicle?",
+    "subtitle": "Un manifesto per il web lento.",
+    "p_library": "Internet doveva essere una biblioteca. Invece, è diventato un casinò.",
+    "p_scroll": "Pensa all'ultima ora che hai passato a scorrere. Ricordi qualcosa di specifico? I feed sono progettati da alcune delle persone più intelligenti in vita per mantenere il tuo pollice in movimento, e sono molto bravi nel loro lavoro. Quello che portano via è sottile: la serata sembra piena mentre la mente rimane vuota.",
+    "p_rebellion": "The Dailicle è una ribellione contro questo.",
+    "h_one": "La filosofia dell'uno",
+    "p_one_1": "Pubbliciamo esattamente un saggio a settimana. Non dieci. Non un feed. Uno, ogni lunedì.",
+    "p_one_2": "La scarsità è una forma di rispetto. Quando c'è solo una cosa da leggere, smetti di scorrere e inizi a leggere. Le dai la tua piena attenzione, e noi le diamo una settimana intera di cura: ogni saggio è scelto tra dozzine di idee candidate, ricercato adeguatamente e scritto per essere completato. La maggior parte richiede dieci-quindici minuti. C'è una narrazione se preferisci ascoltare.",
+    "h_about": "Di cosa parlano i saggi",
+    "p_about_1": "Cinque filoni: psicologia, filosofia, prospettive, vita e denaro. Ciò che li collega è un certo tipo di idea – un'osservazione umana specifica che riconosci a metà ma non hai mai messo in parole. Le preoccupazioni che hai ereditato dai tuoi genitori. Perché alcuni giorni svaniscono e altri durano per sempre. Cosa costa silenziosamente mantenere ogni opzione aperta.",
+    "p_about_2": "Un buon saggio qui dovrebbe rimanere nella tua mente fino a mercoledì.",
+    "h_who": "Per chi è questo?",
+    "p_who_1": "I curiosi. Persone che credono ancora che una frase ben costruita possa cambiare il modo in cui vedi il mondo, e persone che sospettano che leggere di più sarebbe più facile se la lettura non sembrasse così simile ai compiti. Non c'è registrazione, nessun paywall e nulla da tenere traccia – un saggio, una volta a settimana, gratis.",
+    "p_who_2": "Se vuoi contenuti per riempire il silenzio, ci sono molti posti che saranno felici di accontentarti. Se vuoi idee che rimangano dopo che la scheda si chiude, benvenuto a casa.",
+    "h_writes": "Chi lo scrive?",
+    "p_writes": "I saggi sono scritti e modificati alla redazione di The Dailicle, in una voce unica, e mantenuti a un unico standard: un lettore attento vorrebbe leggerlo due volte? Niente firme in cerca di attenzione, nessun post di ospiti, nessuna settimana di riempimento.",
+    "h_recs": "Perché niente raccomandazioni?",
+    "p_recs_1": "Gli algoritmi di raccomandazione sono costruiti per l'engagement, non per l'illuminazione. Vogliamo che tu legga, pensi e poi te ne vada. Fai una passeggiata. Parla con un amico. Costruisci qualcosa.",
+    "p_recs_2": "A volte un saggio termina con alcuni suggerimenti per chi vuole riflettere sull'idea più a lungo. Ma non ti intrappoleremo mai in un loop.",
+    "closing": "Leggi lentamente. Pensa profondamente. Torna lunedì."
+  },
+  "feedback": {
+    "meta": {
+      "title": "Feedback",
+      "description": "Aiuta a plasmare il futuro di The Dailicle. Condividi i tuoi pensieri, idee o semplicemente saluta."
+    },
+    "title": "Feedback",
+    "subtitle": "Aiutaci a plasmare il futuro di Dailicle.",
+    "preferEmail": "Preferisci l'email? Contattaci direttamente:",
+    "form": {
+      "messageLabel": "Il tuo messaggio",
+      "messagePlaceholder": "Cosa hai in mente? Feedback, idee o semplicemente ciao.",
+      "identityLabel": "Chi sei?",
+      "optional": "(Facoltativo)",
+      "identityPlaceholder": "Nome, Twitter o Email",
+      "send": "Invia messaggio",
+      "successTitle": "Messaggio ricevuto",
+      "successBody": "Grazie per i tuoi pensieri.",
+      "error": "Qualcosa è andato storto. Per favore riprova."
+    }
+  },
+  "thankYou": {
+    "eyebrow": "The Dailicle",
+    "title": "Grazie, davvero.",
+    "body": "Grazie a te, la scrivania rimane accesa un po' più a lungo. I saggi continueranno ad arrivare ogni lunedì, lenti, attenti e gratuiti per tutti, esattamente come prima.",
+    "note": "Non dovevi farlo. È proprio per questo che significa così tanto."
+  }
+}

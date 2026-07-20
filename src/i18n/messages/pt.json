@@ -1,0 +1,184 @@
+{
+  "common": {
+    "siteName": "The Dailicle",
+    "tagline": "Um ensaio por semana. Nada mais.",
+    "oneEssayAWeek": "Um ensaio por semana · leia devagar",
+    "backHome": "Voltar para casa",
+    "readAnother": "Leia outro ensaio"
+  },
+  "nav": {
+    "home": "Início",
+    "archive": "Arquivo",
+    "manifesto": "Por que Ler?",
+    "feedback": "Feedback",
+    "support": "Suporte"
+  },
+  "footer": {
+    "tagline": "Um ensaio por semana. Nada mais.",
+    "subscribeLabel": "Inscreva-se para atualizações",
+    "subscribePlaceholder": "você@exemplo.com",
+    "subscribeHint": "Uma nota discreta quando um novo ensaio chega.",
+    "subscribeAria": "Inscreva-se para atualizações",
+    "success": "Inscrito. Vejo você na segunda-feira.",
+    "already": "Já inscrito com este e-mail.",
+    "error": "Não foi possível se inscrever. Por favor, tente novamente.",
+    "onList": "Você está na lista.",
+    "language": "Idioma",
+    "themes": {
+      "light": "Dia",
+      "dark": "Noite",
+      "wooden": "Estudo",
+      "space": "Vazio",
+      "fairytale": "Sonho"
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "The Dailicle – Um ensaio por semana, escrito para ser lido devagar",
+      "description": "Um ensaio semanal sobre a mente, significado, dinheiro e como viver. Pesquisado com cuidado, gratuito para ler, nada para se inscrever – um novo toda segunda-feira."
+    },
+    "thisWeek": {
+      "issue": "Edição {issue}",
+      "thisWeek": "Esta semana",
+      "readCta": "Leia o ensaio desta semana",
+      "readingLine": "{minutes} min de leitura · gratuito · nada para se inscrever",
+      "orArchive": "ou comece no arquivo",
+      "firstIssue": "Primeira edição · {theme} · chegando {date}",
+      "betweenIssues": "Entre edições",
+      "onItsWay": "O próximo ensaio está a caminho.",
+      "browseWhileWaiting": "Navegue pelo arquivo enquanto espera"
+    },
+    "nextWeek": {
+      "label": "Próxima segunda-feira · {date}"
+    },
+    "ethos": {
+      "title": "Um ensaio por semana. Nada mais.",
+      "p1": "Toda segunda-feira, The Dailicle pega uma única ideia – sobre a mente, sobre significado, sobre dinheiro, sobre o estranho negócio de ser uma pessoa – e a segue cuidadosamente, em linguagem simples, em um comprimento que você realmente pode terminar.",
+      "p2": "Não há feed aqui e nada para se inscrever. Você lê o ensaio, fecha a aba e, com um pouco de sorte, a ideia te acompanha pelo resto da semana.",
+      "whyLink": "Por que publicamos assim",
+      "strandsLabel": "Os cinco temas"
+    },
+    "readers": {
+      "eyebrow": "Leia ao redor do mundo",
+      "title": "Silenciosamente, em mais lugares do que você imagina",
+      "footnote": "e leitores silenciosos em dezenas de outros países."
+    },
+    "recent": {
+      "title": "Continue lendo",
+      "browseAll": "Navegue por todos os ensaios",
+      "minutes": "{minutes} min"
+    },
+    "closing": {
+      "title": "O próximo ensaio chega na segunda-feira.",
+      "thisWeekHere": "O desta semana já está aqui.",
+      "startReading": "Comece a ler",
+      "visitArchive": "Visite o arquivo",
+      "free": "Gratuito para ler · nada para se inscrever · sem anúncios"
+    }
+  },
+  "archive": {
+    "meta": {
+      "title": "Os Ensaios - Arquivo | The Dailicle",
+      "description": "Todo ensaio que publicamos – um por semana sobre a mente, significado, dinheiro e como viver."
+    },
+    "title": "Os ensaios",
+    "subtitle": "Um por semana, toda segunda-feira. Escolha um tema ou comece pelo topo.",
+    "searchPlaceholder": "Pesquise os ensaios…",
+    "all": "Todos",
+    "issue": "Edição {issue}",
+    "minutes": "{minutes} min",
+    "noMatch": "Nada corresponde ainda – a coleção cresce em um a cada segunda-feira.",
+    "noMatchQuery": "Nada corresponde a “{query}” ainda – a coleção cresce em um a cada segunda-feira.",
+    "clearFilters": "Limpar filtros",
+    "legacyToggle": "De 2025, antes da era semanal ({count})"
+  },
+  "themes": {
+    "psychology": "Psicologia",
+    "relationships": "Relacionamentos",
+    "philosophy": "Filosofia",
+    "society": "Sociedade",
+    "money": "Dinheiro"
+  },
+  "reader": {
+    "allEssays": "Todos os ensaios",
+    "share": "Compartilhar",
+    "shareThisEssay": "Compartilhar este ensaio",
+    "shareAria": "Compartilhar ensaio",
+    "shareText": "\"{title}\" – um ensaio do The Dailicle",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "copyLink": "Copiar Link",
+    "language": "Idioma",
+    "languageAria": "Mudar idioma",
+    "copied": "Copiado!",
+    "listen": "Ouvir",
+    "playNarration": "Reproduzir narração",
+    "pauseNarration": "Pausar narração",
+    "stopPlayer": "Parar e fechar o player",
+    "notReleased": "O próximo ensaio chega na segunda-feira.",
+    "comeBackSoon": "Volte logo.",
+    "comeBackTomorrow": "Volte amanhã.",
+    "comeBackOn": "Volte {date}.",
+    "fromArchive": "Do arquivo de 2025",
+    "issue": "Edição {issue}",
+    "by": "Por {author} · {date} · {minutes} min de leitura",
+    "furtherReadingIntro": "Se você quiser refletir mais sobre isso:",
+    "nextMonday": "Próxima segunda-feira · {date}",
+    "thanksReading": "Obrigado por ler. Um novo ensaio chega toda segunda-feira.",
+    "readMore": "Leia mais ensaios",
+    "byline": "Escritório The Dailicle"
+  },
+  "manifesto": {
+    "meta": {
+      "title": "Por que ler The Dailicle? Um manifesto para a web lenta",
+      "description": "Uma rebelião contra o ruído da internet. A filosofia por trás de um ensaio por semana."
+    },
+    "title": "Por que ler Dailicle?",
+    "subtitle": "Um manifesto para a web lenta.",
+    "p_library": "A internet deveria ser uma biblioteca. Em vez disso, tornou-se um cassino.",
+    "p_scroll": "Pense na última hora que você passou rolando. Você consegue lembrar de uma coisa dela? Os feeds são projetados por algumas das pessoas mais inteligentes do mundo para manter seu polegar em movimento, e elas são muito boas em seus trabalhos. O que elas levam é sutil: a noite parece cheia enquanto a mente permanece vazia.",
+    "p_rebellion": "The Dailicle é uma rebelião contra isso.",
+    "h_one": "A filosofia de um",
+    "p_one_1": "Publicamos exatamente um ensaio por semana. Não dez. Não um feed. Um, toda segunda-feira.",
+    "p_one_2": "A escassez é uma forma de respeito. Quando há apenas uma coisa para ler, você para de folhear e começa a ler. Você dá sua total atenção, e nós damos uma semana inteira de cuidado: cada ensaio é escolhido entre dezenas de ideias candidatas, pesquisado adequadamente e escrito para ser finalizado. A maioria leva de dez a quinze minutos. Há uma narração se você preferir ouvir.",
+    "h_about": "Sobre o que são os ensaios",
+    "p_about_1": "Cinco vertentes: psicologia, filosofia, perspectivas, vida e dinheiro. O que os conecta é um certo tipo de ideia – uma observação humana específica que você meio reconhece, mas nunca colocou em palavras. As preocupações que você herdou de seus pais. Por que alguns dias desaparecem e outros duram para sempre. O que custa silenciosamente manter cada opção em aberto.",
+    "p_about_2": "Um bom ensaio aqui deve ainda estar na sua mente na quarta-feira.",
+    "h_who": "Para quem é isso?",
+    "p_who_1": "Os curiosos. Pessoas que ainda acreditam que uma frase bem elaborada pode mudar a forma como você vê o mundo, e pessoas que suspeitam que leriam mais se ler não parecesse tanto com dever de casa. Não há inscrição, não há paywall e nada para acompanhar – um ensaio, uma vez por semana, grátis.",
+    "p_who_2": "Se você quer conteúdo para preencher o silêncio, muitos lugares ficarão felizes em atender. Se você quer ideias que persistam depois que a aba se fecha, seja bem-vindo.",
+    "h_writes": "Quem escreve?",
+    "p_writes": "Os ensaios são escritos e editados no Escritório The Dailicle, em uma única voz da casa, e mantidos a uma única barra: um leitor cuidadoso gostaria de ler isso duas vezes? Sem assinaturas buscando atenção, sem posts de convidados, sem semanas de preenchimento.",
+    "h_recs": "Por que sem recomendações?",
+    "p_recs_1": "Os algoritmos de recomendação são feitos para engajamento, não para iluminação. Queremos que você leia, pense e depois saia. Vá dar uma volta. Converse com um amigo. Construa algo.",
+    "p_recs_2": "Às vezes, um ensaio termina com algumas dicas para quem quer refletir mais sobre a ideia. Mas nunca vamos te prender em um loop.",
+    "closing": "Leia devagar. Pense profundamente. Volte na segunda."
+  },
+  "feedback": {
+    "meta": {
+      "title": "Feedback",
+      "description": "Ajude a moldar o futuro do The Dailicle. Compartilhe seus pensamentos, ideias ou apenas diga olá."
+    },
+    "title": "Feedback",
+    "subtitle": "Ajude-nos a moldar o futuro do Dailicle.",
+    "preferEmail": "Prefere email? Entre em contato diretamente:",
+    "form": {
+      "messageLabel": "Sua Mensagem",
+      "messagePlaceholder": "O que você está pensando? Feedback, ideias ou apenas olá.",
+      "identityLabel": "Quem é você?",
+      "optional": "(Opcional)",
+      "identityPlaceholder": "Nome, Twitter ou Email",
+      "send": "Enviar Mensagem",
+      "successTitle": "Mensagem Recebida",
+      "successBody": "Obrigado pelos seus pensamentos.",
+      "error": "Algo deu errado. Por favor, tente novamente."
+    }
+  },
+  "thankYou": {
+    "eyebrow": "The Dailicle",
+    "title": "Obrigado, de verdade.",
+    "body": "Por sua causa, a mesa permanece iluminada um pouco mais. Os ensaios continuarão chegando toda segunda-feira, devagar, com cuidado e gratuitos para todos, exatamente como antes.",
+    "note": "Você não precisava. É exatamente por isso que significa tanto."
+  }
+}

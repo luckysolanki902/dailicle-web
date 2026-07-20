@@ -1,0 +1,184 @@
+{
+  "common": {
+    "siteName": "The Dailicle",
+    "tagline": "Ein Essay pro Woche. Nichts anderes.",
+    "oneEssayAWeek": "Ein Essay pro Woche · langsam lesen",
+    "backHome": "Zurück nach Hause",
+    "readAnother": "Einen weiteren Essay lesen"
+  },
+  "nav": {
+    "home": "Startseite",
+    "archive": "Archiv",
+    "manifesto": "Warum lesen?",
+    "feedback": "Feedback",
+    "support": "Unterstützung"
+  },
+  "footer": {
+    "tagline": "Ein Essay pro Woche. Nichts anderes.",
+    "subscribeLabel": "Für Updates abonnieren",
+    "subscribePlaceholder": "you@example.com",
+    "subscribeHint": "Eine leise Notiz, wenn ein neuer Essay erscheint.",
+    "subscribeAria": "Für Updates abonnieren",
+    "success": "Abonniert. Bis Montag.",
+    "already": "Bereits mit dieser E-Mail abonniert.",
+    "error": "Konnte nicht abonnieren. Bitte erneut versuchen.",
+    "onList": "Du bist auf der Liste.",
+    "language": "Sprache",
+    "themes": {
+      "light": "Tag",
+      "dark": "Nacht",
+      "wooden": "Studium",
+      "space": "Leere",
+      "fairytale": "Traum"
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "The Dailicle – Ein Essay pro Woche, geschrieben um langsam gelesen zu werden",
+      "description": "Ein wöchentlicher Essay über den Geist, Bedeutung, Geld und wie man lebt. Sorgfältig recherchiert, kostenlos zu lesen, nichts zum Anmelden – jeden Montag einen neuen."
+    },
+    "thisWeek": {
+      "issue": "Ausgabe {issue}",
+      "thisWeek": "Diese Woche",
+      "readCta": "Lies den Essay dieser Woche",
+      "readingLine": "{minutes} min Lesezeit · kostenlos · nichts zum Anmelden",
+      "orArchive": "oder im Archiv beginnen",
+      "firstIssue": "Erste Ausgabe · {theme} · erscheint am {date}",
+      "betweenIssues": "Zwischen den Ausgaben",
+      "onItsWay": "Der nächste Essay ist auf dem Weg.",
+      "browseWhileWaiting": "Durchsuche das Archiv, während du wartest"
+    },
+    "nextWeek": {
+      "label": "Nächster Montag · {date}"
+    },
+    "ethos": {
+      "title": "Ein Essay pro Woche. Nichts anderes.",
+      "p1": "Jeden Montag nimmt The Dailicle eine einzelne Idee – über den Geist, über Bedeutung, über Geld, über das seltsame Geschäft, ein Mensch zu sein – und verfolgt sie sorgfältig, in einfacher Sprache, in einer Länge, die du tatsächlich beenden kannst.",
+      "p2": "Es gibt hier keinen Feed und nichts, für das man sich anmelden muss. Du liest den Essay, schließt den Tab, und mit ein wenig Glück folgt dir die Idee den Rest der Woche.",
+      "whyLink": "Warum wir so veröffentlichen",
+      "strandsLabel": "Die fünf Stränge"
+    },
+    "readers": {
+      "eyebrow": "Weltweit lesen",
+      "title": "Leise, an mehr Orten als du denkst",
+      "footnote": "und stille Leser in Dutzenden weiterer Länder."
+    },
+    "recent": {
+      "title": "Weiterlesen",
+      "browseAll": "Alle Essays durchsuchen",
+      "minutes": "{minutes} Min"
+    },
+    "closing": {
+      "title": "Der nächste Essay erscheint am Montag.",
+      "thisWeekHere": "Der dieser Woche ist bereits hier.",
+      "startReading": "Beginne zu lesen",
+      "visitArchive": "Archiv besuchen",
+      "free": "Kostenlos zu lesen · nichts anzumelden · keine Werbung"
+    }
+  },
+  "archive": {
+    "meta": {
+      "title": "Die Essays - Archiv | The Dailicle",
+      "description": "Jedes Essay, das wir veröffentlicht haben – eines pro Woche über den Geist, Bedeutung, Geld und wie man lebt."
+    },
+    "title": "Die Essays",
+    "subtitle": "Eines pro Woche, jeden Montag. Wähle einen Strang oder beginne einfach oben.",
+    "searchPlaceholder": "Die Essays durchsuchen…",
+    "all": "Alle",
+    "issue": "Ausgabe {issue}",
+    "minutes": "{minutes} Min",
+    "noMatch": "Nichts passt bisher – die Sammlung wächst jeden Montag um eins.",
+    "noMatchQuery": "Nichts passt bisher zu „{query}“ – die Sammlung wächst jeden Montag um eins.",
+    "clearFilters": "Filter zurücksetzen",
+    "legacyToggle": "Von 2025, vor der wöchentlichen Ära ({count})"
+  },
+  "themes": {
+    "psychology": "Psychologie",
+    "relationships": "Beziehungen",
+    "philosophy": "Philosophie",
+    "society": "Gesellschaft",
+    "money": "Geld"
+  },
+  "reader": {
+    "allEssays": "Alle Essays",
+    "share": "Teilen",
+    "shareThisEssay": "Teile dieses Essay",
+    "shareAria": "Essay teilen",
+    "shareText": "\"{title}\" – ein Essay von The Dailicle",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "copyLink": "Link kopieren",
+    "language": "Sprache",
+    "languageAria": "Sprache ändern",
+    "copied": "Kopiert!",
+    "listen": "Anhören",
+    "playNarration": "Erzählung abspielen",
+    "pauseNarration": "Erzählung pausieren",
+    "stopPlayer": "Player stoppen und schließen",
+    "notReleased": "Der nächste Aufsatz erscheint am Montag.",
+    "comeBackSoon": "Komm bald wieder.",
+    "comeBackTomorrow": "Komm morgen wieder.",
+    "comeBackOn": "Komm am {date} wieder.",
+    "fromArchive": "Aus dem Archiv 2025",
+    "issue": "Ausgabe {issue}",
+    "by": "Von {author} · {date} · {minutes} Min. Lesezeit",
+    "furtherReadingIntro": "Wenn du länger darüber nachdenken möchtest:",
+    "nextMonday": "Nächster Montag · {date}",
+    "thanksReading": "Danke fürs Lesen. Jeden Montag erscheint ein neuer Aufsatz.",
+    "readMore": "Weitere Aufsätze lesen",
+    "byline": "Die Dailicle Redaktion"
+  },
+  "manifesto": {
+    "meta": {
+      "title": "Warum die Dailicle lesen? Ein Manifest für das langsame Web",
+      "description": "Eine Rebellion gegen den Lärm des Internets. Die Philosophie hinter einem Aufsatz pro Woche."
+    },
+    "title": "Warum die Dailicle lesen?",
+    "subtitle": "Ein Manifest für das langsame Web.",
+    "p_library": "Das Internet sollte eine Bibliothek sein. Stattdessen wurde es ein Casino.",
+    "p_scroll": "Denk an die letzte Stunde, die du mit Scrollen verbracht hast. Kannst du dich an eine Sache davon erinnern? Die Feeds sind von einigen der klügsten Menschen der Welt so gestaltet, dass sie deinen Daumen in Bewegung halten, und sie sind sehr gut in ihrem Job. Was sie nehmen, ist subtil: Der Abend fühlt sich voll an, während der Geist leer bleibt.",
+    "p_rebellion": "Die Dailicle ist eine Rebellion dagegen.",
+    "h_one": "Die Philosophie von einem",
+    "p_one_1": "Wir veröffentlichen genau einen Aufsatz pro Woche. Nicht zehn. Nicht einen Feed. Einen, jeden Montag.",
+    "p_one_2": "Knappheit ist eine Form des Respekts. Wenn es nur eine Sache zu lesen gibt, hörst du auf zu überfliegen und beginnst zu lesen. Du schenkst ihr deine volle Aufmerksamkeit, und wir geben ihr eine volle Woche Pflege: Jeder Aufsatz wird aus Dutzenden von Ideen ausgewählt, richtig recherchiert und so geschrieben, dass er abgeschlossen ist. Die meisten benötigen zehn bis fünfzehn Minuten. Es gibt eine Erzählung, wenn du lieber zuhören möchtest.",
+    "h_about": "Worüber die Aufsätze handeln",
+    "p_about_1": "Fünf Stränge: Psychologie, Philosophie, Perspektiven, Leben und Geld. Was sie verbindet, ist eine bestimmte Art von Idee – eine spezifische, menschliche Beobachtung, die du halb erkennst, aber nie in Worte gefasst hast. Die Sorgen, die du von deinen Eltern geerbt hast. Warum einige Tage verschwinden und andere ewig dauern. Was es leise kostet, jede Option offen zu halten.",
+    "p_about_2": "Ein guter Aufsatz hier sollte am Mittwoch noch in deinem Kopf sein.",
+    "h_who": "Für wen ist das?",
+    "p_who_1": "Die Neugierigen. Menschen, die immer noch glauben, dass ein gut formulierter Satz die Sicht auf die Welt verändern kann, und Menschen, die vermuten, dass sie mehr lesen würden, wenn Lesen weniger wie Hausaufgaben wäre. Es gibt keine Anmeldung, keine Bezahlschranke und nichts, was man im Auge behalten muss – ein Aufsatz, einmal pro Woche, kostenlos.",
+    "p_who_2": "Wenn du Inhalte suchst, die die Stille füllen, gibt es viele Orte, die dir gerne entgegenkommen. Wenn du Ideen willst, die nach dem Schließen des Tabs nachhallen, willkommen zu Hause.",
+    "h_writes": "Wer schreibt das?",
+    "p_writes": "Die Aufsätze werden in der Dailicle Redaktion geschrieben und bearbeitet, in einer einheitlichen Stimme, und an einer einzigen Messlatte gemessen: Würde ein sorgfältiger Leser dies zweimal lesen wollen? Keine Autoren, die Aufmerksamkeit suchen, keine Gastbeiträge, keine Füllwochen.",
+    "h_recs": "Warum keine Empfehlungen?",
+    "p_recs_1": "Empfehlungsalgorithmen sind für Engagement, nicht für Erleuchtung, entwickelt. Wir wollen, dass du liest, nachdenkst und dann gehst. Mach einen Spaziergang. Sprich mit einem Freund. Baue etwas.",
+    "p_recs_2": "Manchmal endet ein Aufsatz mit ein paar Hinweisen für alle, die länger über die Idee nachdenken möchten. Aber wir werden dich niemals in einer Schleife festhalten.",
+    "closing": "Langsam lesen. Tief nachdenken. Komm am Montag wieder."
+  },
+  "feedback": {
+    "meta": {
+      "title": "Feedback",
+      "description": "Hilf mit, die Zukunft von The Dailicle zu gestalten. Teile deine Gedanken, Ideen oder sag einfach Hallo."
+    },
+    "title": "Feedback",
+    "subtitle": "Hilf uns, die Zukunft von Dailicle zu gestalten.",
+    "preferEmail": "Bevorzugst du E-Mail? Kontaktiere uns direkt:",
+    "form": {
+      "messageLabel": "Deine Nachricht",
+      "messagePlaceholder": "Was beschäftigt dich? Feedback, Ideen oder einfach Hallo.",
+      "identityLabel": "Wer bist du?",
+      "optional": "(Optional)",
+      "identityPlaceholder": "Name, Twitter oder E-Mail",
+      "send": "Nachricht senden",
+      "successTitle": "Nachricht erhalten",
+      "successBody": "Danke für deine Gedanken.",
+      "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    }
+  },
+  "thankYou": {
+    "eyebrow": "The Dailicle",
+    "title": "Danke, wirklich.",
+    "body": "Dank dir bleibt der Schreibtisch ein wenig länger beleuchtet. Die Essays werden jeden Montag weiterhin langsam, sorgfältig und kostenlos für alle erscheinen, genau wie zuvor.",
+    "note": "Du hättest das nicht tun müssen. Genau deshalb bedeutet es so viel."
+  }
+}

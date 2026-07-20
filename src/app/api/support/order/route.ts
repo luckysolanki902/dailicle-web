@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
       gaClientId?: unknown;
       essayId?: unknown;
       category?: unknown;
+      message?: unknown;
     } | null;
 
     // Small helper: keep only sane, length-capped strings for analytics fields.
@@ -95,6 +96,7 @@ export async function POST(request: NextRequest) {
           gaClientId: str(body?.gaClientId),
           essayId: str(body?.essayId),
           category: str(body?.category, 32),
+          message: str(body?.message, 500),
         },
       },
       { upsert: true }

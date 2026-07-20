@@ -83,6 +83,7 @@ export async function POST(request: NextRequest) {
         method: (payment.method as string) || null,
         email: (payment.email as string) || null,
         contact: (payment.contact as string) || null,
+        message: (existing.message as string) || null,
       });
     }
 

@@ -10,6 +10,7 @@
     "test:release": "tsc --outDir /tmp/dailicle-release-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/release.ts src/lib/release.test.ts && node --test /tmp/dailicle-release-test/release.test.js"
   },
   "dependencies": {
+    "@google-analytics/data": "^5.2.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/nodemailer": "^7.0.4",
     "@vercel/analytics": "^1.6.1",

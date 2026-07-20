@@ -1,0 +1,184 @@
+{
+  "common": {
+    "siteName": "The Dailicle",
+    "tagline": "Un ensayo a la semana. Nada más.",
+    "oneEssayAWeek": "Un ensayo a la semana · lee despacio",
+    "backHome": "Regresar a casa",
+    "readAnother": "Leer otro ensayo"
+  },
+  "nav": {
+    "home": "Inicio",
+    "archive": "Archivo",
+    "manifesto": "¿Por qué leer?",
+    "feedback": "Comentarios",
+    "support": "Soporte"
+  },
+  "footer": {
+    "tagline": "Un ensayo a la semana. Nada más.",
+    "subscribeLabel": "Suscríbete para actualizaciones",
+    "subscribePlaceholder": "tú@example.com",
+    "subscribeHint": "Una nota silenciosa cuando llegue un nuevo ensayo.",
+    "subscribeAria": "Suscríbete para actualizaciones",
+    "success": "Suscrito. Nos vemos el lunes.",
+    "already": "Ya suscrito con este correo.",
+    "error": "No se pudo suscribir. Por favor, inténtalo de nuevo.",
+    "onList": "Estás en la lista.",
+    "language": "Idioma",
+    "themes": {
+      "light": "Día",
+      "dark": "Noche",
+      "wooden": "Estudio",
+      "space": "Vacío",
+      "fairytale": "Sueño"
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "The Dailicle – Un ensayo a la semana, escrito para ser leído despacio",
+      "description": "Un ensayo semanal sobre la mente, el significado, el dinero y cómo vivir. Cuidadosamente investigado, gratis para leer, nada que registrarse – uno nuevo cada lunes."
+    },
+    "thisWeek": {
+      "issue": "Número {issue}",
+      "thisWeek": "Esta semana",
+      "readCta": "Lee el ensayo de esta semana",
+      "readingLine": "{minutes} min de lectura · gratis · nada que registrarse",
+      "orArchive": "o comienza en el archivo",
+      "firstIssue": "Primer número · {theme} · llegando {date}",
+      "betweenIssues": "Entre números",
+      "onItsWay": "El próximo ensayo está en camino.",
+      "browseWhileWaiting": "Explora el archivo mientras esperas"
+    },
+    "nextWeek": {
+      "label": "Próximo lunes · {date}"
+    },
+    "ethos": {
+      "title": "Un ensayo a la semana. Nada más.",
+      "p1": "Cada lunes, The Dailicle toma una sola idea – sobre la mente, sobre el significado, sobre el dinero, sobre el extraño negocio de ser una persona – y la sigue cuidadosamente, en un lenguaje sencillo, a una longitud que realmente puedes terminar.",
+      "p2": "No hay un feed aquí y nada que registrarse. Lees el ensayo, cierras la pestaña, y con un poco de suerte la idea te sigue durante el resto de la semana.",
+      "whyLink": "Por qué publicamos de esta manera",
+      "strandsLabel": "Los cinco hilos"
+    },
+    "readers": {
+      "eyebrow": "Lee alrededor del mundo",
+      "title": "Silenciosamente, en más lugares de los que piensas",
+      "footnote": "y lectores silenciosos en docenas de países más."
+    },
+    "recent": {
+      "title": "Sigue leyendo",
+      "browseAll": "Explora todos los ensayos",
+      "minutes": "{minutes} min"
+    },
+    "closing": {
+      "title": "El próximo ensayo llega el lunes.",
+      "thisWeekHere": "El de esta semana ya está aquí.",
+      "startReading": "Comienza a leer",
+      "visitArchive": "Visita el archivo",
+      "free": "Gratis para leer · nada que registrarse · sin anuncios"
+    }
+  },
+  "archive": {
+    "meta": {
+      "title": "Los Ensayos - Archivo | The Dailicle",
+      "description": "Cada ensayo que hemos publicado – uno a la semana sobre la mente, el significado, el dinero y cómo vivir."
+    },
+    "title": "Los ensayos",
+    "subtitle": "Uno a la semana, cada lunes. Elige un hilo o simplemente comienza desde arriba.",
+    "searchPlaceholder": "Buscar los ensayos…",
+    "all": "Todos",
+    "issue": "Número {issue}",
+    "minutes": "{minutes} min",
+    "noMatch": "Nada coincide aún – la colección crece en uno cada lunes.",
+    "noMatchQuery": "Nada coincide con “{query}” aún – la colección crece en uno cada lunes.",
+    "clearFilters": "Limpiar filtros",
+    "legacyToggle": "Desde 2025, antes de la era semanal ({count})"
+  },
+  "themes": {
+    "psychology": "Psicología",
+    "relationships": "Relaciones",
+    "philosophy": "Filosofía",
+    "society": "Sociedad",
+    "money": "Dinero"
+  },
+  "reader": {
+    "allEssays": "Todos los ensayos",
+    "share": "Compartir",
+    "shareThisEssay": "Compartir este ensayo",
+    "shareAria": "Compartir ensayo",
+    "shareText": "\"{title}\" – un ensayo de The Dailicle",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "copyLink": "Copiar enlace",
+    "language": "Idioma",
+    "languageAria": "Cambiar idioma",
+    "copied": "¡Copiado!",
+    "listen": "Escuchar",
+    "playNarration": "Reproducir narración",
+    "pauseNarration": "Pausar narración",
+    "stopPlayer": "Detener y cerrar reproductor",
+    "notReleased": "El próximo ensayo llega el lunes.",
+    "comeBackSoon": "Vuelve pronto.",
+    "comeBackTomorrow": "Vuelve mañana.",
+    "comeBackOn": "Vuelve el {date}.",
+    "fromArchive": "Del archivo de 2025",
+    "issue": "Número {issue}",
+    "by": "Por {author} · {date} · {minutes} min de lectura",
+    "furtherReadingIntro": "Si quieres reflexionar más sobre esto:",
+    "nextMonday": "Próximo lunes · {date}",
+    "thanksReading": "Gracias por leer. Un nuevo ensayo llega cada lunes.",
+    "readMore": "Leer más ensayos",
+    "byline": "La Redacción de Dailicle"
+  },
+  "manifesto": {
+    "meta": {
+      "title": "¿Por qué leer The Dailicle? Un manifiesto para la web lenta",
+      "description": "Una rebelión contra el ruido de internet. La filosofía detrás de un ensayo a la semana."
+    },
+    "title": "¿Por qué leer Dailicle?",
+    "subtitle": "Un manifiesto para la web lenta.",
+    "p_library": "Se suponía que internet sería una biblioteca. En cambio, se convirtió en un casino.",
+    "p_scroll": "Piensa en la última hora que pasaste desplazándote. ¿Puedes recordar algo de eso? Los feeds son diseñados por algunas de las personas más inteligentes para mantener tu pulgar en movimiento, y son muy buenos en su trabajo. Lo que quitan es sutil: la tarde se siente llena mientras la mente permanece vacía.",
+    "p_rebellion": "The Dailicle es una rebelión contra eso.",
+    "h_one": "La filosofía de uno",
+    "p_one_1": "Publicamos exactamente un ensayo a la semana. No diez. No un feed. Uno, cada lunes.",
+    "p_one_2": "La escasez es una forma de respeto. Cuando solo hay una cosa para leer, dejas de hojear y comienzas a leer. Le das tu plena atención, y nosotros le damos una semana completa de cuidado: cada ensayo es elegido de docenas de ideas candidatas, investigado adecuadamente y escrito para ser terminado. La mayoría toma de diez a quince minutos. Hay una narración si prefieres escuchar.",
+    "h_about": "De qué tratan los ensayos",
+    "p_about_1": "Cinco hilos: psicología, filosofía, perspectivas, vida y dinero. Lo que los conecta es un cierto tipo de idea: una observación humana específica que reconoces a medias pero nunca has puesto en palabras. Las preocupaciones que heredaste de tus padres. Por qué algunos días desaparecen y otros duran para siempre. Lo que cuesta mantener cada opción abierta.",
+    "p_about_2": "Un buen ensayo aquí debería seguir en tu mente el miércoles.",
+    "h_who": "¿Para quién es esto?",
+    "p_who_1": "Los curiosos. Personas que aún creen que una frase bien elaborada puede cambiar cómo ves el mundo, y personas que sospechan que leerían más si leer no se sintiera tanto como una tarea. No hay registro, no hay muro de pago, y nada que rastrear: un ensayo, una vez a la semana, gratis.",
+    "p_who_2": "Si quieres contenido para llenar el silencio, muchos lugares estarán encantados de complacerte. Si quieres ideas que persistan después de cerrar la pestaña, bienvenido a casa.",
+    "h_writes": "¿Quién lo escribe?",
+    "p_writes": "Los ensayos son escritos y editados en La Redacción de Dailicle, en una sola voz de casa, y se mantienen a un solo estándar: ¿querría un lector cuidadoso leer esto dos veces? Sin firmas persiguiendo atención, sin publicaciones de invitados, sin semanas de relleno.",
+    "h_recs": "¿Por qué no hay recomendaciones?",
+    "p_recs_1": "Los algoritmos de recomendación están diseñados para el compromiso, no para la iluminación. Queremos que leas, pienses y luego te vayas. Sal a caminar. Habla con un amigo. Construye algo.",
+    "p_recs_2": "A veces un ensayo termina con algunos consejos para cualquiera que quiera reflexionar más sobre la idea. Pero nunca te atraparemos en un bucle.",
+    "closing": "Lee despacio. Piensa profundamente. Vuelve el lunes."
+  },
+  "feedback": {
+    "meta": {
+      "title": "Comentarios",
+      "description": "Ayuda a dar forma al futuro de The Dailicle. Comparte tus pensamientos, ideas o simplemente di hola."
+    },
+    "title": "Comentarios",
+    "subtitle": "Ayúdanos a dar forma al futuro de Dailicle.",
+    "preferEmail": "¿Prefieres email? Contáctanos directamente:",
+    "form": {
+      "messageLabel": "Tu Mensaje",
+      "messagePlaceholder": "¿Qué tienes en mente? Comentarios, ideas o simplemente hola.",
+      "identityLabel": "¿Quién eres?",
+      "optional": "(Opcional)",
+      "identityPlaceholder": "Nombre, Twitter o Email",
+      "send": "Enviar Mensaje",
+      "successTitle": "Mensaje Recibido",
+      "successBody": "Gracias por tus pensamientos.",
+      "error": "Algo salió mal. Por favor, intenta de nuevo."
+    }
+  },
+  "thankYou": {
+    "eyebrow": "The Dailicle",
+    "title": "Gracias, de verdad.",
+    "body": "Gracias a ti, el escritorio se mantiene iluminado un poco más. Los ensayos seguirán llegando cada lunes, lentos, cuidadosos y gratuitos para todos, exactamente como antes.",
+    "note": "No tenías que hacerlo. Por eso significa tanto."
+  }
+}

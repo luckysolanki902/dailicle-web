@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { LocalizedLink as Link } from "@/i18n/Link";
+import { useT } from "@/i18n/I18nProvider";
 
 export interface EssayCard {
   href: string;
@@ -21,6 +22,7 @@ interface RecentEssaysProps {
  * cards can't – and the 2025 collection keeps the shelf from looking bare.
  */
 export function RecentEssays({ essays }: RecentEssaysProps) {
+  const t = useT();
   if (essays.length === 0) return null;
 
   return (
@@ -33,7 +35,7 @@ export function RecentEssays({ essays }: RecentEssaysProps) {
           transition={{ duration: 0.6 }}
           className="font-display text-3xl tracking-tight text-center"
         >
-          Keep reading
+          {t("home.recent.title")}
         </motion.h2>
 
         <div className="space-y-3">
@@ -53,7 +55,7 @@ export function RecentEssays({ essays }: RecentEssaysProps) {
                   <span className="text-accent">{essay.themeLabel}</span>
                   <span className="text-foreground/40 font-medium">
                     {" · "}
-                    {essay.readingMinutes} min
+                    {t("home.recent.minutes", { minutes: essay.readingMinutes })}
                   </span>
                 </p>
                 <h3 className="font-display text-xl md:text-[1.35rem] leading-snug tracking-tight group-hover:underline decoration-foreground/25 underline-offset-4">
@@ -74,7 +76,7 @@ export function RecentEssays({ essays }: RecentEssaysProps) {
             href="/archive"
             className="group inline-flex items-center gap-2 text-sm font-medium text-foreground/60 hover:text-foreground transition-colors"
           >
-            <span>Browse all the essays</span>
+            <span>{t("home.recent.browseAll")}</span>
             <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
           </Link>
         </div>

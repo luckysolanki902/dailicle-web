@@ -37,7 +37,17 @@ export async function reportPaymentToGa(orderId: string): Promise<void> {
       { $set: { gaReported: true } },
       { returnDocument: "after" }
     );
-    if (!doc || !doc.gaClientId) return;
+    if (!doc) return;
+
+    // The browser gives us a GA client id at checkout, but it's frequently
+    // absent — ad-blockers, a closed tab, or gtag simply not having loaded in
+    // time. GA4's Measurement Protocol still needs *a* client_id, so fall back
+    // to a deterministic per-order id. This means the revenue event always
+    // fires (the payment is real); it just isn't stitched to a browser session
+    // when the id was missing. Without this, real revenue silently vanished.
+    const clientId = doc.gaClientId
+      ? String(doc.gaClientId)
+      : `srv.${orderId}`;
 
     const subunits =
       typeof doc.amountCaptured === "number"
@@ -46,7 +56,7 @@ export async function reportPaymentToGa(orderId: string): Promise<void> {
           ? doc.amount
           : 0;
 
-    await sendServerEvent(String(doc.gaClientId), "support_payment_verified", {
+    await sendServerEvent(clientId, "support_payment_verified", {
       value: subunits / 100,
       currency:
         (doc.currencyCaptured as string) || (doc.currency as string) || "INR",
@@ -83,6 +93,7 @@ export async function notifyOwnerOfPayment(record: {
   method?: string | null;
   email?: string | null;
   contact?: string | null;
+  message?: string | null;
 }): Promise<void> {
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASS;
@@ -98,6 +109,14 @@ export async function notifyOwnerOfPayment(record: {
       timeZone: "Asia/Kolkata",
     });
 
+    const esc = (s: string) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const messageRow = record.message
+      ? `<tr><td style="padding:4px 12px 4px 0;color:#666;vertical-align:top">Message</td><td style="white-space:pre-wrap"><em>${esc(
+          record.message
+        )}</em></td></tr>`
+      : "";
+
     await transporter.sendMail({
       from: user,
       to: "luckysolanki902@gmail.com",
@@ -106,6 +125,7 @@ export async function notifyOwnerOfPayment(record: {
         <h2>Someone supported The Dailicle</h2>
         <table style="border-collapse:collapse;font-family:system-ui,sans-serif;font-size:14px">
           <tr><td style="padding:4px 12px 4px 0;color:#666">Amount</td><td><strong>${money(record.amount, record.currency)}</strong></td></tr>
+          ${messageRow}
           <tr><td style="padding:4px 12px 4px 0;color:#666">Country</td><td>${record.country || "unknown"}</td></tr>
           <tr><td style="padding:4px 12px 4px 0;color:#666">Method</td><td>${record.method || "-"}</td></tr>
           <tr><td style="padding:4px 12px 4px 0;color:#666">Contact</td><td>${record.email || record.contact || "-"}</td></tr>

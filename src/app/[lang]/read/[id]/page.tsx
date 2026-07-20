@@ -2,12 +2,23 @@ import { EssayReader } from "@/components/reader/EssayReader";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import {
   getEssay,
+  getEssayTranslation,
+  localizeEssay,
   getNextTopic,
   getAllReadable,
   essayBannerUrl,
   essayBannerInfo,
 } from "@/lib/essays";
 import { themeLabel } from "@/lib/themes";
+import { getTranslations } from "@/i18n/getMessages";
+import {
+  DEFAULT_LOCALE,
+  LOCALES,
+  isLocale,
+  localeUrl,
+  hreflangAlternates,
+  type Locale,
+} from "@/i18n/config";
 import { formatDate, nextMonday } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -18,24 +29,33 @@ import type { Metadata } from "next";
 export const revalidate = 86400;
 
 /**
- * Prebuild every listed essay so the hottest route serves from the CDN
- * instead of rendering on demand. dynamicParams stays on (the default), so
- * unlisted essays and legacy ObjectId URLs still render on first request and
- * then cache via ISR.
+ * Prebuild every listed essay in English so the hottest route serves from the
+ * CDN. Localized variants (dynamicParams stays on, the default) render on first
+ * request and then cache via ISR — this keeps the build from fanning out to
+ * essays × 10 locales while still serving every language from the edge.
  */
 export async function generateStaticParams() {
   const essays = await getAllReadable();
   return essays
     .filter((essay) => essay.slug)
-    .map((essay) => ({ id: essay.slug as string }));
+    .map((essay) => ({ lang: DEFAULT_LOCALE, id: essay.slug as string }));
+}
+
+/** Localized theme label ("Psychology" → "Psychologie"), English fallback. */
+async function localeThemeLabel(theme: string | undefined, locale: Locale): Promise<string> {
+  const { t } = await getTranslations(locale);
+  const key = `themes.${theme}`;
+  const translated = t(key);
+  return translated === key ? themeLabel(theme) : translated;
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ lang: string; id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { lang, id } = await params;
+  const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
   const essay = await getEssay(id);
 
   if (!essay) {
@@ -45,33 +65,43 @@ export async function generateMetadata({
     };
   }
 
-  const canonicalPath = `/read/${essay.slug || essay._id}`;
-  const description = (essay.hook ||
-    `An essay from The Dailicle. A ${essay.reading_minutes}-minute read.`).slice(0, 160);
+  const translation = await getEssayTranslation(essay._id, locale);
+  const localized = localizeEssay(essay, translation);
+  const slug = essay.slug || essay._id;
+  const path = `/read/${slug}`;
 
-  // Prefer the essay's own banner illustration for social cards; fall back to
-  // the dynamically-rendered OG card when the essay has no banner.
+  const description = (
+    translation?.meta_description ||
+    localized.hook ||
+    `An essay from The Dailicle. A ${essay.reading_minutes}-minute read.`
+  ).slice(0, 160);
+
+  const categoryLabel = await localeThemeLabel(essay.theme, locale);
+
+  // Prefer the essay's own banner illustration (it carries no text, so it works
+  // for every language); fall back to the dynamic OG card with the translated
+  // title otherwise.
   const banner = essayBannerUrl(essay);
   const ogImageUrl = new URL("https://dailicle.com/api/og");
-  ogImageUrl.searchParams.set("title", essay.title);
-  ogImageUrl.searchParams.set("category", themeLabel(essay.theme));
+  ogImageUrl.searchParams.set("title", localized.title);
+  ogImageUrl.searchParams.set("category", categoryLabel);
   ogImageUrl.searchParams.set("minimal", "true");
 
   const ogImage = banner
-    ? { url: banner, width: 2560, height: 1024, alt: essay.title, type: "image/png" }
+    ? { url: banner, width: 2560, height: 1024, alt: localized.title, type: "image/png" }
     : {
         url: ogImageUrl.toString(),
         width: 1200,
         height: 630,
-        alt: essay.title,
+        alt: localized.title,
         type: "image/png",
       };
 
   return {
-    title: `${essay.title} - The Dailicle`,
+    title: `${localized.title} - The Dailicle`,
     description,
     keywords: [
-      themeLabel(essay.theme),
+      categoryLabel,
       "essay",
       "weekly essay",
       "long-form writing",
@@ -80,26 +110,27 @@ export async function generateMetadata({
     authors: [{ name: "The Dailicle Desk", url: "https://dailicle.com" }],
     publisher: "The Dailicle",
     openGraph: {
-      title: `${essay.title} | The Dailicle`,
+      title: `${localized.title} | The Dailicle`,
       description,
-      url: `https://dailicle.com${canonicalPath}`,
+      url: localeUrl(path, locale),
       siteName: "The Dailicle",
-      locale: "en_US",
+      locale: LOCALES[locale].ogLocale,
       type: "article",
       publishedTime: formatDate(essay.published_at, "iso"),
       authors: ["The Dailicle Desk"],
-      section: themeLabel(essay.theme),
+      section: categoryLabel,
       images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       site: "@dailicle",
-      title: `${essay.title} | The Dailicle`,
+      title: `${localized.title} | The Dailicle`,
       description,
-      images: { url: ogImage.url, alt: essay.title },
+      images: { url: ogImage.url, alt: localized.title },
     },
     alternates: {
-      canonical: `https://dailicle.com${canonicalPath}`,
+      canonical: localeUrl(path, locale),
+      languages: hreflangAlternates(path),
     },
   };
 }
@@ -107,20 +138,29 @@ export async function generateMetadata({
 export default async function ReadPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ lang: string; id: string }>;
 }) {
-  const { id } = await params;
+  const { lang, id } = await params;
+  const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
   const [essay, nextTopic] = await Promise.all([getEssay(id), getNextTopic()]);
 
   if (!essay || !essay.body) {
     notFound();
   }
 
+  const translation = await getEssayTranslation(essay._id, locale);
+  const localized = localizeEssay(essay, translation);
+  const slug = essay.slug || essay._id;
+  const categoryLabel = await localeThemeLabel(essay.theme, locale);
+  const nextTranslation = nextTopic
+    ? await getEssayTranslation(nextTopic._id, locale)
+    : null;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: essay.title,
-    description: essay.hook,
+    headline: localized.title,
+    description: localized.hook,
     author: {
       "@type": "Organization",
       name: "The Dailicle",
@@ -138,12 +178,12 @@ export default async function ReadPage({
     datePublished: formatDate(essay.published_at, "iso"),
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://dailicle.com/read/${essay.slug || essay._id}`,
+      "@id": localeUrl(`/read/${slug}`, locale),
     },
-    articleSection: themeLabel(essay.theme),
-    wordCount: essay.word_count || essay.body.split(/\s+/).length,
+    articleSection: categoryLabel,
+    wordCount: essay.word_count || (localized.body || "").split(/\s+/).length,
     timeRequired: `PT${essay.reading_minutes}M`,
-    inLanguage: "en-US",
+    inLanguage: LOCALES[locale].htmlLang,
     isAccessibleForFree: true,
   };
 
@@ -157,13 +197,16 @@ export default async function ReadPage({
         <ThemeSwitcher />
         <EssayReader
           essayId={essay._id}
+          slug={slug}
+          locale={locale}
+          isTranslated={!!translation}
           essay={{
-            title: essay.title,
-            hook: essay.hook,
-            body: essay.body,
+            title: localized.title,
+            hook: localized.hook,
+            body: localized.body as string,
             dateLabel: formatDate(essay.published_at, "medium"),
             readingMinutes: essay.reading_minutes,
-            themeLabel: themeLabel(essay.theme),
+            themeLabel: categoryLabel,
             category: essay.theme,
             issue: essay.issue,
             archived: essay.status === "archived",
@@ -176,7 +219,7 @@ export default async function ReadPage({
           nextTease={
             nextTopic
               ? {
-                  title: nextTopic.title,
+                  title: nextTranslation?.title || nextTopic.title,
                   dateLabel: formatDate(nextMonday(), "medium"),
                 }
               : null

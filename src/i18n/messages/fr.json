@@ -1,0 +1,184 @@
+{
+  "common": {
+    "siteName": "The Dailicle",
+    "tagline": "Un essai par semaine. Rien d'autre.",
+    "oneEssayAWeek": "Un essai par semaine · lire lentement",
+    "backHome": "Retour à l'accueil",
+    "readAnother": "Lire un autre essai"
+  },
+  "nav": {
+    "home": "Accueil",
+    "archive": "Archives",
+    "manifesto": "Pourquoi lire ?",
+    "feedback": "Retour",
+    "support": "Support"
+  },
+  "footer": {
+    "tagline": "Un essai par semaine. Rien d'autre.",
+    "subscribeLabel": "Abonnez-vous pour des mises à jour",
+    "subscribePlaceholder": "vous@example.com",
+    "subscribeHint": "Une note discrète quand un nouvel essai arrive.",
+    "subscribeAria": "Abonnez-vous pour des mises à jour",
+    "success": "Abonné. À lundi.",
+    "already": "Déjà abonné avec cet e-mail.",
+    "error": "Impossible de s'abonner. Veuillez réessayer.",
+    "onList": "Vous êtes sur la liste.",
+    "language": "Langue",
+    "themes": {
+      "light": "Jour",
+      "dark": "Nuit",
+      "wooden": "Étude",
+      "space": "Vide",
+      "fairytale": "Rêve"
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "The Dailicle – Un essai par semaine, écrit pour être lu lentement",
+      "description": "Un essai hebdomadaire sur l'esprit, le sens, l'argent et comment vivre. Soigneusement recherché, gratuit à lire, rien à s'inscrire – un nouveau chaque lundi."
+    },
+    "thisWeek": {
+      "issue": "Numéro {issue}",
+      "thisWeek": "Cette semaine",
+      "readCta": "Lire l'essai de cette semaine",
+      "readingLine": "{minutes} min de lecture · gratuit · rien à s'inscrire",
+      "orArchive": "ou commencez dans les archives",
+      "firstIssue": "Premier numéro · {theme} · arrivant {date}",
+      "betweenIssues": "Entre les numéros",
+      "onItsWay": "Le prochain essai est en route.",
+      "browseWhileWaiting": "Parcourez les archives en attendant"
+    },
+    "nextWeek": {
+      "label": "Lundi prochain · {date}"
+    },
+    "ethos": {
+      "title": "Un essai par semaine. Rien d'autre.",
+      "p1": "Chaque lundi, The Dailicle prend une seule idée – sur l'esprit, sur le sens, sur l'argent, sur l'étrange affaire d'être une personne – et la suit attentivement, dans un langage simple, à une longueur que vous pouvez réellement terminer.",
+      "p2": "Il n'y a pas de flux ici et rien à s'inscrire. Vous lisez l'essai, vous fermez l'onglet, et avec un peu de chance, l'idée vous suit pour le reste de la semaine.",
+      "whyLink": "Pourquoi nous publions de cette manière",
+      "strandsLabel": "Les cinq axes"
+    },
+    "readers": {
+      "eyebrow": "Lisez à travers le monde",
+      "title": "Silencieusement, dans plus d'endroits que vous ne le pensez",
+      "footnote": "et des lecteurs discrets dans des dizaines d'autres pays."
+    },
+    "recent": {
+      "title": "Continuez à lire",
+      "browseAll": "Parcourez tous les essais",
+      "minutes": "{minutes} min"
+    },
+    "closing": {
+      "title": "Le prochain essai arrive lundi.",
+      "thisWeekHere": "Celui de cette semaine est déjà là.",
+      "startReading": "Commencez à lire",
+      "visitArchive": "Visitez l'archive",
+      "free": "Gratuit à lire · rien à s'inscrire · pas de publicités"
+    }
+  },
+  "archive": {
+    "meta": {
+      "title": "Les Essais - Archive | The Dailicle",
+      "description": "Chaque essai que nous avons publié – un par semaine sur l'esprit, le sens, l'argent et comment vivre."
+    },
+    "title": "Les essais",
+    "subtitle": "Un par semaine, chaque lundi. Choisissez un axe ou commencez simplement par le haut.",
+    "searchPlaceholder": "Rechercher les essais…",
+    "all": "Tous",
+    "issue": "Numéro {issue}",
+    "minutes": "{minutes} min",
+    "noMatch": "Rien ne correspond encore – la collection s'agrandit d'un essai chaque lundi.",
+    "noMatchQuery": "Rien ne correspond à “{query}” encore – la collection s'agrandit d'un essai chaque lundi.",
+    "clearFilters": "Effacer les filtres",
+    "legacyToggle": "Depuis 2025, avant l'ère hebdomadaire ({count})"
+  },
+  "themes": {
+    "psychology": "Psychologie",
+    "relationships": "Relations",
+    "philosophy": "Philosophie",
+    "society": "Société",
+    "money": "Argent"
+  },
+  "reader": {
+    "allEssays": "Tous les essais",
+    "share": "Partager",
+    "shareThisEssay": "Partager cet essai",
+    "shareAria": "Partager l'essai",
+    "shareText": "\"{title}\" – un essai de The Dailicle",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "copyLink": "Copier le lien",
+    "language": "Langue",
+    "languageAria": "Changer de langue",
+    "copied": "Copié !",
+    "listen": "Écouter",
+    "playNarration": "Lire la narration",
+    "pauseNarration": "Mettre en pause la narration",
+    "stopPlayer": "Arrêter et fermer le lecteur",
+    "notReleased": "Le prochain essai arrive lundi.",
+    "comeBackSoon": "Revenez bientôt.",
+    "comeBackTomorrow": "Revenez demain.",
+    "comeBackOn": "Revenez le {date}.",
+    "fromArchive": "De l'archive 2025",
+    "issue": "Numéro {issue}",
+    "by": "Par {author} · {date} · {minutes} min de lecture",
+    "furtherReadingIntro": "Si vous voulez y réfléchir plus longtemps :",
+    "nextMonday": "Lundi prochain · {date}",
+    "thanksReading": "Merci de votre lecture. Un nouvel essai arrive chaque lundi.",
+    "readMore": "Lire plus d'essais",
+    "byline": "La rédaction de Dailicle"
+  },
+  "manifesto": {
+    "meta": {
+      "title": "Pourquoi lire Dailicle ? Un manifeste pour le web lent",
+      "description": "Une rébellion contre le bruit d'internet. La philosophie derrière un essai par semaine."
+    },
+    "title": "Pourquoi lire Dailicle ?",
+    "subtitle": "Un manifeste pour le web lent.",
+    "p_library": "Internet était censé être une bibliothèque. Au lieu de cela, c'est devenu un casino.",
+    "p_scroll": "Pensez à la dernière heure que vous avez passée à faire défiler. Vous souvenez-vous d'une chose ? Les fils sont conçus par certaines des personnes les plus intelligentes pour garder votre pouce en mouvement, et ils sont très bons dans leur travail. Ce qu'ils prennent est subtil : la soirée semble pleine tandis que l'esprit reste vide.",
+    "p_rebellion": "Dailicle est une rébellion contre cela.",
+    "h_one": "La philosophie de l'un",
+    "p_one_1": "Nous publions exactement un essai par semaine. Pas dix. Pas un fil. Un, chaque lundi.",
+    "p_one_2": "La rareté est une forme de respect. Quand il n'y a qu'une seule chose à lire, vous arrêtez de survoler et commencez à lire. Vous lui donnez toute votre attention, et nous lui donnons une semaine entière de soin : chaque essai est choisi parmi des dizaines d'idées candidates, correctement recherché et écrit pour être terminé. La plupart prennent dix à quinze minutes. Il y a une narration si vous préférez écouter.",
+    "h_about": "De quoi parlent les essais",
+    "p_about_1": "Cinq axes : psychologie, philosophie, perspectives, vie et argent. Ce qui les relie est un certain type d'idée – une observation humaine spécifique que vous reconnaissez à moitié mais que vous n'avez jamais mise en mots. Les inquiétudes que vous avez héritées de vos parents. Pourquoi certains jours disparaissent et d'autres durent éternellement. Ce que cela coûte discrètement de garder chaque option ouverte.",
+    "p_about_2": "Un bon essai ici devrait encore être dans votre esprit mercredi.",
+    "h_who": "Pour qui est-ce ?",
+    "p_who_1": "Les curieux. Les personnes qui croient encore qu'une phrase bien écrite peut changer votre vision du monde, et celles qui soupçonnent qu'elles liraient plus si lire ne ressemblait pas à des devoirs. Il n'y a pas d'inscription, pas de mur payant, et rien à suivre – un essai, une fois par semaine, gratuit.",
+    "p_who_2": "Si vous voulez du contenu pour remplir le silence, de nombreux endroits seront heureux de vous satisfaire. Si vous voulez des idées qui persistent après la fermeture de l'onglet, bienvenue chez vous.",
+    "h_writes": "Qui l'écrit ?",
+    "p_writes": "Les essais sont écrits et édités à La rédaction de Dailicle, dans une voix unique, et soumis à une seule exigence : un lecteur attentif voudrait-il lire cela deux fois ? Pas de signatures cherchant l'attention, pas de publications invitées, pas de semaines de remplissage.",
+    "h_recs": "Pourquoi pas de recommandations ?",
+    "p_recs_1": "Les algorithmes de recommandation sont conçus pour l'engagement, pas pour l'illumination. Nous voulons que vous lisiez, réfléchissiez, puis partiez. Allez vous promener. Parlez à un ami. Construisez quelque chose.",
+    "p_recs_2": "Parfois, un essai se termine par quelques conseils pour quiconque souhaite réfléchir plus longtemps à l'idée. Mais nous ne vous piégerons jamais dans une boucle.",
+    "closing": "Lisez lentement. Pensez profondément. Revenez lundi."
+  },
+  "feedback": {
+    "meta": {
+      "title": "Retour d'information",
+      "description": "Aidez à façonner l'avenir de The Dailicle. Partagez vos pensées, idées ou dites simplement bonjour."
+    },
+    "title": "Retour d'information",
+    "subtitle": "Aidez-nous à façonner l'avenir de Dailicle.",
+    "preferEmail": "Préférez-vous l'email ? Contactez-nous directement :",
+    "form": {
+      "messageLabel": "Votre message",
+      "messagePlaceholder": "Qu'est-ce qui vous préoccupe ? Retours, idées ou juste bonjour.",
+      "identityLabel": "Qui êtes-vous ?",
+      "optional": "(Facultatif)",
+      "identityPlaceholder": "Nom, Twitter ou Email",
+      "send": "Envoyer le message",
+      "successTitle": "Message reçu",
+      "successBody": "Merci pour vos pensées.",
+      "error": "Une erreur s'est produite. Veuillez réessayer."
+    }
+  },
+  "thankYou": {
+    "eyebrow": "The Dailicle",
+    "title": "Merci, vraiment.",
+    "body": "Grâce à vous, le bureau reste allumé un peu plus longtemps. Les essais continueront d'arriver chaque lundi, lentement, prudemment et gratuitement pour tous, exactement comme avant.",
+    "note": "Vous n'étiez pas obligé. C'est exactement pourquoi cela signifie tant."
+  }
+}

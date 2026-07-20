@@ -4,8 +4,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, CheckCircle, Loader2 } from "lucide-react";
 import { track } from "@/lib/analytics";
+import { useT } from "@/i18n/I18nProvider";
 
 export function FeedbackForm() {
+  const t = useT();
   const [message, setMessage] = useState("");
   const [identity, setIdentity] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -32,7 +34,7 @@ export function FeedbackForm() {
       } else {
         setStatus("error");
       }
-    } catch (error) {
+    } catch {
       setStatus("error");
     }
   };
@@ -48,8 +50,8 @@ export function FeedbackForm() {
             className="flex flex-col items-center justify-center p-8 text-center space-y-4 bg-foreground/5 rounded-2xl"
           >
             <CheckCircle size={48} className="text-green-500" />
-            <h3 className="text-xl font-medium">Message Received</h3>
-            <p className="text-foreground/60">Thank you for your thoughts.</p>
+            <h3 className="text-xl font-medium">{t("feedback.form.successTitle")}</h3>
+            <p className="text-foreground/60">{t("feedback.form.successBody")}</p>
           </motion.div>
         ) : (
           <motion.form
@@ -61,28 +63,29 @@ export function FeedbackForm() {
           >
             <div className="space-y-2">
               <label htmlFor="message" className="text-sm font-medium text-foreground/60 ml-1">
-                Your Message <span className="text-red-400">*</span>
+                {t("feedback.form.messageLabel")} <span className="text-red-400">*</span>
               </label>
               <textarea
                 id="message"
                 required
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="What's on your mind? Feedback, ideas, or just hello."
+                placeholder={t("feedback.form.messagePlaceholder")}
                 className="w-full min-h-[150px] p-4 rounded-2xl bg-foreground/5 border-transparent focus:border-foreground/20 focus:bg-background transition-all outline-none resize-none placeholder:text-foreground/30"
               />
             </div>
 
             <div className="space-y-2">
               <label htmlFor="identity" className="text-sm font-medium text-foreground/60 ml-1">
-                Who are you? <span className="text-foreground/30 font-normal">(Optional)</span>
+                {t("feedback.form.identityLabel")}{" "}
+                <span className="text-foreground/30 font-normal">{t("feedback.form.optional")}</span>
               </label>
               <input
                 id="identity"
                 type="text"
                 value={identity}
                 onChange={(e) => setIdentity(e.target.value)}
-                placeholder="Name, Twitter, or Email"
+                placeholder={t("feedback.form.identityPlaceholder")}
                 className="w-full p-4 rounded-xl bg-foreground/5 border-transparent focus:border-foreground/20 focus:bg-background transition-all outline-none placeholder:text-foreground/30"
               />
             </div>
@@ -96,16 +99,14 @@ export function FeedbackForm() {
                 <Loader2 size={20} className="animate-spin" />
               ) : (
                 <>
-                  <span>Send Message</span>
+                  <span>{t("feedback.form.send")}</span>
                   <Send size={16} />
                 </>
               )}
             </button>
-            
+
             {status === "error" && (
-              <p className="text-red-500 text-sm text-center">
-                Something went wrong. Please try again.
-              </p>
+              <p className="text-red-500 text-sm text-center">{t("feedback.form.error")}</p>
             )}
           </motion.form>
         )}

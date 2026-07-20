@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { Inter, Merriweather, Space_Grotesk, Lora } from "next/font/google";
-import "./globals.css";
+import { notFound } from "next/navigation";
+import "../globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { SupportProvider } from "@/components/support/SupportProvider";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import { Analytics } from "@vercel/analytics/next";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
+import { I18nProvider } from "@/i18n/I18nProvider";
+import { getMessages } from "@/i18n/getMessages";
+import { LOCALES, LOCALE_CODES, isLocale, type Locale } from "@/i18n/config";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,6 +32,10 @@ const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
 });
+
+export function generateStaticParams() {
+  return LOCALE_CODES.map((lang) => ({ lang }));
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://dailicle.com'),
@@ -61,29 +69,6 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://dailicle.com",
-    siteName: "The Dailicle",
-    title: "The Dailicle - One Essay a Week, Written to Be Read Slowly",
-    description: "A weekly essay on the mind, meaning, money, and how to live. Free to read, nothing to sign up for - a new one every Monday.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "The Dailicle - One Essay a Week",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "The Dailicle - One Essay a Week, Written to Be Read Slowly",
-    description: "A weekly essay on the mind, meaning, money, and how to live. A new one every Monday.",
-    images: ["/og-image.png"],
-    creator: "@dailicle",
-  },
   robots: {
     index: true,
     follow: true,
@@ -96,7 +81,6 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://dailicle.com",
     types: {
       "application/rss+xml": [
         { url: "https://dailicle.com/feed.xml", title: "The Dailicle – weekly essay" },
@@ -123,13 +107,20 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ lang: string }>;
 }>) {
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
+  const locale = lang as Locale;
+  const messages = await getMessages(locale);
+
   return (
-    <html lang="en">
+    <html lang={LOCALES[locale].htmlLang}>
       <head>
         <script
           async
@@ -174,15 +165,17 @@ export default function RootLayout({
             }),
           }}
         />
-        <ThemeProvider>
-          <SupportProvider>
-            <Navbar />
-            {children}
-            <Footer />
-            <Analytics />
-            <AnalyticsProvider />
-          </SupportProvider>
-        </ThemeProvider>
+        <I18nProvider locale={locale} messages={messages}>
+          <ThemeProvider>
+            <SupportProvider>
+              <Navbar />
+              {children}
+              <Footer />
+              <Analytics />
+              <AnalyticsProvider />
+            </SupportProvider>
+          </ThemeProvider>
+        </I18nProvider>
       </body>
     </html>
   );

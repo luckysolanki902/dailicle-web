@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { LocalizedLink as Link } from "@/i18n/Link";
 import { ThisWeek } from "@/components/landing/ThisWeek";
 import { NextWeek } from "@/components/landing/NextWeek";
 import { Ethos } from "@/components/landing/Ethos";
@@ -10,6 +10,8 @@ import { ReadersByCountry } from "@/components/landing/ReadersByCountry";
 import { ReaderWord } from "@/components/landing/ReaderWord";
 import { RecentEssays } from "@/components/landing/RecentEssays";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
+import { useT } from "@/i18n/I18nProvider";
+import { makeThemeLabel } from "@/lib/themes";
 import {
   buildHomeView,
   type HomeView,
@@ -20,6 +22,8 @@ import {
 interface HomeClientProps {
   published: LandingEssay[];
   queued: QueuedTopic[];
+  /** Top readerships from GA (empty ⇒ the section falls back to static data). */
+  readers: { name: string; flag: string; share: number }[];
   /**
    * The view computed on the server. The release calendar is the reader's
    * LOCAL calendar and the page is cached, so recomputing it during hydration
@@ -29,7 +33,8 @@ interface HomeClientProps {
   initialView: HomeView;
 }
 
-export function HomeClient({ published, queued, initialView }: HomeClientProps) {
+export function HomeClient({ published, queued, initialView, readers }: HomeClientProps) {
+  const t = useT();
   const [mounted, setMounted] = useState(false);
 
   // Deferred so hydration completes against the server view before the local
@@ -40,8 +45,11 @@ export function HomeClient({ published, queued, initialView }: HomeClientProps) 
   }, []);
 
   const { hero, tease, cards } = useMemo(
-    () => (mounted ? buildHomeView(published, queued, new Date()) : initialView),
-    [mounted, published, queued, initialView]
+    () =>
+      mounted
+        ? buildHomeView(published, queued, new Date(), makeThemeLabel(t))
+        : initialView,
+    [mounted, published, queued, initialView, t]
   );
 
   return (
@@ -51,28 +59,26 @@ export function HomeClient({ published, queued, initialView }: HomeClientProps) 
       <ThisWeek essay={hero} upcoming={!hero ? tease : null} />
       {hero && <NextWeek topic={tease} />}
       <Ethos />
-      <ReadersByCountry />
+      <ReadersByCountry countries={readers} />
       <ReaderWord />
       <RecentEssays essays={cards} />
 
       <section className="py-24 px-6 text-center border-t border-foreground/10">
         <div className="max-w-xl mx-auto space-y-6">
           <h2 className="font-display text-3xl md:text-4xl tracking-tight text-balance">
-            The next essay arrives Monday.
-            {hero && <span className="block">This week&apos;s is already here.</span>}
+            {t("home.closing.title")}
+            {hero && <span className="block">{t("home.closing.thisWeekHere")}</span>}
           </h2>
           <div className="pt-2">
             <Link
               href={hero ? hero.href : "/archive"}
               className="group inline-flex items-center gap-3 px-9 py-4 bg-foreground text-background rounded-full text-base font-medium transition-all hover:shadow-xl hover:-translate-y-0.5"
             >
-              <span>{hero ? "Start reading" : "Visit the archive"}</span>
+              <span>{hero ? t("home.closing.startReading") : t("home.closing.visitArchive")}</span>
               <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
-          <p className="text-xs text-foreground/40">
-            Free to read · nothing to sign up for · no ads
-          </p>
+          <p className="text-xs text-foreground/40">{t("home.closing.free")}</p>
         </div>
       </section>
     </main>

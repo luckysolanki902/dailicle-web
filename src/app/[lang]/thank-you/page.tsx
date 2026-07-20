@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import { LocalizedLink as Link } from "@/i18n/Link";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
+import { useT } from "@/i18n/I18nProvider";
 
 /**
  * Where a reader lands after a successful support payment. Deliberately quiet
@@ -10,6 +11,7 @@ import { Heart } from "lucide-react";
  * variables (--background / --foreground / --accent) the rest of the site uses.
  */
 export default function ThankYouPage() {
+  const t = useT();
   const container = {
     hidden: {},
     show: { transition: { staggerChildren: 0.14, delayChildren: 0.15 } },
@@ -71,30 +73,28 @@ export default function ThankYouPage() {
           variants={item}
           className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-accent"
         >
-          The Dailicle
+          {t("thankYou.eyebrow")}
         </motion.p>
 
         <motion.h1
           variants={item}
           className="font-display text-4xl leading-[1.12] tracking-tight text-balance md:text-5xl"
         >
-          Thank you, truly.
+          {t("thankYou.title")}
         </motion.h1>
 
         <motion.p
           variants={item}
           className="mx-auto mt-6 max-w-md font-serif text-lg leading-relaxed text-foreground/60"
         >
-          Because of you, the desk stays lit a little longer. The essays will keep
-          arriving every Monday, slow, careful, and free for everyone, exactly as
-          they were before.
+          {t("thankYou.body")}
         </motion.p>
 
         <motion.p
           variants={item}
           className="mx-auto mt-4 max-w-sm font-serif italic text-foreground/45"
         >
-          You didn&apos;t have to. That&apos;s exactly why it means so much.
+          {t("thankYou.note")}
         </motion.p>
 
         <motion.div
@@ -105,13 +105,13 @@ export default function ThankYouPage() {
             href="/"
             className="rounded-full bg-foreground px-7 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
           >
-            Back home
+            {t("common.backHome")}
           </Link>
           <Link
             href="/archive"
             className="text-sm font-medium text-foreground/60 underline decoration-accent/40 underline-offset-4 transition-colors hover:text-foreground hover:decoration-accent"
           >
-            Read another essay
+            {t("common.readAnother")}
           </Link>
         </motion.div>
       </motion.div>

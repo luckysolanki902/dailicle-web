@@ -1,21 +1,27 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { LocalizedLink as Link } from "@/i18n/Link";
 import { SupportButton } from "@/components/support/SupportButton";
+import { useT } from "@/i18n/I18nProvider";
+import { splitLocale } from "@/i18n/config";
 
 export function Navbar() {
   const pathname = usePathname();
+  const t = useT();
+  // Compare against the locale-less path so the active-link filter works under
+  // every locale prefix (/es/archive still matches "/archive").
+  const { path } = splitLocale(pathname || "/");
 
   const links = [
-    { href: "/", label: "Home" },
-    { href: "/archive", label: "Archive" },
-    { href: "/manifesto", label: "Why Read?" },
+    { href: "/", label: t("nav.home") },
+    { href: "/archive", label: t("nav.archive") },
+    { href: "/manifesto", label: t("nav.manifesto") },
   ];
 
   // Filter out current page and Feedback (Feedback is footer only)
-  const visibleLinks = links.filter(link => link.href !== pathname);
+  const visibleLinks = links.filter((link) => link.href !== path);
 
   return (
     <motion.nav
@@ -37,6 +43,7 @@ export function Navbar() {
         ))}
         <SupportButton
           source="navbar"
+          label={t("nav.support")}
           className="text-sm font-medium text-foreground/40 hover:text-foreground"
         />
       </div>
