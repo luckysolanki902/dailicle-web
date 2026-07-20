@@ -4,7 +4,8 @@
     "tagline": "Haftada bir deneme. Başka bir şey yok.",
     "oneEssayAWeek": "Haftada bir deneme · yavaşça oku",
     "backHome": "Ana sayfaya dön",
-    "readAnother": "Başka bir deneme oku"
+    "readAnother": "Başka bir deneme oku",
+    "dismiss": "Kapat"
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -129,8 +130,22 @@
     "furtherReadingIntro": "Bunu daha uzun süre düşünmek istersen:",
     "nextMonday": "Gelecek Pazartesi · {date}",
     "thanksReading": "Okuduğunuz için teşekkürler. Her Pazartesi yeni bir deneme geliyor.",
-    "readMore": "Daha fazla deneme oku",
-    "byline": "The Dailicle Masası"
+    "readMore": "Tüm denemeleri göz at",
+    "byline": "The Dailicle Masası",
+    "keepReading": "Okumaya devam et",
+    "minRead": "{minutes} dk okuma",
+    "subscribe": {
+      "eyebrow": "Katıl",
+      "heading": "Eğer bu hoşunuza gittiyse, bir sonraki için abone olun.",
+      "sub": "Bu tarz bir deneme, çoğu hafta. Spam yok, sadece bir sonraki.",
+      "nextWeek": "Gelecek hafta —",
+      "reassure": "Ücretsiz · spam yok · istediğiniz zaman iptal edin",
+      "placeholder": "your@email.com",
+      "cta": "Güncellemeleri al",
+      "done": "Listedesiniz. Pazartesi görüşürüz.",
+      "already": "Zaten listedesiniz — Pazartesi görüşürüz.",
+      "nudge": "Ücretsiz haftalık almak ister misiniz?"
+    }
   },
   "manifesto": {
     "meta": {
@@ -183,5 +198,53 @@
     "title": "Teşekkür ederiz, gerçekten.",
     "body": "Sizin sayenizde masa biraz daha aydınlık kalıyor. Denemeler her Pazartesi, yavaş, dikkatli ve herkes için ücretsiz olarak, tam olarak önceki gibi gelmeye devam edecek.",
     "note": "Bunu yapmak zorunda değildiniz. Bu yüzden bu kadar anlamlı."
+  },
+  "support": {
+    "title": "Buradaki her şey ücretsiz. Böyle kalabilir.",
+    "body": "Bir makale için hiçbir ödeme duvarı, reklam yok, sadece yavaş yazılmış bir makale. Eğer sizi durdurduysa, devam etmesine yardımcı olabilirsiniz. İsterseniz.",
+    "tiers": {
+      "t1": "Bir kahve",
+      "t2": "Sessiz bir destekçi",
+      "t3": "Bir inanan"
+    },
+    "anotherAmount": "Başka bir miktar",
+    "notePlaceholder": "Bir not bırakın, isterseniz (isteğe bağlı)",
+    "cta": "The Dailicle'ı destekle",
+    "processing": "Güvenli ödeme sayfası açılıyor…",
+    "maybeLater": "Belki başka bir zaman",
+    "secure": "Razorpay ile güvenli ödeme · tek seferlik bir teşekkür, abonelik değil",
+    "thanksTitle": "Teşekkür ederiz, gerçekten.",
+    "thanksBody": "Masa sizin sayenizde biraz daha aydınlık kalıyor. Denemeler her zamanki gibi, herkes için ücretsiz olarak devam edecek.",
+    "backToReading": "Okumaya geri dön",
+    "close": "Kapat",
+    "checkoutDescription": "Masanın aydınlık kalmasına yardımcı olun, teşekkürler.",
+    "errMin": "En az {amount} girin.",
+    "errCheckout": "Güvenli ödeme sayfası yüklenemedi.",
+    "errStart": "Ödeme başlatılamadı.",
+    "errGeneric": "Bir şeyler yanlış gitti. Tekrar deneyin."
+  },
+  "prefs": {
+    "aria": "Okuma tercihleri",
+    "title": "Okuma konforu",
+    "close": "Kapat",
+    "textSize": "Yazı boyutu",
+    "comfortable": "Rahat",
+    "large": "Büyük",
+    "veryLarge": "Çok büyük",
+    "bodyTypeface": "Gövde yazı tipi",
+    "sans": "Sans",
+    "serif": "Serif",
+    "lineSpacing": "Satır aralığı",
+    "normal": "Normal",
+    "relaxed": "Rahat"
+  },
+  "reactions": {
+    "prompt": "Bu deneme senin için etkili oldu mu?",
+    "yes": "Evet, bu etkili oldu",
+    "no": "Pek değil",
+    "noted": "Not alındı – teşekkürler."
+  },
+  "themeSwitcher": {
+    "switchTo": "{theme} temasına geç"
   }
 }

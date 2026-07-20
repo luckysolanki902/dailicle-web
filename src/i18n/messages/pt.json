@@ -4,7 +4,8 @@
     "tagline": "Um ensaio por semana. Nada mais.",
     "oneEssayAWeek": "Um ensaio por semana · leia devagar",
     "backHome": "Voltar para casa",
-    "readAnother": "Leia outro ensaio"
+    "readAnother": "Leia outro ensaio",
+    "dismiss": "Dispensar"
   },
   "nav": {
     "home": "Início",
@@ -129,8 +130,22 @@
     "furtherReadingIntro": "Se você quiser refletir mais sobre isso:",
     "nextMonday": "Próxima segunda-feira · {date}",
     "thanksReading": "Obrigado por ler. Um novo ensaio chega toda segunda-feira.",
-    "readMore": "Leia mais ensaios",
-    "byline": "Escritório The Dailicle"
+    "readMore": "Navegar por todos os ensaios",
+    "byline": "Escritório The Dailicle",
+    "keepReading": "Continuar lendo",
+    "minRead": "{minutes} min de leitura",
+    "subscribe": {
+      "eyebrow": "Venha junto",
+      "heading": "Se este te agradou, receba o próximo.",
+      "sub": "Um ensaio como este, na maioria das semanas. Sem spam, apenas o próximo.",
+      "nextWeek": "Próxima semana —",
+      "reassure": "Gratuito · sem spam · cancele a qualquer momento",
+      "placeholder": "seu@email.com",
+      "cta": "Receber atualizações",
+      "done": "Você está dentro. Até segunda.",
+      "already": "Você já está na lista — até segunda.",
+      "nudge": "Receber o semanal gratuito?"
+    }
   },
   "manifesto": {
     "meta": {
@@ -183,5 +198,53 @@
     "title": "Obrigado, de verdade.",
     "body": "Por sua causa, a mesa permanece iluminada um pouco mais. Os ensaios continuarão chegando toda segunda-feira, devagar, com cuidado e gratuitos para todos, exatamente como antes.",
     "note": "Você não precisava. É exatamente por isso que significa tanto."
+  },
+  "support": {
+    "title": "Tudo aqui é gratuito. Pode continuar assim.",
+    "body": "Sem paywall, sem anúncios, nada para se inscrever para apenas um ensaio por semana, escrito devagar. Se já te fez pausar, você pode ajudar a mantê-lo. Somente se quiser.",
+    "tiers": {
+      "t1": "Um café",
+      "t2": "Um patrono silencioso",
+      "t3": "Um crente"
+    },
+    "anotherAmount": "Outro valor",
+    "notePlaceholder": "Deixe uma nota, se quiser (opcional)",
+    "cta": "Apoiar The Dailicle",
+    "processing": "Abrindo checkout seguro…",
+    "maybeLater": "Talvez outra hora",
+    "secure": "Pagamento seguro pelo Razorpay · um agradecimento único, não uma assinatura",
+    "thanksTitle": "Obrigado, de verdade.",
+    "thanksBody": "A mesa permanece iluminada um pouco mais por sua causa. Os ensaios continuarão chegando como sempre, gratuitos para todos.",
+    "backToReading": "Voltar à leitura",
+    "close": "Fechar",
+    "checkoutDescription": "Mantenha a mesa iluminada, obrigado.",
+    "errMin": "Insira pelo menos {amount}.",
+    "errCheckout": "Não foi possível carregar o checkout seguro.",
+    "errStart": "Não foi possível iniciar o pagamento.",
+    "errGeneric": "Algo deu errado. Tente novamente."
+  },
+  "prefs": {
+    "aria": "Preferências de leitura",
+    "title": "Conforto de leitura",
+    "close": "Fechar",
+    "textSize": "Tamanho do texto",
+    "comfortable": "Confortável",
+    "large": "Grande",
+    "veryLarge": "Muito grande",
+    "bodyTypeface": "Fonte do corpo",
+    "sans": "Sem serifa",
+    "serif": "Com serifa",
+    "lineSpacing": "Espaçamento entre linhas",
+    "normal": "Normal",
+    "relaxed": "Relaxado"
+  },
+  "reactions": {
+    "prompt": "Este ensaio fez sentido para você?",
+    "yes": "Sim, fez sentido",
+    "no": "Não muito",
+    "noted": "Anotado – obrigado."
+  },
+  "themeSwitcher": {
+    "switchTo": "Mudar para o tema {theme}"
   }
 }

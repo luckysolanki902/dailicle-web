@@ -4,7 +4,8 @@
     "tagline": "매주 에세이 하나. 그게 전부입니다.",
     "oneEssayAWeek": "매주 에세이 하나 · 천천히 읽기",
     "backHome": "홈으로 돌아가기",
-    "readAnother": "다른 에세이 읽기"
+    "readAnother": "다른 에세이 읽기",
+    "dismiss": "무시하기"
   },
   "nav": {
     "home": "홈",
@@ -129,8 +130,22 @@
     "furtherReadingIntro": "더 오래 생각하고 싶다면:",
     "nextMonday": "다음 월요일 · {date}",
     "thanksReading": "읽어주셔서 감사합니다. 새로운 에세이는 매주 월요일에 도착합니다.",
-    "readMore": "더 많은 에세이 읽기",
-    "byline": "더 데일리클 데스크"
+    "readMore": "모든 에세이 보기",
+    "byline": "더 데일리클 데스크",
+    "keepReading": "계속 읽기",
+    "minRead": "{minutes} 분 읽기",
+    "subscribe": {
+      "eyebrow": "함께 하세요",
+      "heading": "이 글이 마음에 드셨다면, 다음 글도 받아보세요.",
+      "sub": "이런 에세이를 매주 한 편씩. 스팸 없이, 다음 글만.",
+      "nextWeek": "다음 주 —",
+      "reassure": "무료 · 스팸 없음 · 언제든지 구독 취소",
+      "placeholder": "your@email.com",
+      "cta": "업데이트 받기",
+      "done": "가입 완료. 월요일에 만나요.",
+      "already": "이미 목록에 있습니다 — 월요일에 만나요.",
+      "nudge": "무료 주간 구독 하시겠어요?"
+    }
   },
   "manifesto": {
     "meta": {
@@ -183,5 +198,53 @@
     "title": "진심으로 감사합니다.",
     "body": "당신 덕분에 책상이 조금 더 밝게 유지됩니다. 에세이는 매주 월요일마다 계속 도착할 것이며, 느리고 신중하며 모두에게 무료로 제공됩니다. 이전과 정확히 같습니다.",
     "note": "당신이 하지 않아도 되었어요. 그래서 더욱 의미가 있습니다."
+  },
+  "support": {
+    "title": "여기 있는 모든 것은 무료입니다. 계속 그렇게 유지할 수 있습니다.",
+    "body": "주 1회 에세이를 위해 가입할 필요 없이, 결제 벽이나 광고가 없습니다. 잠시라도 생각하게 했다면, 계속할 수 있도록 도와주세요. 원하실 때만요.",
+    "tiers": {
+      "t1": "커피 한 잔",
+      "t2": "조용한 후원자",
+      "t3": "신념을 가진 사람"
+    },
+    "anotherAmount": "다른 금액",
+    "notePlaceholder": "메모를 남기세요 (선택 사항)",
+    "cta": "The Dailicle 후원하기",
+    "processing": "안전한 결제 창 열기…",
+    "maybeLater": "다음에 또 생각해볼게요",
+    "secure": "Razorpay를 통한 안전한 결제 · 일회성 감사의 표시, 구독 아님",
+    "thanksTitle": "진심으로 감사합니다.",
+    "thanksBody": "당신 덕분에 책상이 조금 더 밝게 유지됩니다. 에세이는 항상처럼 계속 무료로 제공됩니다.",
+    "backToReading": "읽기로 돌아가기",
+    "close": "닫기",
+    "checkoutDescription": "책상을 밝게 유지해 주세요, 감사합니다.",
+    "errMin": "최소 {amount}을 입력하세요.",
+    "errCheckout": "안전한 결제를 불러올 수 없습니다.",
+    "errStart": "결제를 시작할 수 없습니다.",
+    "errGeneric": "문제가 발생했습니다. 다시 시도하세요."
+  },
+  "prefs": {
+    "aria": "읽기 환경 설정",
+    "title": "읽기 편안함",
+    "close": "닫기",
+    "textSize": "텍스트 크기",
+    "comfortable": "편안함",
+    "large": "큰 글씨",
+    "veryLarge": "매우 큼",
+    "bodyTypeface": "본문 글꼴",
+    "sans": "산세리프",
+    "serif": "세리프",
+    "lineSpacing": "줄 간격",
+    "normal": "보통",
+    "relaxed": "여유롭게"
+  },
+  "reactions": {
+    "prompt": "이 에세이가 당신에게 잘 전달되었나요?",
+    "yes": "네, 잘 전달되었습니다",
+    "no": "그렇지 않아요",
+    "noted": "알겠습니다 – 감사합니다."
+  },
+  "themeSwitcher": {
+    "switchTo": "{theme} 테마로 전환"
   }
 }

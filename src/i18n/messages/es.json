@@ -4,7 +4,8 @@
     "tagline": "Un ensayo a la semana. Nada más.",
     "oneEssayAWeek": "Un ensayo a la semana · lee despacio",
     "backHome": "Regresar a casa",
-    "readAnother": "Leer otro ensayo"
+    "readAnother": "Leer otro ensayo",
+    "dismiss": "Descartar"
   },
   "nav": {
     "home": "Inicio",
@@ -129,8 +130,22 @@
     "furtherReadingIntro": "Si quieres reflexionar más sobre esto:",
     "nextMonday": "Próximo lunes · {date}",
     "thanksReading": "Gracias por leer. Un nuevo ensayo llega cada lunes.",
-    "readMore": "Leer más ensayos",
-    "byline": "La Redacción de Dailicle"
+    "readMore": "Explorar todos los ensayos",
+    "byline": "La Redacción de Dailicle",
+    "keepReading": "Seguir leyendo",
+    "minRead": "{minutes} min de lectura",
+    "subscribe": {
+      "eyebrow": "Únete",
+      "heading": "Si este te gustó, recibe el siguiente.",
+      "sub": "Un ensayo como este, la mayoría de las semanas. Sin spam, solo el siguiente.",
+      "nextWeek": "La próxima semana —",
+      "reassure": "Gratis · sin spam · cancela en cualquier momento",
+      "placeholder": "tu@email.com",
+      "cta": "Recibir actualizaciones",
+      "done": "Estás dentro. Nos vemos el lunes.",
+      "already": "Ya estás en la lista — nos vemos el lunes.",
+      "nudge": "¿Recibir el semanal gratuito?"
+    }
   },
   "manifesto": {
     "meta": {
@@ -183,5 +198,53 @@
     "title": "Gracias, de verdad.",
     "body": "Gracias a ti, el escritorio se mantiene iluminado un poco más. Los ensayos seguirán llegando cada lunes, lentos, cuidadosos y gratuitos para todos, exactamente como antes.",
     "note": "No tenías que hacerlo. Por eso significa tanto."
+  },
+  "support": {
+    "title": "Todo aquí es gratis. Puede seguir así.",
+    "body": "Sin muro de pago, sin anuncios, nada que registrarse para un ensayo a la semana, escrito lentamente. Si alguna vez te ha hecho pausar, puedes ayudar a mantenerlo. Solo si quieres.",
+    "tiers": {
+      "t1": "Un café",
+      "t2": "Un patrocinador silencioso",
+      "t3": "Un creyente"
+    },
+    "anotherAmount": "Otra cantidad",
+    "notePlaceholder": "Deja una nota, si lo deseas (opcional)",
+    "cta": "Apoyar a The Dailicle",
+    "processing": "Abriendo pago seguro…",
+    "maybeLater": "Quizás otra vez",
+    "secure": "Pago seguro por Razorpay · un agradecimiento único, no una suscripción",
+    "thanksTitle": "Gracias, de verdad.",
+    "thanksBody": "El escritorio se mantiene iluminado un poco más gracias a ti. Los ensayos seguirán llegando como siempre, gratis para todos.",
+    "backToReading": "Volver a leer",
+    "close": "Cerrar",
+    "checkoutDescription": "Mantén el escritorio iluminado, gracias.",
+    "errMin": "Ingresa al menos {amount}.",
+    "errCheckout": "No se pudo cargar el pago seguro.",
+    "errStart": "No se pudo iniciar el pago.",
+    "errGeneric": "Algo salió mal. Intenta de nuevo."
+  },
+  "prefs": {
+    "aria": "Preferencias de lectura",
+    "title": "Comodidad de lectura",
+    "close": "Cerrar",
+    "textSize": "Tamaño de texto",
+    "comfortable": "Cómodo",
+    "large": "Grande",
+    "veryLarge": "Muy grande",
+    "bodyTypeface": "Tipografía del cuerpo",
+    "sans": "Sin serifas",
+    "serif": "Con serifas",
+    "lineSpacing": "Espaciado de línea",
+    "normal": "Normal",
+    "relaxed": "Relajado"
+  },
+  "reactions": {
+    "prompt": "¿Te llegó este ensayo?",
+    "yes": "Sí, me llegó",
+    "no": "No realmente",
+    "noted": "Anotado – gracias."
+  },
+  "themeSwitcher": {
+    "switchTo": "Cambiar a tema {theme}"
   }
 }

@@ -4,7 +4,8 @@
     "tagline": "Ein Essay pro Woche. Nichts anderes.",
     "oneEssayAWeek": "Ein Essay pro Woche · langsam lesen",
     "backHome": "Zurück nach Hause",
-    "readAnother": "Einen weiteren Essay lesen"
+    "readAnother": "Einen weiteren Essay lesen",
+    "dismiss": "Ablehnen"
   },
   "nav": {
     "home": "Startseite",
@@ -129,8 +130,22 @@
     "furtherReadingIntro": "Wenn du länger darüber nachdenken möchtest:",
     "nextMonday": "Nächster Montag · {date}",
     "thanksReading": "Danke fürs Lesen. Jeden Montag erscheint ein neuer Aufsatz.",
-    "readMore": "Weitere Aufsätze lesen",
-    "byline": "Die Dailicle Redaktion"
+    "readMore": "Alle Essays durchsuchen",
+    "byline": "Die Dailicle Redaktion",
+    "keepReading": "Weiterlesen",
+    "minRead": "{minutes} min Lesezeit",
+    "subscribe": {
+      "eyebrow": "Komm mit",
+      "heading": "Wenn dir dieser gefallen hat, bekommst du den nächsten.",
+      "sub": "Ein Essay wie dieser, die meisten Wochen. Kein Spam, nur der nächste.",
+      "nextWeek": "Nächste Woche —",
+      "reassure": "Kostenlos · kein Spam · jederzeit abbestellen",
+      "placeholder": "deine@email.com",
+      "cta": "Updates erhalten",
+      "done": "Du bist dabei. Bis Montag.",
+      "already": "Du bist bereits auf der Liste — bis Montag.",
+      "nudge": "Das kostenlose wöchentliche Angebot?"
+    }
   },
   "manifesto": {
     "meta": {
@@ -183,5 +198,53 @@
     "title": "Danke, wirklich.",
     "body": "Dank dir bleibt der Schreibtisch ein wenig länger beleuchtet. Die Essays werden jeden Montag weiterhin langsam, sorgfältig und kostenlos für alle erscheinen, genau wie zuvor.",
     "note": "Du hättest das nicht tun müssen. Genau deshalb bedeutet es so viel."
+  },
+  "support": {
+    "title": "Alles hier ist kostenlos. Es kann so bleiben.",
+    "body": "Kein Paywall, keine Werbung, nichts, wofür man sich anmelden muss, nur ein Essay pro Woche, langsam geschrieben. Wenn es dich jemals zum Nachdenken gebracht hat, kannst du helfen, es am Laufen zu halten. Nur wenn du möchtest.",
+    "tiers": {
+      "t1": "Ein Kaffee",
+      "t2": "Ein stiller Förderer",
+      "t3": "Ein Gläubiger"
+    },
+    "anotherAmount": "Ein anderer Betrag",
+    "notePlaceholder": "Hinterlasse eine Nachricht, wenn du möchtest (optional)",
+    "cta": "Unterstütze The Dailicle",
+    "processing": "Sicheren Checkout öffnen…",
+    "maybeLater": "Vielleicht ein anderes Mal",
+    "secure": "Sichere Zahlung über Razorpay · ein einmaliges Dankeschön, kein Abonnement",
+    "thanksTitle": "Danke, wirklich.",
+    "thanksBody": "Der Schreibtisch bleibt ein wenig länger beleuchtet wegen dir. Die Essays werden weiterhin wie gewohnt kommen, kostenlos für alle.",
+    "backToReading": "Zurück zum Lesen",
+    "close": "Schließen",
+    "checkoutDescription": "Halte den Schreibtisch beleuchtet, danke.",
+    "errMin": "Gib mindestens {amount} ein.",
+    "errCheckout": "Konnte den sicheren Checkout nicht laden.",
+    "errStart": "Konnte die Zahlung nicht starten.",
+    "errGeneric": "Etwas ist schiefgelaufen. Versuch es erneut."
+  },
+  "prefs": {
+    "aria": "Leseeinstellungen",
+    "title": "Lesekomfort",
+    "close": "Schließen",
+    "textSize": "Textgröße",
+    "comfortable": "Bequem",
+    "large": "Groß",
+    "veryLarge": "Sehr groß",
+    "bodyTypeface": "Schriftart des Fließtexts",
+    "sans": "Sans",
+    "serif": "Serif",
+    "lineSpacing": "Zeilenabstand",
+    "normal": "Normal",
+    "relaxed": "Entspannt"
+  },
+  "reactions": {
+    "prompt": "Hat dieser Aufsatz bei dir gewirkt?",
+    "yes": "Ja, das hat gewirkt",
+    "no": "Nicht wirklich",
+    "noted": "Verstanden – danke."
+  },
+  "themeSwitcher": {
+    "switchTo": "Wechsel zu {theme} Thema"
   }
 }

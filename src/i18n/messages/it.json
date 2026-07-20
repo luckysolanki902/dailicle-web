@@ -4,7 +4,8 @@
     "tagline": "Un saggio a settimana. Nient'altro.",
     "oneEssayAWeek": "Un saggio a settimana · leggi lentamente",
     "backHome": "Torna a casa",
-    "readAnother": "Leggi un altro saggio"
+    "readAnother": "Leggi un altro saggio",
+    "dismiss": "Ignora"
   },
   "nav": {
     "home": "Home",
@@ -129,8 +130,22 @@
     "furtherReadingIntro": "Se vuoi riflettere su questo più a lungo:",
     "nextMonday": "Prossimo lunedì · {date}",
     "thanksReading": "Grazie per aver letto. Un nuovo saggio arriva ogni lunedì.",
-    "readMore": "Leggi altri saggi",
-    "byline": "La redazione di The Dailicle"
+    "readMore": "Sfoglia tutti gli saggi",
+    "byline": "La redazione di The Dailicle",
+    "keepReading": "Continua a leggere",
+    "minRead": "{minutes} min di lettura",
+    "subscribe": {
+      "eyebrow": "Unisciti a noi",
+      "heading": "Se questo ti è piaciuto, ricevi il prossimo.",
+      "sub": "Un saggio come questo, la maggior parte delle settimane. Niente spam, solo il prossimo.",
+      "nextWeek": "La prossima settimana —",
+      "reassure": "Gratuito · niente spam · disiscriviti in qualsiasi momento",
+      "placeholder": "tuo@email.com",
+      "cta": "Ricevi aggiornamenti",
+      "done": "Sei dentro. Ci vediamo lunedì.",
+      "already": "Sei già nella lista — ci vediamo lunedì.",
+      "nudge": "Ricevi il settimanale gratuito?"
+    }
   },
   "manifesto": {
     "meta": {
@@ -183,5 +198,53 @@
     "title": "Grazie, davvero.",
     "body": "Grazie a te, la scrivania rimane accesa un po' più a lungo. I saggi continueranno ad arrivare ogni lunedì, lenti, attenti e gratuiti per tutti, esattamente come prima.",
     "note": "Non dovevi farlo. È proprio per questo che significa così tanto."
+  },
+  "support": {
+    "title": "Tutto qui è gratuito. Può rimanere così.",
+    "body": "Nessun paywall, nessuna pubblicità, niente da registrarsi per un solo saggio a settimana, scritto lentamente. Se ti ha mai fatto fermare, puoi aiutare a mantenerlo attivo. Solo se vuoi.",
+    "tiers": {
+      "t1": "Un caffè",
+      "t2": "Un patrono silenzioso",
+      "t3": "Un credente"
+    },
+    "anotherAmount": "Un altro importo",
+    "notePlaceholder": "Lascia un messaggio, se vuoi (opzionale)",
+    "cta": "Sostieni The Dailicle",
+    "processing": "Apertura del pagamento sicuro…",
+    "maybeLater": "Forse un'altra volta",
+    "secure": "Pagamento sicuro tramite Razorpay · un ringraziamento una tantum, non un abbonamento",
+    "thanksTitle": "Grazie, davvero.",
+    "thanksBody": "La scrivania rimane accesa un po' più a lungo grazie a te. Gli saggi continueranno a arrivare come sempre, gratuiti per tutti.",
+    "backToReading": "Torna a leggere",
+    "close": "Chiudi",
+    "checkoutDescription": "Mantieni accesa la scrivania, grazie.",
+    "errMin": "Inserisci almeno {amount}.",
+    "errCheckout": "Impossibile caricare il pagamento sicuro.",
+    "errStart": "Impossibile avviare il pagamento.",
+    "errGeneric": "Qualcosa è andato storto. Riprova."
+  },
+  "prefs": {
+    "aria": "Preferenze di lettura",
+    "title": "Comfort di lettura",
+    "close": "Chiudi",
+    "textSize": "Dimensione del testo",
+    "comfortable": "Confortevole",
+    "large": "Grande",
+    "veryLarge": "Molto grande",
+    "bodyTypeface": "Carattere del corpo",
+    "sans": "Senza grazie",
+    "serif": "Con grazie",
+    "lineSpacing": "Interlinea",
+    "normal": "Normale",
+    "relaxed": "Rilassato"
+  },
+  "reactions": {
+    "prompt": "Questo saggio ti è piaciuto?",
+    "yes": "Sì, mi è piaciuto",
+    "no": "Non proprio",
+    "noted": "Annotato – grazie."
+  },
+  "themeSwitcher": {
+    "switchTo": "Passa al tema {theme}"
   }
 }

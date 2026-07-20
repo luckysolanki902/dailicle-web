@@ -4,7 +4,8 @@
     "tagline": "Un essai par semaine. Rien d'autre.",
     "oneEssayAWeek": "Un essai par semaine · lire lentement",
     "backHome": "Retour à l'accueil",
-    "readAnother": "Lire un autre essai"
+    "readAnother": "Lire un autre essai",
+    "dismiss": "Ignorer"
   },
   "nav": {
     "home": "Accueil",
@@ -129,8 +130,22 @@
     "furtherReadingIntro": "Si vous voulez y réfléchir plus longtemps :",
     "nextMonday": "Lundi prochain · {date}",
     "thanksReading": "Merci de votre lecture. Un nouvel essai arrive chaque lundi.",
-    "readMore": "Lire plus d'essais",
-    "byline": "La rédaction de Dailicle"
+    "readMore": "Parcourir tous les essais",
+    "byline": "La rédaction de Dailicle",
+    "keepReading": "Continuer la lecture",
+    "minRead": "{minutes} min de lecture",
+    "subscribe": {
+      "eyebrow": "Venez avec nous",
+      "heading": "Si celui-ci vous a plu, recevez le suivant.",
+      "sub": "Un essai comme celui-ci, la plupart des semaines. Pas de spam, juste le suivant.",
+      "nextWeek": "La semaine prochaine —",
+      "reassure": "Gratuit · pas de spam · désinscription à tout moment",
+      "placeholder": "votre@email.com",
+      "cta": "Recevoir des mises à jour",
+      "done": "Vous êtes inscrit. À lundi.",
+      "already": "Vous êtes déjà sur la liste — à lundi.",
+      "nudge": "Recevoir le hebdomadaire gratuit ?"
+    }
   },
   "manifesto": {
     "meta": {
@@ -183,5 +198,53 @@
     "title": "Merci, vraiment.",
     "body": "Grâce à vous, le bureau reste allumé un peu plus longtemps. Les essais continueront d'arriver chaque lundi, lentement, prudemment et gratuitement pour tous, exactement comme avant.",
     "note": "Vous n'étiez pas obligé. C'est exactement pourquoi cela signifie tant."
+  },
+  "support": {
+    "title": "Tout ici est gratuit. Ça peut rester ainsi.",
+    "body": "Pas de mur payant, pas de publicités, rien à s'inscrire pour un essai par semaine, écrit lentement. Si cela vous a déjà fait réfléchir, vous pouvez aider à le maintenir. Seulement si vous le souhaitez.",
+    "tiers": {
+      "t1": "Un café",
+      "t2": "Un patron discret",
+      "t3": "Un croyant"
+    },
+    "anotherAmount": "Un autre montant",
+    "notePlaceholder": "Laissez une note, si vous le souhaitez (facultatif)",
+    "cta": "Soutenir The Dailicle",
+    "processing": "Ouverture du paiement sécurisé…",
+    "maybeLater": "Peut-être une autre fois",
+    "secure": "Paiement sécurisé par Razorpay · un remerciement unique, pas un abonnement",
+    "thanksTitle": "Merci, vraiment.",
+    "thanksBody": "Le bureau reste allumé un peu plus longtemps grâce à vous. Les essais continueront comme toujours, gratuits pour tous.",
+    "backToReading": "Retour à la lecture",
+    "close": "Fermer",
+    "checkoutDescription": "Gardez le bureau allumé, merci.",
+    "errMin": "Entrez au moins {amount}.",
+    "errCheckout": "Impossible de charger le paiement sécurisé.",
+    "errStart": "Impossible de commencer le paiement.",
+    "errGeneric": "Quelque chose a mal tourné. Réessayez."
+  },
+  "prefs": {
+    "aria": "Préférences de lecture",
+    "title": "Confort de lecture",
+    "close": "Fermer",
+    "textSize": "Taille du texte",
+    "comfortable": "Confortable",
+    "large": "Grand",
+    "veryLarge": "Très grand",
+    "bodyTypeface": "Police du corps",
+    "sans": "Sans",
+    "serif": "Serif",
+    "lineSpacing": "Interligne",
+    "normal": "Normal",
+    "relaxed": "Détendu"
+  },
+  "reactions": {
+    "prompt": "Cet essai vous a-t-il convaincu ?",
+    "yes": "Oui, cela a fonctionné",
+    "no": "Pas vraiment",
+    "noted": "Noté – merci."
+  },
+  "themeSwitcher": {
+    "switchTo": "Passer au thème {theme}"
   }
 }

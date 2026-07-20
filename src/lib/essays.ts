@@ -208,11 +208,14 @@ export async function getPublishedEssays(limit = 200): Promise<Essay[]> {
 }
 
 /**
- * Two essays to hard-recommend at the end of the one just read — same theme
- * first (the strongest "you'll like this too" signal), then filled with the
- * newest others so there are always two. Excludes the current essay and any
- * not-yet-released (future-dated) issue. This is the internal-linking lever that
- * turns a one-essay visit into a second read.
+ * Two essays to hard-recommend at the end of the one just read:
+ *   1. the latest from the *same* category ("more like this"), then
+ *   2. the latest from a *different* category ("something new"),
+ * both newest-first, excluding the current essay and any not-yet-released
+ * (future-dated) issue. If a bucket is empty (e.g. only one category exists so
+ * far) the slot is filled with the newest remaining essay so there are always
+ * two. This is the internal-linking lever that turns a one-essay visit into a
+ * second read.
  */
 export async function getRelatedEssays(
   currentId: string,
@@ -225,29 +228,33 @@ export async function getRelatedEssays(
     unlisted: { $ne: true },
     published_at: { $lte: new Date() },
   };
-  if (ObjectId.isValid(currentId)) base._id = { $ne: new ObjectId(currentId) };
 
   const picked: Essay[] = [];
   const seen = new Set<string>([currentId]);
 
-  const take = async (query: Record<string, unknown>) => {
+  const takeLatest = async (query: Record<string, unknown>) => {
     if (picked.length >= limit) return;
-    const docs = await col
-      .find(query, { projection: LIST_PROJECTION })
-      .sort({ publish_on: -1, published_at: -1 })
-      .limit(limit * 2)
-      .toArray();
-    for (const doc of docs) {
+    const exclude = [...seen]
+      .filter((id) => ObjectId.isValid(id))
+      .map((id) => new ObjectId(id));
+    const doc = await col.findOne(
+      { ...query, _id: { $nin: exclude } },
+      { projection: LIST_PROJECTION, sort: { publish_on: -1, published_at: -1 } }
+    );
+    if (doc) {
       const e = serialize(doc);
-      if (seen.has(e._id)) continue;
       seen.add(e._id);
       picked.push(e);
-      if (picked.length >= limit) break;
     }
   };
 
-  if (theme) await take({ ...base, theme });
-  await take(base); // fill with newest others if same-theme was short
+  if (theme) await takeLatest({ ...base, theme }); // 1) same category, latest
+  await takeLatest(theme ? { ...base, theme: { $ne: theme } } : base); // 2) different, latest
+  while (picked.length < limit) {
+    const before = picked.length;
+    await takeLatest(base); // fill any empty slot with the newest remaining
+    if (picked.length === before) break; // nothing left to add
+  }
   return picked.slice(0, limit);
 }
 
