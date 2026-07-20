@@ -3,8 +3,10 @@ import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import {
   getEssay,
   getEssayTranslation,
+  getTranslationsMap,
   localizeEssay,
   getNextTopic,
+  getRelatedEssays,
   getAllReadable,
   essayBannerUrl,
   essayBannerInfo,
@@ -156,6 +158,25 @@ export default async function ReadPage({
     ? await getEssayTranslation(nextTopic._id, locale)
     : null;
 
+  // Two hard recommendations for the end of the essay, localized.
+  const related = await getRelatedEssays(essay._id, essay.theme, 2);
+  const relatedTranslations = await getTranslationsMap(
+    related.map((r) => r._id),
+    locale
+  );
+  const relatedProps = await Promise.all(
+    related.map(async (r) => {
+      const tr = relatedTranslations.get(r._id);
+      return {
+        href: `/read/${r.slug || r._id}`,
+        title: tr?.title || r.title,
+        hook: tr?.hook || r.hook,
+        themeLabel: await localeThemeLabel(r.theme, locale),
+        readingMinutes: r.reading_minutes,
+      };
+    })
+  );
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -224,6 +245,7 @@ export default async function ReadPage({
                 }
               : null
           }
+          related={relatedProps}
           publishOn={essay.publish_on ? new Date(essay.publish_on).toISOString() : null}
           publishedAt={essay.published_at ? new Date(essay.published_at).toISOString() : null}
         />

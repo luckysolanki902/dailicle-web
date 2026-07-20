@@ -28,6 +28,8 @@ import {
 import { AudioPlayer } from "@/components/reader/AudioPlayer";
 import { EssayBanner } from "@/components/ui/EssayBanner";
 import { ReactionBar } from "@/components/reader/ReactionBar";
+import { SubscribeForm } from "@/components/reader/SubscribeForm";
+import { ScrollSubscribeNudge } from "@/components/reader/ScrollSubscribeNudge";
 import { ReadingSupportTrigger } from "@/components/support/ReadingSupportTrigger";
 import { isReleasedLocally, localReleaseDate } from "@/lib/release";
 import {
@@ -70,6 +72,14 @@ export interface EssayReaderProps {
     title: string;
     dateLabel: string;
   } | null;
+  /** Two hard-recommended essays to read next (same theme first). */
+  related?: {
+    href: string;
+    title: string;
+    hook?: string;
+    themeLabel: string;
+    readingMinutes: number;
+  }[];
   publishOn?: string | null;
   publishedAt?: string | null;
 }
@@ -100,6 +110,7 @@ export function EssayReader({
   locale = "en",
   essay,
   nextTease,
+  related,
   publishOn,
   publishedAt,
 }: EssayReaderProps) {
@@ -355,6 +366,7 @@ export function EssayReader({
     <article className="min-h-screen py-12 md:py-20 px-4 md:px-6 overflow-x-hidden">
       <ReadingProgress />
       <ReadingSupportTrigger />
+      <ScrollSubscribeNudge />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -368,7 +380,7 @@ export function EssayReader({
             className="inline-flex items-center gap-2 text-sm text-foreground/40 hover:text-foreground transition-colors"
           >
             <ArrowLeft size={14} />
-            <span>All essays</span>
+            <span>{t("reader.allEssays")}</span>
           </Link>
 
           <div className="flex items-center gap-1">
@@ -550,25 +562,76 @@ export function EssayReader({
           </aside>
         )}
 
-        {/* End – rate the essay just read, then the reason to come back */}
-        <footer className="mt-20 pt-12 border-t border-foreground/10 text-center space-y-10">
-          <ReactionBar essayId={essayId} />
+        {/* End – rate the essay just read, then capture the email, then send
+            them straight into a second essay (the retention levers). */}
+        <footer className="mt-20 pt-12 border-t border-foreground/10 space-y-12">
+          <div className="text-center">
+            <ReactionBar essayId={essayId} />
+          </div>
 
-          {nextTease ? (
-            <div className="space-y-2 pt-10 border-t border-foreground/10">
-              <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-accent">
-                {t("reader.nextMonday", { date: nextTease.dateLabel })}
-              </p>
-              <p className="font-display text-xl md:text-2xl tracking-tight text-balance">
-                {nextTease.title}
-              </p>
-            </div>
-          ) : (
-            <p className="text-foreground/45 italic text-sm pt-10 border-t border-foreground/10">
-              {t("reader.thanksReading")}
+          {/* Free-subscribe box — the primary ask at the high-intent moment */}
+          <div className="rounded-3xl border border-foreground/10 bg-foreground/[0.02] px-6 py-8 text-center sm:px-10">
+            <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-accent">
+              {t("reader.subscribe.eyebrow")}
             </p>
+            <h2 className="mt-3 font-display text-2xl tracking-tight text-balance md:text-[1.6rem]">
+              {t("reader.subscribe.heading")}
+            </h2>
+            <p className="mx-auto mt-2 max-w-md font-serif text-[15px] leading-relaxed text-foreground/60 text-balance">
+              {t("reader.subscribe.sub")}
+            </p>
+            {nextTease && (
+              <p className="mx-auto mt-4 max-w-md text-sm text-foreground/70">
+                <span className="font-semibold text-foreground/80">
+                  {t("reader.subscribe.nextWeek")}
+                </span>{" "}
+                <span className="italic">{nextTease.title}</span>
+              </p>
+            )}
+            <div className="mt-6">
+              <SubscribeForm source="reader" />
+            </div>
+            <p className="mt-3 text-[11px] text-foreground/35">
+              {t("reader.subscribe.reassure")}
+            </p>
+          </div>
+
+          {/* Keep reading — two specific, hooked recommendations */}
+          {related && related.length > 0 && (
+            <div className="pt-2">
+              <p className="mb-5 text-center text-[11px] font-semibold tracking-[0.2em] uppercase text-foreground/40">
+                {t("reader.keepReading")}
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {related.map((r) => (
+                  <Link
+                    key={r.href}
+                    href={r.href}
+                    onClick={() =>
+                      track("related_click", { from: essayId, to: r.href })
+                    }
+                    className="group flex flex-col rounded-2xl border border-foreground/10 bg-background/40 p-5 text-left transition-colors hover:border-accent/40 hover:bg-foreground/[0.03]"
+                  >
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/40">
+                      {r.themeLabel}
+                      {" · "}
+                      {t("reader.minRead", { minutes: r.readingMinutes })}
+                    </span>
+                    <span className="mt-2 font-display text-lg leading-snug tracking-tight text-balance transition-colors group-hover:text-accent">
+                      {r.title}
+                    </span>
+                    {r.hook && (
+                      <span className="mt-1.5 font-serif text-sm italic leading-relaxed text-foreground/55 line-clamp-3">
+                        {r.hook}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </div>
           )}
-          <div>
+
+          <div className="text-center">
             <Link
               href="/archive"
               className="text-sm font-medium border-b border-foreground/20 pb-0.5 hover:border-accent hover:text-foreground transition-colors"

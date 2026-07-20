@@ -137,7 +137,10 @@
     "thankYou.eyebrow": "76acdec7f881a49a",
     "thankYou.title": "d149eccc323b7ba4",
     "thankYou.body": "766095875d95dcfb",
-    "thankYou.note": "df1a8f110dec39c5"
+    "thankYou.note": "df1a8f110dec39c5",
+    "reader.listenInstead": "7e0a34b20324a00c",
+    "reader.audioMinutes": "e1bded87ee24b702",
+    "reader.seek": "67ae3405bcd4df1f"
   },
   "de": {
     "common.siteName": "76acdec7f881a49a",
@@ -277,7 +280,10 @@
     "thankYou.eyebrow": "76acdec7f881a49a",
     "thankYou.title": "d149eccc323b7ba4",
     "thankYou.body": "766095875d95dcfb",
-    "thankYou.note": "df1a8f110dec39c5"
+    "thankYou.note": "df1a8f110dec39c5",
+    "reader.listenInstead": "7e0a34b20324a00c",
+    "reader.audioMinutes": "e1bded87ee24b702",
+    "reader.seek": "67ae3405bcd4df1f"
   },
   "fr": {
     "common.siteName": "76acdec7f881a49a",
@@ -417,7 +423,10 @@
     "thankYou.eyebrow": "76acdec7f881a49a",
     "thankYou.title": "d149eccc323b7ba4",
     "thankYou.body": "766095875d95dcfb",
-    "thankYou.note": "df1a8f110dec39c5"
+    "thankYou.note": "df1a8f110dec39c5",
+    "reader.listenInstead": "7e0a34b20324a00c",
+    "reader.audioMinutes": "e1bded87ee24b702",
+    "reader.seek": "67ae3405bcd4df1f"
   },
   "ja": {
     "common.siteName": "76acdec7f881a49a",
@@ -557,7 +566,10 @@
     "thankYou.eyebrow": "76acdec7f881a49a",
     "thankYou.title": "d149eccc323b7ba4",
     "thankYou.body": "766095875d95dcfb",
-    "thankYou.note": "df1a8f110dec39c5"
+    "thankYou.note": "df1a8f110dec39c5",
+    "reader.listenInstead": "7e0a34b20324a00c",
+    "reader.audioMinutes": "e1bded87ee24b702",
+    "reader.seek": "67ae3405bcd4df1f"
   },
   "pt": {
     "common.siteName": "76acdec7f881a49a",
@@ -697,7 +709,10 @@
     "thankYou.eyebrow": "76acdec7f881a49a",
     "thankYou.title": "d149eccc323b7ba4",
     "thankYou.body": "766095875d95dcfb",
-    "thankYou.note": "df1a8f110dec39c5"
+    "thankYou.note": "df1a8f110dec39c5",
+    "reader.listenInstead": "7e0a34b20324a00c",
+    "reader.audioMinutes": "e1bded87ee24b702",
+    "reader.seek": "67ae3405bcd4df1f"
   },
   "it": {
     "common.siteName": "76acdec7f881a49a",
@@ -837,7 +852,10 @@
     "thankYou.eyebrow": "76acdec7f881a49a",
     "thankYou.title": "d149eccc323b7ba4",
     "thankYou.body": "766095875d95dcfb",
-    "thankYou.note": "df1a8f110dec39c5"
+    "thankYou.note": "df1a8f110dec39c5",
+    "reader.listenInstead": "7e0a34b20324a00c",
+    "reader.audioMinutes": "e1bded87ee24b702",
+    "reader.seek": "67ae3405bcd4df1f"
   },
   "ko": {
     "common.siteName": "76acdec7f881a49a",
@@ -977,7 +995,10 @@
     "thankYou.eyebrow": "76acdec7f881a49a",
     "thankYou.title": "d149eccc323b7ba4",
     "thankYou.body": "766095875d95dcfb",
-    "thankYou.note": "df1a8f110dec39c5"
+    "thankYou.note": "df1a8f110dec39c5",
+    "reader.listenInstead": "7e0a34b20324a00c",
+    "reader.audioMinutes": "e1bded87ee24b702",
+    "reader.seek": "67ae3405bcd4df1f"
   },
   "ru": {
     "common.siteName": "76acdec7f881a49a",
@@ -1117,7 +1138,10 @@
     "thankYou.eyebrow": "76acdec7f881a49a",
     "thankYou.title": "d149eccc323b7ba4",
     "thankYou.body": "766095875d95dcfb",
-    "thankYou.note": "df1a8f110dec39c5"
+    "thankYou.note": "df1a8f110dec39c5",
+    "reader.listenInstead": "7e0a34b20324a00c",
+    "reader.audioMinutes": "e1bded87ee24b702",
+    "reader.seek": "67ae3405bcd4df1f"
   },
   "tr": {
     "common.siteName": "76acdec7f881a49a",
@@ -1257,6 +1281,9 @@
     "thankYou.eyebrow": "76acdec7f881a49a",
     "thankYou.title": "d149eccc323b7ba4",
     "thankYou.body": "766095875d95dcfb",
-    "thankYou.note": "df1a8f110dec39c5"
+    "thankYou.note": "df1a8f110dec39c5",
+    "reader.listenInstead": "7e0a34b20324a00c",
+    "reader.audioMinutes": "e1bded87ee24b702",
+    "reader.seek": "67ae3405bcd4df1f"
   }
 }

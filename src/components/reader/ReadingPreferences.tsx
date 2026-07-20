@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Type, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/i18n/I18nProvider";
 
 export interface ReaderPrefs {
   size: 0 | 1 | 2; // comfortable / large / very large
@@ -43,6 +44,7 @@ interface ReadingPreferencesProps {
  * comfort settings are a promise that we expect people to actually read.
  */
 export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps) {
+  const t = useT();
   const [open, setOpen] = useState(false);
 
   // Escape closes
@@ -60,7 +62,7 @@ export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps)
       <button
         onClick={() => setOpen((v) => !v)}
         className="inline-flex items-center gap-2 text-sm text-foreground/40 hover:text-foreground transition-colors p-2 rounded-lg hover:bg-foreground/5"
-        aria-label="Reading preferences"
+        aria-label={t("prefs.aria")}
         aria-expanded={open}
       >
         <Type size={18} />
@@ -86,12 +88,12 @@ export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps)
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-foreground/50">
-                  Reading comfort
+                  {t("prefs.title")}
                 </span>
                 <button
                   onClick={() => setOpen(false)}
                   className="text-foreground/40 hover:text-foreground"
-                  aria-label="Close"
+                  aria-label={t("prefs.close")}
                 >
                   <X size={14} />
                 </button>
@@ -99,7 +101,7 @@ export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps)
 
               {/* Text size */}
               <div className="space-y-2">
-                <p className="text-xs text-foreground/50">Text size</p>
+                <p className="text-xs text-foreground/50">{t("prefs.textSize")}</p>
                 <div className="grid grid-cols-3 gap-1.5">
                   {(["A", "A", "A"] as const).map((label, i) => (
                     <button
@@ -114,7 +116,7 @@ export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps)
                           ? "bg-foreground text-background border-foreground"
                           : "border-foreground/15 text-foreground/60 hover:border-foreground/40"
                       )}
-                      aria-label={["Comfortable", "Large", "Very large"][i]}
+                      aria-label={[t("prefs.comfortable"), t("prefs.large"), t("prefs.veryLarge")][i]}
                     >
                       {label}
                     </button>
@@ -124,7 +126,7 @@ export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps)
 
               {/* Typeface */}
               <div className="space-y-2">
-                <p className="text-xs text-foreground/50">Body typeface</p>
+                <p className="text-xs text-foreground/50">{t("prefs.bodyTypeface")}</p>
                 <div className="grid grid-cols-2 gap-1.5">
                   <button
                     onClick={() => set({ serifBody: false })}
@@ -135,7 +137,7 @@ export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps)
                         : "border-foreground/15 text-foreground/60 hover:border-foreground/40"
                     )}
                   >
-                    Sans
+                    {t("prefs.sans")}
                   </button>
                   <button
                     onClick={() => set({ serifBody: true })}
@@ -146,14 +148,14 @@ export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps)
                         : "border-foreground/15 text-foreground/60 hover:border-foreground/40"
                     )}
                   >
-                    Serif
+                    {t("prefs.serif")}
                   </button>
                 </div>
               </div>
 
               {/* Spacing */}
               <div className="space-y-2">
-                <p className="text-xs text-foreground/50">Line spacing</p>
+                <p className="text-xs text-foreground/50">{t("prefs.lineSpacing")}</p>
                 <div className="grid grid-cols-2 gap-1.5">
                   <button
                     onClick={() => set({ relaxed: false })}
@@ -164,7 +166,7 @@ export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps)
                         : "border-foreground/15 text-foreground/60 hover:border-foreground/40"
                     )}
                   >
-                    Normal
+                    {t("prefs.normal")}
                   </button>
                   <button
                     onClick={() => set({ relaxed: true })}
@@ -175,7 +177,7 @@ export function ReadingPreferences({ prefs, onChange }: ReadingPreferencesProps)
                         : "border-foreground/15 text-foreground/60 hover:border-foreground/40"
                     )}
                   >
-                    Relaxed
+                    {t("prefs.relaxed")}
                   </button>
                 </div>
               </div>

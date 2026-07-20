@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Pause, Play, Volume2, X } from "lucide-react";
 import { track, getCurrentEssay } from "@/lib/analytics";
+import { useT } from "@/i18n/I18nProvider";
 
 interface AudioPlayerProps {
   /** Relative S3 key (audio/2026/07/xxx.mp3) or full URL. */
@@ -36,6 +37,7 @@ function formatTime(seconds: number) {
  * and people who never would have read 2,500 words but will hear them.
  */
 export function AudioPlayer({ src, estimatedDuration }: AudioPlayerProps) {
+  const t = useT();
   const [visible, setVisible] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -112,10 +114,10 @@ export function AudioPlayer({ src, estimatedDuration }: AudioPlayerProps) {
           className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-accent hover:opacity-75 transition-opacity"
         >
           <Volume2 size={13} />
-          <span>Listen instead</span>
+          <span>{t("reader.listenInstead")}</span>
           {estimatedDuration ? (
             <span className="text-foreground/40 normal-case tracking-normal">
-              · {Math.round(estimatedDuration / 60)} min
+              · {t("reader.audioMinutes", { minutes: Math.round(estimatedDuration / 60) })}
             </span>
           ) : null}
         </button>
@@ -134,7 +136,7 @@ export function AudioPlayer({ src, estimatedDuration }: AudioPlayerProps) {
               <button
                 onClick={toggle}
                 className="text-foreground/70 hover:text-foreground transition-colors"
-                aria-label={playing ? "Pause narration" : "Play narration"}
+                aria-label={playing ? t("reader.pauseNarration") : t("reader.playNarration")}
               >
                 {playing ? <Pause size={18} /> : <Play size={18} />}
               </button>
@@ -147,7 +149,7 @@ export function AudioPlayer({ src, estimatedDuration }: AudioPlayerProps) {
                   className="w-32 md:w-48 h-1 bg-foreground/10 rounded-full overflow-hidden cursor-pointer"
                   onClick={seek}
                   role="slider"
-                  aria-label="Seek"
+                  aria-label={t("reader.seek")}
                   aria-valuenow={Math.round(currentTime)}
                   aria-valuemin={0}
                   aria-valuemax={Math.round(duration || estimatedDuration || 0)}
@@ -167,7 +169,7 @@ export function AudioPlayer({ src, estimatedDuration }: AudioPlayerProps) {
               <button
                 onClick={stop}
                 className="text-foreground/35 hover:text-foreground/70 transition-colors"
-                aria-label="Stop and close player"
+                aria-label={t("reader.stopPlayer")}
               >
                 <X size={14} />
               </button>

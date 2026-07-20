@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { track, getCurrentEssay } from "@/lib/analytics";
+import { useT } from "@/i18n/I18nProvider";
 
 /**
  * A deliberately quiet like/dislike. No counts, no crowd just a private
@@ -11,6 +12,7 @@ import { track, getCurrentEssay } from "@/lib/analytics";
  * server-side by IP); tapping the same choice again clears it.
  */
 export function ReactionBar({ essayId }: { essayId: string }) {
+  const t = useT();
   const [value, setValue] = useState<number>(0);
 
   useEffect(() => {
@@ -46,13 +48,13 @@ export function ReactionBar({ essayId }: { essayId: string }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-foreground/40">
-        Did this essay land for you?
+        {t("reactions.prompt")}
       </p>
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={() => vote(1)}
-          aria-label="Yes, this landed"
+          aria-label={t("reactions.yes")}
           aria-pressed={value === 1}
           className={cn(
             "p-3 rounded-full border transition-colors",
@@ -66,7 +68,7 @@ export function ReactionBar({ essayId }: { essayId: string }) {
         <button
           type="button"
           onClick={() => vote(-1)}
-          aria-label="Not really"
+          aria-label={t("reactions.no")}
           aria-pressed={value === -1}
           className={cn(
             "p-3 rounded-full border transition-colors",
@@ -84,7 +86,7 @@ export function ReactionBar({ essayId }: { essayId: string }) {
           value === 0 ? "opacity-0" : "opacity-100"
         )}
       >
-        Noted – thank you.
+        {t("reactions.noted")}
       </p>
     </div>
   );

@@ -7,6 +7,7 @@ import { Check, Heart, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SupportSource } from "./SupportProvider";
 import { track, getGaClientId, getCurrentEssay } from "@/lib/analytics";
+import { useT } from "@/i18n/I18nProvider";
 
 type TierId = "t1" | "t2" | "t3";
 
@@ -76,12 +77,6 @@ function readAccent(): string {
 
 type Status = "idle" | "processing" | "success" | "error";
 
-const TIER_LABELS: Record<TierId, string> = {
-  t1: "A coffee",
-  t2: "A quiet patron",
-  t3: "A believer",
-};
-
 export function SupportDialog({
   isOpen,
   source,
@@ -93,6 +88,7 @@ export function SupportDialog({
   onClose: () => void;
   onSupported: () => void;
 }) {
+  const t = useT();
   const router = useRouter();
   const [config, setConfig] = useState<Config | null>(null);
   const [selected, setSelected] = useState<TierId | "custom">("t2");
@@ -173,7 +169,7 @@ export function SupportDialog({
       const n = Number(custom);
       if (!Number.isFinite(n) || n < config.min) {
         setStatus("error");
-        setError(`Enter at least ${config.symbol}${config.min}.`);
+        setError(t("support.errMin", { amount: `${config.symbol}${config.min}` }));
         return;
       }
       payload.amount = n;
@@ -196,7 +192,7 @@ export function SupportDialog({
 
       const scriptOk = await loadCheckout();
       if (!scriptOk || !window.Razorpay) {
-        throw new Error("Could not load the secure checkout.");
+        throw new Error(t("support.errCheckout"));
       }
 
       const orderRes = await fetch("/api/support/order", {
@@ -206,7 +202,7 @@ export function SupportDialog({
       });
       const order = await orderRes.json();
       if (!orderRes.ok) {
-        throw new Error(order?.message || "Could not start the payment.");
+        throw new Error(order?.message || t("support.errStart"));
       }
 
       const rzp = new window.Razorpay({
@@ -215,7 +211,7 @@ export function SupportDialog({
         amount: order.amount,
         currency: order.currency,
         name: "The Dailicle",
-        description: "Keep the desk lit, thank you.",
+        description: t("support.checkoutDescription"),
         theme: { color: readAccent() },
         handler: async (resp) => {
           onSupported();
@@ -262,7 +258,7 @@ export function SupportDialog({
     } catch (err) {
       setStatus("error");
       setError(
-        err instanceof Error ? err.message : "Something went wrong. Try again."
+        err instanceof Error ? err.message : t("support.errGeneric")
       );
     }
   }, [config, status, selected, custom, source, onSupported]);
@@ -317,7 +313,7 @@ export function SupportDialog({
             <button
               onClick={onClose}
               className="absolute right-4 top-4 z-10 rounded-full p-1.5 text-foreground/40 transition-colors hover:bg-foreground/5 hover:text-foreground"
-              aria-label="Close"
+              aria-label={t("support.close")}
             >
               <X size={18} />
             </button>
@@ -329,17 +325,16 @@ export function SupportDialog({
                     <Check size={26} />
                   </div>
                   <h2 className="font-display text-2xl tracking-tight">
-                    Thank you, truly.
+                    {t("support.thanksTitle")}
                   </h2>
                   <p className="max-w-xs font-serif text-foreground/60">
-                    The desk stays lit a little longer because of you. The essays
-                    will keep coming same as always, free for everyone.
+                    {t("support.thanksBody")}
                   </p>
                   <button
                     onClick={onClose}
                     className="mt-2 rounded-full bg-foreground px-6 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90"
                   >
-                    Back to reading
+                    {t("support.backToReading")}
                   </button>
                 </div>
               ) : (
@@ -352,12 +347,10 @@ export function SupportDialog({
                   </div>
 
                   <h2 className="mt-4 font-display text-2xl leading-snug tracking-tight text-balance">
-                    Everything here is free. It can stay that way.
+                    {t("support.title")}
                   </h2>
                   <p className="mt-2 font-serif text-[15px] leading-relaxed text-foreground/60">
-                    No paywall, no ads, nothing to sign up for just one essay a
-                    week, written slowly. If it&apos;s ever made you pause, you can
-                    help keep it going. Only if you want to.
+                    {t("support.body")}
                   </p>
 
                   {/* Tiers */}
@@ -391,7 +384,7 @@ export function SupportDialog({
                               active ? "text-accent" : "text-foreground/40"
                             )}
                           >
-                            {TIER_LABELS[tier]}
+                            {t(`support.tiers.${tier}`)}
                           </span>
                         </button>
                       );
@@ -418,7 +411,7 @@ export function SupportDialog({
                       onChange={(e) =>
                         setCustom(e.target.value.replace(/[^0-9]/g, ""))
                       }
-                      placeholder="Another amount"
+                      placeholder={t("support.anotherAmount")}
                       className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/35"
                     />
                   </button>
@@ -431,7 +424,7 @@ export function SupportDialog({
                         setMessage(e.target.value.slice(0, MESSAGE_MAX))
                       }
                       rows={2}
-                      placeholder="Leave a note, if you'd like (optional)"
+                      placeholder={t("support.notePlaceholder")}
                       className="w-full resize-none rounded-2xl border border-foreground/10 bg-transparent px-4 py-3 text-sm outline-none transition-colors placeholder:text-foreground/35 focus:border-foreground/25"
                     />
                     {message.trim() && (
@@ -455,10 +448,10 @@ export function SupportDialog({
                     {status === "processing" ? (
                       <>
                         <Loader2 size={16} className="animate-spin" />
-                        Opening secure checkout…
+                        {t("support.processing")}
                       </>
                     ) : (
-                      <>Support The Dailicle</>
+                      <>{t("support.cta")}</>
                     )}
                   </button>
 
@@ -466,12 +459,11 @@ export function SupportDialog({
                     onClick={onClose}
                     className="mt-3 w-full text-center text-xs text-foreground/40 transition-colors hover:text-foreground/70"
                   >
-                    Maybe another time
+                    {t("support.maybeLater")}
                   </button>
 
                   <p className="mt-4 text-center text-[11px] text-foreground/35">
-                    Secure payment by Razorpay · a one-time thank-you, not a
-                    subscription
+                    {t("support.secure")}
                   </p>
                 </>
               )}

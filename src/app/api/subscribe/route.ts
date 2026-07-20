@@ -4,13 +4,22 @@ import { getClientIp, getClientCountry } from "@/lib/request";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Where the signup came from — mirrors the admin's SOURCE_LABELS so we can see
+// which surface actually captures readers (footer vs. the essay page).
+const ALLOWED_SOURCES = new Set(["navbar", "footer", "reader", "reader_inline", "dialog"]);
+
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json().catch(() => null)) as {
       email?: unknown;
+      source?: unknown;
     } | null;
     const email =
       typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
+    const source =
+      typeof body?.source === "string" && ALLOWED_SOURCES.has(body.source)
+        ? body.source
+        : "footer";
 
     if (!email || !emailPattern.test(email)) {
       return NextResponse.json(
@@ -52,7 +61,7 @@ export async function POST(request: NextRequest) {
       country: getClientCountry(request),
       userAgent: request.headers.get("user-agent") || "unknown",
       referer: request.headers.get("referer") || null,
-      source: "footer",
+      source,
       status: "subscribed",
       createdAt: new Date(),
       updatedAt: new Date(),

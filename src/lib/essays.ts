@@ -208,6 +208,50 @@ export async function getPublishedEssays(limit = 200): Promise<Essay[]> {
 }
 
 /**
+ * Two essays to hard-recommend at the end of the one just read — same theme
+ * first (the strongest "you'll like this too" signal), then filled with the
+ * newest others so there are always two. Excludes the current essay and any
+ * not-yet-released (future-dated) issue. This is the internal-linking lever that
+ * turns a one-essay visit into a second read.
+ */
+export async function getRelatedEssays(
+  currentId: string,
+  theme: string | undefined,
+  limit = 2
+): Promise<Essay[]> {
+  const col = await collection();
+  const base: Record<string, unknown> = {
+    status: { $in: ["published", "archived"] },
+    unlisted: { $ne: true },
+    published_at: { $lte: new Date() },
+  };
+  if (ObjectId.isValid(currentId)) base._id = { $ne: new ObjectId(currentId) };
+
+  const picked: Essay[] = [];
+  const seen = new Set<string>([currentId]);
+
+  const take = async (query: Record<string, unknown>) => {
+    if (picked.length >= limit) return;
+    const docs = await col
+      .find(query, { projection: LIST_PROJECTION })
+      .sort({ publish_on: -1, published_at: -1 })
+      .limit(limit * 2)
+      .toArray();
+    for (const doc of docs) {
+      const e = serialize(doc);
+      if (seen.has(e._id)) continue;
+      seen.add(e._id);
+      picked.push(e);
+      if (picked.length >= limit) break;
+    }
+  };
+
+  if (theme) await take({ ...base, theme });
+  await take(base); // fill with newest others if same-theme was short
+  return picked.slice(0, limit);
+}
+
+/**
  * The 2025 archive – legacy essays that still meet the bar, newest first.
  * Unlisted ones stay readable at their URLs but appear in no listing.
  */

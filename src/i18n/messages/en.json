@@ -4,7 +4,8 @@
     "tagline": "One essay a week. Nothing else.",
     "oneEssayAWeek": "One essay a week · read slowly",
     "backHome": "Back home",
-    "readAnother": "Read another essay"
+    "readAnother": "Read another essay",
+    "dismiss": "Dismiss"
   },
   "nav": {
     "home": "Home",
@@ -113,6 +114,9 @@
     "languageAria": "Change language",
     "copied": "Copied!",
     "listen": "Listen",
+    "listenInstead": "Listen instead",
+    "audioMinutes": "{minutes} min",
+    "seek": "Seek",
     "playNarration": "Play narration",
     "pauseNarration": "Pause narration",
     "stopPlayer": "Stop and close player",
@@ -126,8 +130,22 @@
     "furtherReadingIntro": "If you want to sit with this longer:",
     "nextMonday": "Next Monday · {date}",
     "thanksReading": "Thanks for reading. A new essay arrives every Monday.",
-    "readMore": "Read more essays",
-    "byline": "The Dailicle Desk"
+    "readMore": "Browse all essays",
+    "byline": "The Dailicle Desk",
+    "keepReading": "Keep reading",
+    "minRead": "{minutes} min read",
+    "subscribe": {
+      "eyebrow": "Come along",
+      "heading": "If this one landed, get the next one.",
+      "sub": "One essay like this, most weeks. No spam, just the next one.",
+      "nextWeek": "Next week —",
+      "reassure": "Free · no spam · unsubscribe anytime",
+      "placeholder": "your@email.com",
+      "cta": "Subscribe",
+      "done": "You're in. See you Monday.",
+      "already": "You're already on the list — see you Monday.",
+      "nudge": "Enjoying this?"
+    }
   },
   "manifesto": {
     "meta": {
@@ -180,5 +198,53 @@
     "title": "Thank you, truly.",
     "body": "Because of you, the desk stays lit a little longer. The essays will keep arriving every Monday, slow, careful, and free for everyone, exactly as they were before.",
     "note": "You didn't have to. That's exactly why it means so much."
+  },
+  "support": {
+    "title": "Everything here is free. It can stay that way.",
+    "body": "No paywall, no ads, nothing to sign up for just one essay a week, written slowly. If it's ever made you pause, you can help keep it going. Only if you want to.",
+    "tiers": {
+      "t1": "A coffee",
+      "t2": "A quiet patron",
+      "t3": "A believer"
+    },
+    "anotherAmount": "Another amount",
+    "notePlaceholder": "Leave a note, if you'd like (optional)",
+    "cta": "Support The Dailicle",
+    "processing": "Opening secure checkout…",
+    "maybeLater": "Maybe another time",
+    "secure": "Secure payment by Razorpay · a one-time thank-you, not a subscription",
+    "thanksTitle": "Thank you, truly.",
+    "thanksBody": "The desk stays lit a little longer because of you. The essays will keep coming same as always, free for everyone.",
+    "backToReading": "Back to reading",
+    "close": "Close",
+    "checkoutDescription": "Keep the desk lit, thank you.",
+    "errMin": "Enter at least {amount}.",
+    "errCheckout": "Could not load the secure checkout.",
+    "errStart": "Could not start the payment.",
+    "errGeneric": "Something went wrong. Try again."
+  },
+  "prefs": {
+    "aria": "Reading preferences",
+    "title": "Reading comfort",
+    "close": "Close",
+    "textSize": "Text size",
+    "comfortable": "Comfortable",
+    "large": "Large",
+    "veryLarge": "Very large",
+    "bodyTypeface": "Body typeface",
+    "sans": "Sans",
+    "serif": "Serif",
+    "lineSpacing": "Line spacing",
+    "normal": "Normal",
+    "relaxed": "Relaxed"
+  },
+  "reactions": {
+    "prompt": "Did this essay land for you?",
+    "yes": "Yes, this landed",
+    "no": "Not really",
+    "noted": "Noted – thank you."
+  },
+  "themeSwitcher": {
+    "switchTo": "Switch to {theme} theme"
   }
 }
