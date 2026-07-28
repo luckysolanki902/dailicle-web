@@ -109,6 +109,20 @@ textarea:focus-visible {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
+/*
+  Fairytale ("dream") theme softens every image – hero banners and inline
+  figures alike – so artwork melts into the dreamy pink wash.
+*/
+.theme-fairytale img {
+  opacity: 0.75;
+}
+
+/* Study (wooden) and dark themes take a gentler softening. */
+.theme-wooden img,
+.theme-dark img {
+  opacity: 0.8;
+}
+
 /* Dark theme prose readability */
 .theme-dark .prose,
 .theme-space .prose {
