@@ -21,9 +21,11 @@ import {
 } from "@/i18n/config";
 import type { Metadata } from "next";
 
-// The archive listing only changes when a new essay ships (weekly), so a
-// day-long revalidate window is plenty and keeps background renders cheap.
-export const revalidate = 86400;
+// Match the homepage cadence: a new essay ships weekly, but the essay is
+// written to the DB out-of-band (the publish cron), so a day-long window left
+// the archive showing the previous week on publish day. Hourly revalidation
+// keeps it fresh within an hour of a publish, same as the homepage.
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,

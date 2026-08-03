@@ -67,11 +67,6 @@ export interface EssayReaderProps {
     /** Whether the banner image has a transparent background. */
     bannerTransparent?: boolean;
   };
-  /** Next Monday's topic, if one is queued – the reason to come back. */
-  nextTease?: {
-    title: string;
-    dateLabel: string;
-  } | null;
   /** Two hard-recommended essays to read next (same theme first). */
   related?: {
     href: string;
@@ -109,7 +104,6 @@ export function EssayReader({
   essayId,
   locale = "en",
   essay,
-  nextTease,
   related,
   publishOn,
   publishedAt,
@@ -580,14 +574,6 @@ export function EssayReader({
             <p className="mx-auto mt-2 max-w-md font-serif text-[15px] leading-relaxed text-foreground/60 text-balance">
               {t("reader.subscribe.sub")}
             </p>
-            {nextTease && (
-              <p className="mx-auto mt-4 max-w-md text-sm text-foreground/70">
-                <span className="font-semibold text-foreground/80">
-                  {t("reader.subscribe.nextWeek")}
-                </span>{" "}
-                <span className="italic">{nextTease.title}</span>
-              </p>
-            )}
             <div className="mt-6">
               <SubscribeForm source="reader" />
             </div>

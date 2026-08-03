@@ -5,7 +5,6 @@ import {
   getEssayTranslation,
   getTranslationsMap,
   localizeEssay,
-  getNextTopic,
   getRelatedEssays,
   getAllReadable,
   essayBannerUrl,
@@ -21,7 +20,7 @@ import {
   hreflangAlternates,
   type Locale,
 } from "@/i18n/config";
-import { formatDate, nextMonday } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -144,7 +143,7 @@ export default async function ReadPage({
 }) {
   const { lang, id } = await params;
   const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
-  const [essay, nextTopic] = await Promise.all([getEssay(id), getNextTopic()]);
+  const essay = await getEssay(id);
 
   if (!essay || !essay.body) {
     notFound();
@@ -154,9 +153,6 @@ export default async function ReadPage({
   const localized = localizeEssay(essay, translation);
   const slug = essay.slug || essay._id;
   const categoryLabel = await localeThemeLabel(essay.theme, locale);
-  const nextTranslation = nextTopic
-    ? await getEssayTranslation(nextTopic._id, locale)
-    : null;
 
   // Two hard recommendations for the end of the essay, localized.
   const related = await getRelatedEssays(essay._id, essay.theme, 2);
@@ -237,14 +233,6 @@ export default async function ReadPage({
             bannerUrl: essayBannerInfo(essay)?.url ?? null,
             bannerTransparent: essayBannerInfo(essay)?.transparent ?? false,
           }}
-          nextTease={
-            nextTopic
-              ? {
-                  title: nextTranslation?.title || nextTopic.title,
-                  dateLabel: formatDate(nextMonday(), "medium"),
-                }
-              : null
-          }
           related={relatedProps}
           publishOn={essay.publish_on ? new Date(essay.publish_on).toISOString() : null}
           publishedAt={essay.published_at ? new Date(essay.published_at).toISOString() : null}
