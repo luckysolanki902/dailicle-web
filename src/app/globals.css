@@ -102,11 +102,18 @@ body {
   outline-offset: 3px;
 }
 
-/* Soft accent glow on focused fields for a gentler, on-theme feel. */
+/*
+  Text fields get a single, clean focus treatment instead of the button-style
+  offset outline: the border turns accent and a soft ring hugs it (no gap, no
+  second concentric line). This overrides the generic :focus-visible outline
+  above so inputs never show the doubled ring.
+*/
 input:focus-visible,
-textarea:focus-visible {
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 /*

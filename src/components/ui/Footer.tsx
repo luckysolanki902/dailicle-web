@@ -131,7 +131,7 @@ export function Footer() {
             >
               {t("footer.subscribeLabel")}
             </label>
-            <div className="flex items-center gap-2 rounded-full border border-foreground/10 bg-background/45 p-1.5 shadow-[0_18px_60px_color-mix(in_srgb,var(--foreground)_6%,transparent)] backdrop-blur">
+            <div className="flex items-center gap-2 rounded-full border border-foreground/10 bg-background/45 p-1.5 shadow-[0_18px_60px_color-mix(in_srgb,var(--foreground)_6%,transparent)] backdrop-blur transition-colors focus-within:border-accent/60">
               <div className="pl-3 text-foreground/35">
                 <Mail size={17} aria-hidden="true" />
               </div>
@@ -149,7 +149,7 @@ export function Footer() {
                 }}
                 placeholder={t("footer.subscribePlaceholder")}
                 autoComplete="email"
-                className="min-w-0 flex-1 bg-transparent py-2.5 text-sm outline-none placeholder:text-foreground/30"
+                className="min-w-0 flex-1 bg-transparent py-2.5 text-sm outline-none focus-visible:shadow-none placeholder:text-foreground/30"
               />
               <button
                 type="submit"

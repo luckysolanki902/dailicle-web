@@ -71,7 +71,7 @@ export function FeedbackForm() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={t("feedback.form.messagePlaceholder")}
-                className="w-full min-h-[150px] p-4 rounded-2xl bg-foreground/5 border-transparent focus:border-foreground/20 focus:bg-background transition-all outline-none resize-none placeholder:text-foreground/30"
+                className="w-full min-h-[150px] p-4 rounded-2xl bg-foreground/5 border-transparent focus:border-accent/60 focus:bg-background transition-all outline-none resize-none placeholder:text-foreground/30"
               />
             </div>
 
@@ -86,7 +86,7 @@ export function FeedbackForm() {
                 value={identity}
                 onChange={(e) => setIdentity(e.target.value)}
                 placeholder={t("feedback.form.identityPlaceholder")}
-                className="w-full p-4 rounded-xl bg-foreground/5 border-transparent focus:border-foreground/20 focus:bg-background transition-all outline-none placeholder:text-foreground/30"
+                className="w-full p-4 rounded-xl bg-foreground/5 border-transparent focus:border-accent/60 focus:bg-background transition-all outline-none placeholder:text-foreground/30"
               />
             </div>
 

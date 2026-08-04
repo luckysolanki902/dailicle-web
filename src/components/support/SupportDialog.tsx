@@ -437,7 +437,7 @@ export function SupportDialog({
                         setCustom(e.target.value.replace(/[^0-9]/g, ""))
                       }
                       placeholder={t("support.anotherAmount")}
-                      className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-foreground/35"
+                      className="min-w-0 flex-1 bg-transparent text-sm outline-none focus-visible:shadow-none placeholder:text-foreground/35"
                     />
                   </button>
 
@@ -450,7 +450,7 @@ export function SupportDialog({
                       }
                       rows={2}
                       placeholder={t("support.notePlaceholder")}
-                      className="w-full resize-none rounded-2xl border border-foreground/10 bg-transparent px-4 py-3 text-sm outline-none transition-colors placeholder:text-foreground/35 focus:border-foreground/25"
+                      className="w-full resize-none rounded-2xl border border-foreground/10 bg-transparent px-4 py-3 text-sm outline-none transition-colors placeholder:text-foreground/35 focus:border-accent/60"
                     />
                     {message.trim() && (
                       <p className="mt-1 pr-1 text-right text-[10px] text-foreground/30">
