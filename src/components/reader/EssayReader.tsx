@@ -38,6 +38,7 @@ import {
   markEssayRead,
   setCurrentEssay,
 } from "@/lib/analytics";
+import { journeyEssay } from "@/lib/journey";
 
 export interface EssayReaderProps {
   /** Canonical essay id, used to key the like/dislike signal. */
@@ -144,6 +145,9 @@ export function EssayReader({
       categoryLabel: essay.themeLabel,
       title: essay.title,
     });
+    // Name the essay on the journey's open dwell segment now — by the time a
+    // route change closes that segment this component has already unmounted.
+    journeyEssay({ id: essayId, category, title: essay.title });
     markEssayRead(essayId);
     clarityTag("category", category);
     clarityTag("last_essay", essay.title);

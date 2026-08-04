@@ -4,6 +4,7 @@ import {
   supportersCollection,
   notifyOwnerOfPayment,
   reportPaymentToGa,
+  linkPaymentToJourney,
 } from "@/lib/supporters";
 
 export const runtime = "nodejs";
@@ -98,7 +99,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Backup conversion to GA4 for closed-tab payments (once per order).
-    if (captured) await reportPaymentToGa(orderId);
+    if (captured) {
+      await reportPaymentToGa(orderId);
+      await linkPaymentToJourney(orderId);
+    }
   } catch (error) {
     // Return 500 so Razorpay retries the webhook.
     console.error("support/webhook error:", error);

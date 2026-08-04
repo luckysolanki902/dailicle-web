@@ -7,6 +7,7 @@ import { Check, Heart, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SupportSource } from "./SupportProvider";
 import { track, getGaClientId, getCurrentEssay } from "@/lib/analytics";
+import { getVisitorId, getJourneySessionId, journeyEvent } from "@/lib/journey";
 import { useT } from "@/i18n/I18nProvider";
 
 type TierId = "t1" | "t2" | "t3";
@@ -156,11 +157,17 @@ export function SupportDialog({
       amount?: number;
       source: string;
       gaClientId?: string;
+      vid?: string;
+      sid?: string;
       essayId?: string;
       category?: string;
       message?: string;
     } = {
       source,
+      // The anonymous visitor id is what joins this payment to everything the
+      // reader did before it — the whole point of the journey record.
+      vid: getVisitorId() || undefined,
+      sid: getJourneySessionId() || undefined,
       essayId: essay?.id,
       category: essay?.category,
       message: message.trim() || undefined,
@@ -183,6 +190,12 @@ export function SupportDialog({
       amount: payload.amount,
       category: essay?.category,
       essay_id: essay?.id,
+    });
+    journeyEvent("checkout_start", {
+      source,
+      essayId: essay?.id,
+      title: essay?.title,
+      category: essay?.category,
     });
 
     try {
@@ -224,6 +237,12 @@ export function SupportDialog({
             category: essay?.category,
             essay_id: essay?.id,
           });
+          journeyEvent("payment_success", {
+            source,
+            essayId: essay?.id,
+            title: essay?.title,
+            category: essay?.category,
+          });
           // Confirm to the server (the webhook is a redundant safety net if
           // this fails), then send the reader to the thank-you page.
           try {
@@ -245,6 +264,12 @@ export function SupportDialog({
               source,
               tier: payload.tier,
               amount: payload.amount,
+            });
+            journeyEvent("checkout_dismiss", {
+              source,
+              essayId: essay?.id,
+              title: essay?.title,
+              category: essay?.category,
             });
           },
         },

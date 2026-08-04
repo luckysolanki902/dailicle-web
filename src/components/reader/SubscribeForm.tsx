@@ -4,7 +4,8 @@ import { useState, type FormEvent } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/i18n/I18nProvider";
-import { track } from "@/lib/analytics";
+import { track, getCurrentEssay } from "@/lib/analytics";
+import { journeyEvent } from "@/lib/journey";
 
 type State = "idle" | "loading" | "done" | "already" | "error";
 
@@ -52,6 +53,15 @@ export function SubscribeForm({
       if (res.ok) {
         setState("done");
         track("subscribe_success", { source });
+        // Timeline only — the journey records *that* they subscribed, never
+        // the address they typed.
+        const essay = getCurrentEssay();
+        journeyEvent("subscribe", {
+          source,
+          essayId: essay?.id,
+          title: essay?.title,
+          category: essay?.category,
+        });
       } else if (res.status === 409) {
         setState("already");
       } else {

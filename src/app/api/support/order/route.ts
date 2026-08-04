@@ -27,6 +27,8 @@ export async function POST(request: NextRequest) {
       amount?: unknown;
       source?: unknown;
       gaClientId?: unknown;
+      vid?: unknown;
+      sid?: unknown;
       essayId?: unknown;
       category?: unknown;
       message?: unknown;
@@ -94,6 +96,10 @@ export async function POST(request: NextRequest) {
           status: "created",
           updatedAt: now,
           gaClientId: str(body?.gaClientId),
+          // Anonymous visitor id — the join key to the reader journey, which is
+          // what turns this row into "who they were before they paid".
+          vid: str(body?.vid, 64),
+          sid: str(body?.sid, 64),
           essayId: str(body?.essayId),
           category: str(body?.category, 32),
           message: str(body?.message, 500),

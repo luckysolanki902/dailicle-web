@@ -2,6 +2,7 @@ import clientPromise from "@/lib/mongodb";
 import nodemailer from "nodemailer";
 import type { Collection, Document } from "mongodb";
 import { gaConfigured, sendServerEvent } from "@/lib/ga-server";
+import { markJourneySupported } from "@/lib/journey-store";
 
 /**
  * Persistence + owner-notification for the optional support flow. Every payment
@@ -69,6 +70,28 @@ export async function reportPaymentToGa(orderId: string): Promise<void> {
     });
   } catch (err) {
     console.error("reportPaymentToGa failed:", err);
+  }
+}
+
+/**
+ * Stamp the reader's anonymous journey with "this one paid", exactly once per
+ * order. The link is the random visitor id their browser minted — never an
+ * email or anything else that identifies the person. Guarded by an atomic
+ * `journeyLinked` flag so verify and webhook can both call it.
+ */
+export async function linkPaymentToJourney(orderId: string): Promise<void> {
+  if (!orderId) return;
+  try {
+    const col = await supportersCollection();
+    const doc = await col.findOneAndUpdate(
+      { orderId, journeyLinked: { $ne: true } },
+      { $set: { journeyLinked: true } },
+      { returnDocument: "after" }
+    );
+    if (!doc?.vid) return;
+    await markJourneySupported(String(doc.vid), new Date());
+  } catch (err) {
+    console.error("linkPaymentToJourney failed:", err);
   }
 }
 

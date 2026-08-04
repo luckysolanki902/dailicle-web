@@ -4,6 +4,7 @@ import {
   supportersCollection,
   notifyOwnerOfPayment,
   reportPaymentToGa,
+  linkPaymentToJourney,
 } from "@/lib/supporters";
 
 export const runtime = "nodejs";
@@ -89,6 +90,8 @@ export async function POST(request: NextRequest) {
 
     // Authoritative conversion to GA4 (once per order; webhook is the backup).
     await reportPaymentToGa(orderId);
+    // Close the loop on the anonymous reading journey that led here.
+    await linkPaymentToJourney(orderId);
 
     return NextResponse.json({ success: true });
   } catch (error) {

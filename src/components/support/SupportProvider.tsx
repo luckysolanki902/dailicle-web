@@ -14,6 +14,7 @@ import {
   getSessionEssayCount,
   getVisitCount,
 } from "@/lib/analytics";
+import { journeyEvent } from "@/lib/journey";
 
 export type SupportSource = "navbar" | "footer" | "reader" | "dialog";
 
@@ -61,6 +62,12 @@ export function SupportProvider({ children }: { children: React.ReactNode }) {
         essays_read_session: getSessionEssayCount(),
         visit_count: getVisitCount(),
         has_supported_before: hasSupported,
+      });
+      journeyEvent("support_open", {
+        source: src,
+        essayId: essay?.id,
+        title: essay?.title,
+        category: essay?.category,
       });
     },
     [hasSupported]
