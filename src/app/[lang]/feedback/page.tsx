@@ -29,11 +29,11 @@ export default function FeedbackPage() {
           <div className="pt-12 text-center space-y-4">
             <p className="text-sm text-foreground/40">{t("feedback.preferEmail")}</p>
             <a
-              href="mailto:luckysolanki902@gmail.com"
+              href="mailto:read@dailicle.com"
               className="inline-flex items-center gap-2 text-foreground/80 hover:text-foreground transition-colors font-medium"
             >
               <Mail size={16} />
-              luckysolanki902@gmail.com
+              read@dailicle.com
             </a>
           </div>
         </motion.div>

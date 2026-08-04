@@ -119,7 +119,7 @@ export async function notifyOwnerOfPayment(record: {
 
     await transporter.sendMail({
       from: user,
-      to: "luckysolanki902@gmail.com",
+      to: "read@dailicle.com",
       subject: `💛 New support - ${money(record.amount, record.currency)} - The Dailicle`,
       html: `
         <h2>Someone supported The Dailicle</h2>
