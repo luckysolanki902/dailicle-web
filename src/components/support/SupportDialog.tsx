@@ -9,15 +9,21 @@ import type { SupportSource } from "./SupportProvider";
 import { track, getGaClientId, getCurrentEssay } from "@/lib/analytics";
 import { getVisitorId, getJourneySessionId, journeyEvent } from "@/lib/journey";
 import { useT } from "@/i18n/I18nProvider";
+import { PaypalButtons } from "./PaypalButtons";
 
 type TierId = "t1" | "t2" | "t3";
 
 interface Config {
+  /** Which gateway this reader gets — decided server-side from their country. */
+  provider: "razorpay" | "paypal";
   currency: string;
   symbol: string;
   presets: Record<TierId, number>;
   min: number;
   max: number;
+  /** Their real currency, when PayPal cannot settle it and we quoted USD. */
+  originalCurrency?: string | null;
+  paypalClientId?: string | null;
 }
 
 // Minimal typing for the Razorpay Checkout global loaded from their CDN.
@@ -112,6 +118,10 @@ export function SupportDialog({
       .catch(() => {
         if (!cancelled)
           setConfig({
+            // The endpoint is what knows about gateways; if it is unreachable
+            // fall back to Razorpay, which is the one that works without any
+            // extra client-side setup.
+            provider: "razorpay",
             currency: "USD",
             symbol: "$",
             presets: { t1: 3, t2: 5, t3: 15 },
@@ -146,23 +156,28 @@ export function SupportDialog({
     };
   }, [isOpen]);
 
-  const pay = useCallback(async () => {
-    if (!config || status === "processing") return;
-    setStatus("processing");
-    setError("");
+  interface SupportPayload {
+    tier?: TierId;
+    amount?: number;
+    source: string;
+    gaClientId?: string;
+    vid?: string;
+    sid?: string;
+    essayId?: string;
+    category?: string;
+    message?: string;
+  }
 
+  /**
+   * Everything the server needs to price and attribute this contribution.
+   * Shared by both gateways: Razorpay calls it once up front, PayPal calls it
+   * from inside its button at click time so the reader's latest choice wins.
+   * Returns null (having set the error) when the custom amount is unusable.
+   */
+  const buildPayload = useCallback((): SupportPayload | null => {
+    if (!config) return null;
     const essay = getCurrentEssay();
-    const payload: {
-      tier?: TierId;
-      amount?: number;
-      source: string;
-      gaClientId?: string;
-      vid?: string;
-      sid?: string;
-      essayId?: string;
-      category?: string;
-      message?: string;
-    } = {
+    const payload: SupportPayload = {
       source,
       // The anonymous visitor id is what joins this payment to everything the
       // reader did before it — the whole point of the journey record.
@@ -177,12 +192,23 @@ export function SupportDialog({
       if (!Number.isFinite(n) || n < config.min) {
         setStatus("error");
         setError(t("support.errMin", { amount: `${config.symbol}${config.min}` }));
-        return;
+        return null;
       }
       payload.amount = n;
     } else {
       payload.tier = selected;
     }
+    return payload;
+  }, [config, source, message, selected, custom, t]);
+
+  const pay = useCallback(async () => {
+    if (!config || status === "processing") return;
+    setStatus("processing");
+    setError("");
+
+    const essay = getCurrentEssay();
+    const payload = buildPayload();
+    if (!payload) return;
 
     track("support_checkout_start", {
       source,
@@ -286,7 +312,63 @@ export function SupportDialog({
         err instanceof Error ? err.message : t("support.errGeneric")
       );
     }
-  }, [config, status, selected, custom, source, onSupported]);
+  }, [config, status, source, onSupported, buildPayload, router, t]);
+
+  /* ---- PayPal (readers outside India) --------------------------------- */
+
+  /** Fires when the reader clicks PayPal's own button. */
+  const onPaypalStart = useCallback(() => {
+    const essay = getCurrentEssay();
+    const payload = buildPayload();
+    if (!payload) return null;
+    track("support_checkout_start", {
+      source,
+      tier: payload.tier,
+      amount: payload.amount,
+      category: essay?.category,
+      essay_id: essay?.id,
+      provider: "paypal",
+    });
+    journeyEvent("checkout_start", {
+      source,
+      essayId: essay?.id,
+      title: essay?.title,
+      category: essay?.category,
+    });
+    return payload as unknown as Record<string, unknown>;
+  }, [buildPayload, source]);
+
+  const onPaypalSuccess = useCallback(() => {
+    const essay = getCurrentEssay();
+    onSupported();
+    track("support_payment_success", {
+      source,
+      currency: config?.currency,
+      category: essay?.category,
+      essay_id: essay?.id,
+      provider: "paypal",
+    });
+    journeyEvent("payment_success", {
+      source,
+      essayId: essay?.id,
+      title: essay?.title,
+      category: essay?.category,
+    });
+    setStatus("success");
+    router.push("/thank-you");
+  }, [config, source, onSupported, router]);
+
+  const onPaypalCancel = useCallback(() => {
+    const essay = getCurrentEssay();
+    setStatus("idle");
+    track("support_checkout_dismissed", { source, provider: "paypal" });
+    journeyEvent("checkout_dismiss", {
+      source,
+      essayId: essay?.id,
+      title: essay?.title,
+      category: essay?.category,
+    });
+  }, [source]);
 
   const chooseTier = useCallback(
     (tier: TierId | "custom") => {
@@ -465,20 +547,38 @@ export function SupportDialog({
                     </p>
                   )}
 
-                  <button
-                    onClick={pay}
-                    disabled={status === "processing" || !config}
-                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {status === "processing" ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        {t("support.processing")}
-                      </>
-                    ) : (
-                      <>{t("support.cta")}</>
-                    )}
-                  </button>
+                  {config?.provider === "paypal" && config.paypalClientId ? (
+                    <PaypalButtons
+                      clientId={config.paypalClientId}
+                      currency={config.currency}
+                      getPayload={onPaypalStart}
+                      onSuccess={onPaypalSuccess}
+                      onError={(m) => {
+                        setStatus("error");
+                        setError(m);
+                      }}
+                      onCancel={onPaypalCancel}
+                      labels={{
+                        loading: t("support.processing"),
+                        failed: t("support.errCheckout"),
+                      }}
+                    />
+                  ) : (
+                    <button
+                      onClick={pay}
+                      disabled={status === "processing" || !config}
+                      className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {status === "processing" ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          {t("support.processing")}
+                        </>
+                      ) : (
+                        <>{t("support.cta")}</>
+                      )}
+                    </button>
+                  )}
 
                   <button
                     onClick={onClose}
@@ -488,7 +588,11 @@ export function SupportDialog({
                   </button>
 
                   <p className="mt-4 text-center text-[11px] text-foreground/35">
-                    {t("support.secure")}
+                    {t(
+                      config?.provider === "paypal"
+                        ? "support.securePaypal"
+                        : "support.secure"
+                    )}
                   </p>
                 </>
               )}

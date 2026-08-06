@@ -1,15 +1,20 @@
 // Relative import (not the "@/" alias) so this module and its test compile
 // standalone under `npm run test:merge`, the same way release.ts does.
-import { contactFromPayment, type PaymentContact } from "./razorpay";
+import { emptyFacts, type PaymentFacts, type PaymentProvider } from "./payment-facts";
 
 /**
- * How a Razorpay payment gets merged onto a supporter record.
+ * How a payment gets merged onto a supporter record.
  *
  * Kept as a pure function, separate from the Mongo/mailer plumbing in
- * `supporters.ts`, because this is the part that has to be exactly right: three
- * independent writers (the browser's /verify call, Razorpay's webhook, and the
- * contact backfill) all update the same document, in any order, sometimes at the
- * same instant, and each of them may hold only part of the truth.
+ * `supporters.ts`, because this is the part that has to be exactly right: for
+ * any one order, several independent writers update the same document, in any
+ * order, sometimes at the same instant, and each may hold only part of the
+ * truth. For Razorpay that is /verify, the webhook, and the contact backfill;
+ * for PayPal it is /capture and the webhook.
+ *
+ * It is also provider-neutral by construction. Razorpay and PayPal describe the
+ * same event in different dialects, so each flattens its own response into
+ * `PaymentFacts` (see payment-facts.ts) and only that shape reaches this file.
  *
  * Two rules govern everything below:
  *
@@ -38,12 +43,13 @@ export type PaymentStatus = "authorized" | "paid" | "captured" | "failed";
 
 export interface MergeInput {
   orderId: string;
+  /** Overrides `facts.paymentId` when the caller knows better. */
   paymentId?: string | null;
-  /** The Razorpay payment entity, or `{}`/null if we could not fetch it. */
-  payment?: Record<string, unknown> | null;
+  /** What this write learned, already flattened by the provider's client. */
+  facts?: PaymentFacts | null;
   /** New lifecycle status; ignored if it would move the record backwards. */
   status?: PaymentStatus;
-  /** Which writer this is ("verify", "webhook", "backfill"). */
+  /** Which writer this is ("verify", "webhook", "capture", "backfill"). */
   via: string;
 }
 
@@ -67,17 +73,17 @@ export interface MergeResult {
   /** The aggregation pipeline to hand to updateOne/findOneAndUpdate. */
   pipeline: Record<string, unknown>[];
   /** What this write learned about the reader, after normalization. */
-  contact: PaymentContact;
+  contact: { email: string | null; contact: string | null };
 }
 
 export function buildPaymentMerge(
   input: MergeInput,
   now: Date = new Date()
 ): MergeResult {
-  const payment = input.payment ?? {};
-  const hasEntity = Object.keys(payment).length > 0;
-  const contact = contactFromPayment(payment);
-  const learnedContact = Boolean(contact.email || contact.contact);
+  const facts: PaymentFacts = input.facts ?? emptyFacts("razorpay");
+  const hasEntity = Object.keys(facts.raw ?? {}).length > 0;
+  const learnedContact = Boolean(facts.email || facts.contact);
+  const paymentId = input.paymentId ?? facts.paymentId;
 
   const rank = input.status ? STATUS_RANK[input.status] : undefined;
   const captured = input.status === "captured" || input.status === "paid";
@@ -89,30 +95,34 @@ export function buildPaymentMerge(
     notified: { $ifNull: ["$notified", false] },
     updatedAt: now,
 
-    paymentId: preferNew(input.paymentId, "paymentId"),
+    // Which gateway this order belongs to. Set once, on first sight, so a
+    // later write can never relabel a PayPal payment as a Razorpay one.
+    provider: { $ifNull: ["$provider", facts.provider] },
+
+    paymentId: preferNew(paymentId, "paymentId"),
 
     // Rule 1, the whole point of this module: once we know how to reach a
     // supporter, no later write may blank it out.
-    email: preferNew(contact.email, "email"),
-    contact: preferNew(contact.contact, "contact"),
+    email: preferNew(facts.email, "email"),
+    contact: preferNew(facts.contact, "contact"),
     // Which writer first learned the details — for auditing gaps later.
     contactVia: learnedContact ? { $ifNull: ["$contactVia", input.via] } : "$contactVia",
     contactAt: learnedContact ? { $ifNull: ["$contactAt", now] } : "$contactAt",
 
-    method: preferNew(payment.method, "method"),
-    fee: preferNew(payment.fee, "fee"),
-    tax: preferNew(payment.tax, "tax"),
-    amountCaptured: preferNew(payment.amount, "amountCaptured"),
-    currencyCaptured: preferNew(payment.currency, "currencyCaptured"),
-    // The raw entity is worth keeping, but only when we have a real one.
-    razorpay: hasEntity ? { $literal: payment } : "$razorpay",
+    method: preferNew(facts.method, "method"),
+    fee: preferNew(facts.fee, "fee"),
+    tax: preferNew(facts.tax, "tax"),
+    amountCaptured: preferNew(facts.amountSubunits, "amountCaptured"),
+    currencyCaptured: preferNew(facts.currency, "currencyCaptured"),
+    // The raw provider response is worth keeping, but only when we have one.
+    razorpay: hasEntity ? { $literal: facts.raw } : "$razorpay",
     capturedAt: captured ? { $ifNull: ["$capturedAt", now] } : "$capturedAt",
 
-    // Intent fields normally come from /api/support/order. Fill them only if
+    // Intent fields normally come from the order endpoint. Fill them only if
     // this is the first we have heard of the order at all — which happens when
     // the reader closed the tab and the webhook got here first.
-    amount: fillIfEmpty(payment.amount, "amount"),
-    currency: fillIfEmpty(payment.currency, "currency"),
+    amount: fillIfEmpty(facts.amountSubunits, "amount"),
+    currency: fillIfEmpty(facts.currency, "currency"),
     source: { $ifNull: ["$source", input.via] },
   };
 
@@ -124,5 +134,10 @@ export function buildPaymentMerge(
     set.statusRank = { $max: [rank, currentRank] };
   }
 
-  return { pipeline: [{ $set: set }], contact };
+  return {
+    pipeline: [{ $set: set }],
+    contact: { email: facts.email, contact: facts.contact },
+  };
 }
+
+export type { PaymentFacts, PaymentProvider };

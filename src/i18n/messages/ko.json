@@ -226,7 +226,8 @@
     "errMin": "최소 {amount}을 입력하세요.",
     "errCheckout": "안전한 결제를 불러올 수 없습니다.",
     "errStart": "결제를 시작할 수 없습니다.",
-    "errGeneric": "문제가 발생했습니다. 다시 시도하세요."
+    "errGeneric": "문제가 발생했습니다. 다시 시도하세요.",
+    "securePaypal": "PayPal를 통한 안전한 결제 · 일회성 감사의 표시, 구독 아님"
   },
   "prefs": {
     "aria": "읽기 환경 설정",

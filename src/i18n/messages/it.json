@@ -226,7 +226,8 @@
     "errMin": "Inserisci almeno {amount}.",
     "errCheckout": "Impossibile caricare il pagamento sicuro.",
     "errStart": "Impossibile avviare il pagamento.",
-    "errGeneric": "Qualcosa è andato storto. Riprova."
+    "errGeneric": "Qualcosa è andato storto. Riprova.",
+    "securePaypal": "Pagamento sicuro tramite PayPal · un ringraziamento una tantum, non un abbonamento"
   },
   "prefs": {
     "aria": "Preferenze di lettura",

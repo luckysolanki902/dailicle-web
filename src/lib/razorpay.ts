@@ -1,4 +1,10 @@
 import crypto from "crypto";
+import {
+  emptyFacts,
+  normalizeContactBasic,
+  normalizeEmailBasic,
+  type PaymentFacts,
+} from "./payment-facts";
 
 /**
  * Thin, dependency-free Razorpay helpers. We talk to the REST API directly with
@@ -130,33 +136,22 @@ const PLACEHOLDER_CONTACTS = new Set([
 ]);
 
 export function normalizeEmail(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const email = value.trim().toLowerCase();
-  if (!email || email === "void") return null;
+  const email = normalizeEmailBasic(value);
+  if (!email) return null;
   // Anything @razorpay.com is theirs, not the reader's.
   if (PLACEHOLDER_EMAILS.has(email) || email.endsWith("@razorpay.com")) {
     return null;
   }
-  if (!/^[^\s@]+@[^\s@.]+\.[^\s@]+$/.test(email)) return null;
-  return email.slice(0, 254);
+  return email;
 }
 
 export function normalizeContact(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const raw = value.trim();
-  if (!raw || raw.toLowerCase() === "void") return null;
-
-  // Keep a leading "+" and the digits; drop spaces, dashes, brackets.
-  const plus = raw.startsWith("+");
-  const digits = raw.replace(/\D/g, "");
-  if (digits.length < 7 || digits.length > 15) return null;
-
-  const normalized = (plus ? "+" : "") + digits;
+  const normalized = normalizeContactBasic(value);
+  if (!normalized) return null;
+  const digits = normalized.replace(/\D/g, "");
   if (PLACEHOLDER_CONTACTS.has(normalized) || PLACEHOLDER_CONTACTS.has(digits)) {
     return null;
   }
-  // A run of one repeated digit is never a real number.
-  if (/^(\d)\1+$/.test(digits)) return null;
   return normalized;
 }
 
@@ -192,6 +187,31 @@ export function contactFromPayment(
     null;
 
   return { email, contact };
+}
+
+/**
+ * Flatten a Razorpay payment entity into the provider-neutral shape the
+ * supporter merge understands. Razorpay already speaks in subunits, so the
+ * amounts pass through untouched.
+ */
+export function razorpayFacts(
+  payment: Record<string, unknown> | null | undefined
+): PaymentFacts {
+  const facts = emptyFacts("razorpay");
+  if (!payment || Object.keys(payment).length === 0) return facts;
+
+  const { email, contact } = contactFromPayment(payment);
+  facts.raw = payment;
+  facts.paymentId = typeof payment.id === "string" ? payment.id : null;
+  facts.email = email;
+  facts.contact = contact;
+  facts.method = typeof payment.method === "string" ? payment.method : null;
+  facts.amountSubunits =
+    typeof payment.amount === "number" ? payment.amount : null;
+  facts.currency = typeof payment.currency === "string" ? payment.currency : null;
+  facts.fee = typeof payment.fee === "number" ? payment.fee : null;
+  facts.tax = typeof payment.tax === "number" ? payment.tax : null;
+  return facts;
 }
 
 /** Rank payment attempts so the most meaningful one wins during recovery. */

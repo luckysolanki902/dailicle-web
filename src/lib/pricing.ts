@@ -139,6 +139,17 @@ const COUNTRY_TO_CURRENCY: Record<string, string> = {
   ...Object.fromEntries(EUROZONE.map((c) => [c, "EUR"])),
 };
 
+/**
+ * Subunits back to major units for a given currency. Not every currency is
+ * 1/100: yen and won are whole units, the Gulf dinars are 1/1000. Reporting
+ * ¥2000 as "20.00" understates real revenue by 100×, so anything converting a
+ * stored amount for display or analytics must go through this.
+ */
+export function subunitsToMajor(subunits: number, currency: string): number {
+  const decimals = CURRENCIES[currency?.toUpperCase()]?.decimals ?? 2;
+  return subunits / 10 ** decimals;
+}
+
 /** Resolve the price table for a two-letter ISO country code (or null). */
 export function priceConfigFor(country: string | null): PriceConfig {
   const code = country ? COUNTRY_TO_CURRENCY[country.toUpperCase()] : undefined;

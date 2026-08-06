@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { buildPaymentMerge } from "./supporter-merge";
-import { normalizeContact, normalizeEmail } from "./razorpay";
+import { normalizeContact, normalizeEmail, razorpayFacts } from "./razorpay";
+import { emptyFacts } from "./payment-facts";
+import { paypalFacts, toPaypalAmount, fromPaypalAmount } from "./paypal";
 
 /**
  * A minimal evaluator for the handful of aggregation operators the merge
@@ -104,7 +106,7 @@ test("a failed payment fetch cannot erase contact details we already have", () =
     buildPaymentMerge({
       orderId: "order_1",
       paymentId: "pay_real",
-      payment: capturedPayment,
+      facts: razorpayFacts(capturedPayment),
       status: "captured",
       via: "webhook",
     }).pipeline
@@ -119,7 +121,7 @@ test("a failed payment fetch cannot erase contact details we already have", () =
     buildPaymentMerge({
       orderId: "order_1",
       paymentId: "pay_real",
-      payment: {},
+      facts: emptyFacts("razorpay"),
       status: "paid",
       via: "verify",
     }).pipeline
@@ -140,11 +142,11 @@ test("placeholder values never displace details a later write recovers", () => {
     buildPaymentMerge({
       orderId: "order_1",
       paymentId: "pay_1",
-      payment: {
+      facts: razorpayFacts({
         ...capturedPayment,
         email: "void@razorpay.com",
         contact: "+919999999999",
-      },
+      }),
       status: "captured",
       via: "webhook",
     }).pipeline
@@ -157,7 +159,7 @@ test("placeholder values never displace details a later write recovers", () => {
     withPlaceholders,
     buildPaymentMerge({
       orderId: "order_1",
-      payment: capturedPayment,
+      facts: razorpayFacts(capturedPayment),
       via: "backfill",
     }).pipeline
   );
@@ -172,12 +174,12 @@ test("contact details are read from notes and the first writer is credited", () 
     buildPaymentMerge({
       orderId: "order_1",
       paymentId: "pay_1",
-      payment: {
+      facts: razorpayFacts({
         id: "pay_1",
         status: "captured",
         email: "void@razorpay.com",
         notes: { email: "notes@example.com", phone: "+91 90000 10000" },
-      },
+      }),
       status: "captured",
       via: "verify",
     }).pipeline
@@ -192,7 +194,7 @@ test("contact details are read from notes and the first writer is credited", () 
     merged,
     buildPaymentMerge({
       orderId: "order_1",
-      payment: capturedPayment,
+      facts: razorpayFacts(capturedPayment),
       status: "captured",
       via: "webhook",
     }).pipeline
@@ -207,7 +209,7 @@ test("status only ever moves forward, whatever order events arrive in", () => {
     created,
     buildPaymentMerge({
       orderId: "order_1",
-      payment: capturedPayment,
+      facts: razorpayFacts(capturedPayment),
       status: "captured",
       via: "webhook",
     }).pipeline
@@ -219,7 +221,7 @@ test("status only ever moves forward, whatever order events arrive in", () => {
     captured,
     buildPaymentMerge({
       orderId: "order_1",
-      payment: { ...capturedPayment, status: "authorized" },
+      facts: razorpayFacts({ ...capturedPayment, status: "authorized" }),
       status: "authorized",
       via: "webhook",
     }).pipeline
@@ -237,7 +239,7 @@ test("a webhook-first payment creates a complete record on its own", () => {
     buildPaymentMerge({
       orderId: "order_1",
       paymentId: "pay_real",
-      payment: capturedPayment,
+      facts: razorpayFacts(capturedPayment),
       status: "captured",
       via: "webhook",
     }).pipeline
@@ -273,7 +275,7 @@ test("a real order's intent fields are never overwritten by the webhook", () => 
     buildPaymentMerge({
       orderId: "order_1",
       paymentId: "pay_real",
-      payment: capturedPayment,
+      facts: razorpayFacts(capturedPayment),
       status: "captured",
       via: "webhook",
     }).pipeline
@@ -284,4 +286,127 @@ test("a real order's intent fields are never overwritten by the webhook", () => 
   assert.equal(doc.message, "thank you for the essays");
   assert.equal(doc.amount, 50000);
   assert.equal(doc.notified, false);
+});
+
+/* ------------------------------------------------------------ PayPal ---- */
+
+const paypalCapture = {
+  id: "5O190127TN364715T",
+  status: "COMPLETED",
+  payer: {
+    email_address: "Reader@Example.com",
+    payer_id: "QYR5Z8XDVJNXQ",
+    phone: { country_code: "1", phone_number: { national_number: "4155550132" } },
+  },
+  purchase_units: [
+    {
+      custom_id: "dl_abc123",
+      payments: {
+        captures: [
+          {
+            id: "3C679366HH908993F",
+            status: "COMPLETED",
+            amount: { currency_code: "USD", value: "5.00" },
+            seller_receivable_breakdown: {
+              paypal_fee: { currency_code: "USD", value: "0.64" },
+            },
+          },
+        ],
+      },
+    },
+  ],
+};
+
+test("a PayPal capture records the payer's email and a subunit amount", () => {
+  const doc = apply(
+    {},
+    buildPaymentMerge({
+      orderId: "5O190127TN364715T",
+      facts: paypalFacts(paypalCapture),
+      status: "captured",
+      via: "capture",
+    }).pipeline
+  );
+
+  assert.equal(doc.provider, "paypal");
+  assert.equal(doc.email, "reader@example.com");
+  assert.equal(doc.contact, "+14155550132");
+  assert.equal(doc.method, "paypal");
+  assert.equal(doc.paymentId, "3C679366HH908993F");
+  // PayPal talks in "5.00"; everything downstream expects 500.
+  assert.equal(doc.amountCaptured, 500);
+  assert.equal(doc.currencyCaptured, "USD");
+  assert.equal(doc.fee, 64);
+  assert.equal(doc.status, "captured");
+});
+
+test("a later empty PayPal write cannot erase the payer's details either", () => {
+  const captured = apply(
+    {},
+    buildPaymentMerge({
+      orderId: "order_pp",
+      facts: paypalFacts(paypalCapture),
+      status: "captured",
+      via: "capture",
+    }).pipeline
+  );
+  // The webhook arrives after the browser already captured, but its order
+  // fetch failed, so it carries nothing.
+  const afterWebhook = apply(
+    captured,
+    buildPaymentMerge({
+      orderId: "order_pp",
+      facts: emptyFacts("paypal"),
+      status: "captured",
+      via: "webhook",
+    }).pipeline
+  );
+  assert.equal(afterWebhook.email, "reader@example.com");
+  assert.equal(afterWebhook.amountCaptured, 500);
+  assert.equal(afterWebhook.provider, "paypal");
+});
+
+test("provider is stamped once and never relabelled", () => {
+  const pp = apply(
+    {},
+    buildPaymentMerge({
+      orderId: "order_pp",
+      facts: paypalFacts(paypalCapture),
+      status: "captured",
+      via: "capture",
+    }).pipeline
+  );
+  // A stray Razorpay-shaped write must not turn a PayPal order into a
+  // Razorpay one — the admin and the backfill both key off this field.
+  const confused = apply(
+    pp,
+    buildPaymentMerge({
+      orderId: "order_pp",
+      facts: razorpayFacts(capturedPayment),
+      via: "webhook",
+    }).pipeline
+  );
+  assert.equal(confused.provider, "paypal");
+});
+
+test("zero-decimal currencies convert without a phantom 100x", () => {
+  assert.equal(toPaypalAmount(2000, "JPY"), "2000");
+  assert.equal(toPaypalAmount(500, "USD"), "5.00");
+  assert.equal(fromPaypalAmount("2000", "JPY"), 2000);
+  assert.equal(fromPaypalAmount("5.00", "USD"), 500);
+  // Round-trips must be lossless, or amounts drift every time they are stored.
+  for (const [sub, cur] of [[500, "USD"], [2000, "JPY"], [1234, "EUR"]] as const) {
+    assert.equal(fromPaypalAmount(toPaypalAmount(sub, cur), cur), sub);
+  }
+});
+
+test("an unapproved PayPal order still yields the intended amount", () => {
+  const pending = paypalFacts({
+    id: "order_x",
+    status: "PAYER_ACTION_REQUIRED",
+    purchase_units: [{ amount: { currency_code: "EUR", value: "5.00" } }],
+  });
+  assert.equal(pending.amountSubunits, 500);
+  assert.equal(pending.currency, "EUR");
+  assert.equal(pending.paymentId, null);
 });

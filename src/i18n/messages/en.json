@@ -225,7 +225,8 @@
     "errMin": "Enter at least {amount}.",
     "errCheckout": "Could not load the secure checkout.",
     "errStart": "Could not start the payment.",
-    "errGeneric": "Something went wrong. Try again."
+    "errGeneric": "Something went wrong. Try again.",
+    "securePaypal": "Secure payment by PayPal · a one-time thank-you, not a subscription"
   },
   "prefs": {
     "aria": "Reading preferences",

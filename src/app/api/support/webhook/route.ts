@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyWebhookSignature } from "@/lib/razorpay";
+import { verifyWebhookSignature, razorpayFacts } from "@/lib/razorpay";
 import {
   notifyOwnerOfPayment,
   reportPaymentToGa,
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const doc = await recordPayment({
       orderId,
       paymentId,
-      payment,
+      facts: razorpayFacts(payment),
       status,
       via: "webhook",
     });

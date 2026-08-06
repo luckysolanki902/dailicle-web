@@ -226,7 +226,8 @@
     "errMin": "En az {amount} girin.",
     "errCheckout": "Güvenli ödeme sayfası yüklenemedi.",
     "errStart": "Ödeme başlatılamadı.",
-    "errGeneric": "Bir şeyler yanlış gitti. Tekrar deneyin."
+    "errGeneric": "Bir şeyler yanlış gitti. Tekrar deneyin.",
+    "securePaypal": "PayPal ile güvenli ödeme · tek seferlik bir teşekkür, abonelik değil"
   },
   "prefs": {
     "aria": "Okuma tercihleri",

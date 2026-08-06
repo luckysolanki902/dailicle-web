@@ -226,7 +226,8 @@
     "errMin": "Entrez au moins {amount}.",
     "errCheckout": "Impossible de charger le paiement sécurisé.",
     "errStart": "Impossible de commencer le paiement.",
-    "errGeneric": "Quelque chose a mal tourné. Réessayez."
+    "errGeneric": "Quelque chose a mal tourné. Réessayez.",
+    "securePaypal": "Paiement sécurisé par PayPal · un remerciement unique, pas un abonnement"
   },
   "prefs": {
     "aria": "Préférences de lecture",

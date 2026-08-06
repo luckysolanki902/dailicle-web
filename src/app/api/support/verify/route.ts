@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyCheckoutSignature, fetchPayment } from "@/lib/razorpay";
+import {
+  verifyCheckoutSignature,
+  fetchPayment,
+  razorpayFacts,
+} from "@/lib/razorpay";
 import {
   supportersCollection,
   notifyOwnerOfPayment,
@@ -57,7 +61,7 @@ export async function POST(request: NextRequest) {
     const doc = await recordPayment({
       orderId,
       paymentId,
-      payment,
+      facts: razorpayFacts(payment),
       status: (payment.status as string) === "captured" ? "captured" : "paid",
       via: "verify",
     });

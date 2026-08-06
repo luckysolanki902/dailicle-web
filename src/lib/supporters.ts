@@ -3,11 +3,13 @@ import nodemailer from "nodemailer";
 import type { Collection, Document } from "mongodb";
 import { gaConfigured, sendServerEvent } from "@/lib/ga-server";
 import { markJourneySupported } from "@/lib/journey-store";
+import { subunitsToMajor } from "@/lib/pricing";
 import {
   contactFromPayment,
   fetchOrderPayments,
   fetchPayment,
   paymentAttemptScore,
+  razorpayFacts,
 } from "@/lib/razorpay";
 import { buildPaymentMerge, type MergeInput } from "@/lib/supporter-merge";
 
@@ -55,12 +57,16 @@ export async function recordPayment(
  * Razorpay directly. With just the order id we can list every attempt made
  * against it and take the contact details off the furthest-along one. Silent and
  * best-effort: this must never break a payment that already succeeded.
+ *
+ * Razorpay only. A PayPal payment carries the payer's account email in the
+ * capture response itself, so there is nothing to go back for.
  */
 export async function backfillContact(orderId: string): Promise<void> {
   if (!orderId) return;
   try {
     const col = await supportersCollection();
     const doc = await col.findOne({ orderId });
+    if (doc?.provider === "paypal") return;
     if (doc?.email && doc?.contact) return;
 
     // Prefer the known payment id; fall back to listing the order's attempts.
@@ -95,7 +101,7 @@ export async function backfillContact(orderId: string): Promise<void> {
     await recordPayment({
       orderId,
       paymentId: (best.id as string) || (doc?.paymentId as string) || null,
-      payment: merged,
+      facts: razorpayFacts(merged),
       via: "backfill",
     });
   } catch (err) {
@@ -157,10 +163,14 @@ export async function reportPaymentToGa(orderId: string): Promise<void> {
           ? doc.amount
           : 0;
 
+    const currency =
+      (doc.currencyCaptured as string) || (doc.currency as string) || "INR";
+
     await sendServerEvent(clientId, "support_payment_verified", {
-      value: subunits / 100,
-      currency:
-        (doc.currencyCaptured as string) || (doc.currency as string) || "INR",
+      // Not every currency is 1/100 — yen is whole units, the Gulf dinars are
+      // 1/1000 — so this must not divide by a hardcoded hundred.
+      value: subunitsToMajor(subunits, currency),
+      currency,
       source: (doc.source as string) || "unknown",
       tier: (doc.tier as string) || undefined,
       method: (doc.method as string) || undefined,

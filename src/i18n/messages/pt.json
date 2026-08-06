@@ -226,7 +226,8 @@
     "errMin": "Insira pelo menos {amount}.",
     "errCheckout": "Não foi possível carregar o checkout seguro.",
     "errStart": "Não foi possível iniciar o pagamento.",
-    "errGeneric": "Algo deu errado. Tente novamente."
+    "errGeneric": "Algo deu errado. Tente novamente.",
+    "securePaypal": "Pagamento seguro pelo PayPal · um agradecimento único, não uma assinatura"
   },
   "prefs": {
     "aria": "Preferências de leitura",

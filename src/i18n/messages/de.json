@@ -226,7 +226,8 @@
     "errMin": "Gib mindestens {amount} ein.",
     "errCheckout": "Konnte den sicheren Checkout nicht laden.",
     "errStart": "Konnte die Zahlung nicht starten.",
-    "errGeneric": "Etwas ist schiefgelaufen. Versuch es erneut."
+    "errGeneric": "Etwas ist schiefgelaufen. Versuch es erneut.",
+    "securePaypal": "Sichere Zahlung über PayPal · ein einmaliges Dankeschön, kein Abonnement"
   },
   "prefs": {
     "aria": "Leseeinstellungen",
