@@ -30,6 +30,22 @@ export function isReleasedLocally(item: ReleaseDateFields, now = new Date()): bo
   return release ? release.getTime() <= now.getTime() : true;
 }
 
+/**
+ * True once local midnight Monday has passed in *every* timezone, not just the
+ * server's. Reader clocks span UTC+14 to UTC-12, and the server's own offset is
+ * somewhere in that range too, so the last reader crosses the boundary at most
+ * 26h after `localReleaseDate` computed here.
+ *
+ * Anything older than that is safe to render server-side: no reader anywhere
+ * can still be waiting for it. That matters because crawlers, link previews and
+ * article importers only ever see the server HTML.
+ */
+export function isReleasedEverywhere(item: ReleaseDateFields, now = new Date()): boolean {
+  const release = localReleaseDate(item);
+  if (!release) return true;
+  return release.getTime() + 26 * 60 * 60 * 1000 <= now.getTime();
+}
+
 export function startOfToday(from = new Date()): Date {
   return new Date(from.getFullYear(), from.getMonth(), from.getDate());
 }

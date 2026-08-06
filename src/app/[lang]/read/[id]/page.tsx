@@ -21,6 +21,7 @@ import {
   type Locale,
 } from "@/i18n/config";
 import { formatDate } from "@/lib/utils";
+import { isReleasedEverywhere } from "@/lib/release";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -236,6 +237,10 @@ export default async function ReadPage({
           related={relatedProps}
           publishOn={essay.publish_on ? new Date(essay.publish_on).toISOString() : null}
           publishedAt={essay.published_at ? new Date(essay.published_at).toISOString() : null}
+          releasedEverywhere={isReleasedEverywhere({
+            publish_on: essay.publish_on,
+            published_at: essay.published_at,
+          })}
         />
       </main>
     </>

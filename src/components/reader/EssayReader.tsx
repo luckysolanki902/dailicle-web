@@ -78,6 +78,13 @@ export interface EssayReaderProps {
   }[];
   publishOn?: string | null;
   publishedAt?: string | null;
+  /**
+   * True when the release moment has passed in every timezone, so there is no
+   * reader left to withhold the essay from. The server then renders the full
+   * article into the initial HTML instead of the "come back soon" placeholder —
+   * which is all crawlers, link previews and importers (Medium, Substack) get.
+   */
+  releasedEverywhere?: boolean;
 }
 
 const BYLINE = "The Dailicle Desk";
@@ -108,14 +115,19 @@ export function EssayReader({
   related,
   publishOn,
   publishedAt,
+  releasedEverywhere = false,
 }: EssayReaderProps) {
   const t = useT();
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   const [prefs, setPrefs] = useState<ReaderPrefs>(DEFAULT_PREFS);
-  // Start closed on the server so a direct reader URL cannot render a
-  // weekend-generated essay before the browser checks its local clock.
-  const [isReleased, setIsReleased] = useState<boolean | null>(null);
+  // Once the essay is out in every timezone, render it on the server — nobody's
+  // local clock can disagree, and the HTML is what crawlers and importers read.
+  // Only while a release is still in flight do we start closed and wait for the
+  // browser to check its own clock.
+  const [isReleased, setIsReleased] = useState<boolean | null>(
+    releasedEverywhere ? true : null
+  );
 
   useEffect(() => {
     // deferred so hydration completes with defaults before stored prefs apply

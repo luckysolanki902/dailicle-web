@@ -1,90 +1,50 @@
-"use client";
-
-import { useEffect } from "react";
-import { motion } from "framer-motion";
-import { BookText, Sparkles } from "lucide-react";
-
+/**
+ * Streamed ahead of the essay, so it is also what anything reading the raw HTML
+ * sees first — crawlers, link unfurlers, article importers. It therefore says
+ * nothing: no headings, no copy, just the shape of the page. A talkative
+ * fallback ("Preparing your essay…") gets mistaken for the article itself.
+ */
 export default function Loading() {
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, []);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col items-center gap-6 px-6"
-      >
-        {/* Animated Reading Icon */}
-        <motion.div
-          animate={{ 
-            rotate: [0, 5, -5, 0],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="relative"
-        >
-          <BookText size={64} className="text-foreground" strokeWidth={1.5} />
-          <motion.div
-            animate={{ 
-              scale: [1, 1.3, 1],
-              opacity: [0.5, 0.2, 0.5]
-            }}
-            transition={{ 
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute -top-2 -right-2"
-          >
-            <Sparkles size={20} className="text-yellow-500" />
-          </motion.div>
-        </motion.div>
-
-        {/* Loading Text */}
-        <div className="text-center space-y-2">
-          <motion.h2
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ 
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="text-2xl md:text-3xl font-bold text-foreground"
-          >
-            Preparing your essay...
-          </motion.h2>
-          <p className="text-sm text-foreground/50">
-            Setting up the perfect reading environment
-          </p>
+    <div
+      aria-hidden
+      className="min-h-screen px-4 py-12 md:px-6 md:py-20"
+    >
+      <div className="mx-auto max-w-2xl animate-pulse">
+        {/* Top bar */}
+        <div className="mb-12 flex items-center justify-between">
+          <div className="h-4 w-24 rounded bg-foreground/10" />
+          <div className="flex gap-2">
+            <div className="h-8 w-8 rounded-lg bg-foreground/10" />
+            <div className="h-8 w-8 rounded-lg bg-foreground/10" />
+            <div className="h-8 w-8 rounded-lg bg-foreground/10" />
+          </div>
         </div>
 
-        {/* Animated Dots */}
-        <div className="flex gap-2">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              animate={{ 
-                y: [0, -10, 0],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{ 
-                duration: 1,
-                repeat: Infinity,
-                delay: i * 0.2,
-                ease: "easeInOut"
-              }}
-              className="w-2 h-2 rounded-full bg-foreground/40"
-            />
+        {/* Banner */}
+        <div className="mb-8 h-44 rounded-2xl bg-foreground/[0.07] md:mb-10 md:h-56" />
+
+        {/* Header */}
+        <div className="mb-14 flex flex-col items-center gap-4">
+          <div className="h-3 w-40 rounded bg-foreground/10" />
+          <div className="h-9 w-full max-w-lg rounded bg-foreground/10" />
+          <div className="h-9 w-3/5 rounded bg-foreground/10" />
+          <div className="h-4 w-72 max-w-full rounded bg-foreground/[0.07]" />
+          <div className="h-3 w-48 rounded bg-foreground/[0.07]" />
+        </div>
+
+        {/* Body */}
+        <div className="space-y-8">
+          {[0, 1, 2].map((block) => (
+            <div key={block} className="space-y-3">
+              <div className="h-4 w-full rounded bg-foreground/[0.07]" />
+              <div className="h-4 w-full rounded bg-foreground/[0.07]" />
+              <div className="h-4 w-11/12 rounded bg-foreground/[0.07]" />
+              <div className="h-4 w-4/5 rounded bg-foreground/[0.07]" />
+            </div>
           ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
