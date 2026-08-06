@@ -7,6 +7,13 @@ import { ChevronDown, Search, X } from "lucide-react";
 import { THEMES, makeThemeLabel } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 import { isReleasedLocally } from "@/lib/release";
+import {
+  DEFAULT_SORT,
+  SORT_MODES,
+  isSortMode,
+  sortEntries,
+  type SortMode,
+} from "@/lib/archive-sort";
 import { EssayBanner } from "@/components/ui/EssayBanner";
 import { useT } from "@/i18n/I18nProvider";
 
@@ -20,6 +27,11 @@ export interface ArchiveEntry {
   publishOn?: string | null;
   publishedAt?: string | null;
   issue?: number | null;
+  /**
+   * How many readers liked the essay. Used only to order the list — the number
+   * itself is never shown, the same way the reaction bar shows no totals.
+   */
+  likes?: number;
   /** Resolved CDN banner URL, if the essay has an enabled banner. */
   bannerUrl?: string | null;
   /**
@@ -107,27 +119,49 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
   const [query, setQuery] = useState("");
   const [showLegacy, setShowLegacy] = useState(false);
   const [theme, setThemeState] = useState<string | null>(null);
+  // The server hands `current` over already sorted this way, so the first
+  // render matches the HTML exactly.
+  const [sort, setSortState] = useState<SortMode>(DEFAULT_SORT);
 
-  // Keep the URL shareable without triggering a navigation.
-  const setTheme = useCallback((slug: string | null) => {
-    setThemeState(slug);
-    if (typeof window !== "undefined") {
-      const url = new URL(window.location.href);
-      if (slug) url.searchParams.set("theme", slug);
-      else url.searchParams.delete("theme");
-      window.history.replaceState(null, "", url.toString());
-    }
+  /** Mirror a control into the URL without triggering a navigation. */
+  const syncUrl = useCallback((key: string, value: string | null) => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (value) url.searchParams.set(key, value);
+    else url.searchParams.delete(key);
+    window.history.replaceState(null, "", url.toString());
   }, []);
 
-  // Read the shared ?theme= from the URL on the client so the page itself
-  // stays statically rendered (reading searchParams on the server would opt
-  // the whole route into dynamic rendering on every request).
+  // Keep the URL shareable without triggering a navigation.
+  const setTheme = useCallback(
+    (slug: string | null) => {
+      setThemeState(slug);
+      syncUrl("theme", slug);
+    },
+    [syncUrl]
+  );
+
+  const setSort = useCallback(
+    (mode: SortMode) => {
+      setSortState(mode);
+      // The default needs no parameter — a bare /archive stays the clean URL.
+      syncUrl("sort", mode === DEFAULT_SORT ? null : mode);
+    },
+    [syncUrl]
+  );
+
+  // Read the shared ?theme= / ?sort= from the URL on the client so the page
+  // itself stays statically rendered (reading searchParams on the server would
+  // opt the whole route into dynamic rendering on every request).
   React.useEffect(() => {
     const id = window.setTimeout(() => setMounted(true), 0);
-    const urlTheme = new URLSearchParams(window.location.search).get("theme");
+    const params = new URLSearchParams(window.location.search);
+    const urlTheme = params.get("theme");
     if (urlTheme && THEMES.some((th) => th.slug === urlTheme)) {
       setThemeState(urlTheme);
     }
+    const urlSort = params.get("sort");
+    if (isSortMode(urlSort)) setSortState(urlSort);
     return () => window.clearTimeout(id);
   }, []);
 
@@ -154,6 +188,7 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
       (e) => e.title.toLowerCase().includes(q) || e.hook.toLowerCase().includes(q)
     );
   }
+  shown = sortEntries(shown, sort);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-24">
@@ -211,6 +246,35 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
               </button>
             );
           })}
+        </div>
+
+        {/* Sort. Deliberately quieter than the theme chips — it reorders the
+            same list rather than narrowing it, so it shouldn't compete. */}
+        <div className="flex items-center justify-center gap-2.5">
+          <span className="text-[11px] text-foreground/35">
+            {t("archive.sort.label")}
+          </span>
+          <div
+            role="group"
+            aria-label={t("archive.sort.label")}
+            className="flex items-center gap-0.5 rounded-full border border-foreground/10 p-0.5"
+          >
+            {SORT_MODES.map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setSort(mode)}
+                aria-pressed={sort === mode}
+                className={cn(
+                  "px-3 py-1 rounded-full text-[11px] font-medium transition-colors",
+                  sort === mode
+                    ? "bg-foreground/10 text-foreground"
+                    : "text-foreground/45 hover:text-foreground/75"
+                )}
+              >
+                {t(`archive.sort.${mode}`)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -10,6 +10,8 @@ import {
 } from "@/lib/essays";
 import { formatDate } from "@/lib/utils";
 import { isReleasedLocally } from "@/lib/release";
+import { getLikeCounts } from "@/lib/reactions";
+import { DEFAULT_SORT, sortEntries } from "@/lib/archive-sort";
 import { getTranslations } from "@/i18n/getMessages";
 import {
   DEFAULT_LOCALE,
@@ -95,7 +97,8 @@ export async function generateMetadata({
 function toEntry(
   essay: Essay,
   now: Date,
-  translation: EssayTranslation | undefined
+  translation: EssayTranslation | undefined,
+  likes: number
 ): ArchiveEntry {
   return {
     href: `/read/${essay.slug || essay._id}`,
@@ -107,6 +110,7 @@ function toEntry(
     publishOn: essay.publish_on ? new Date(essay.publish_on).toISOString() : null,
     publishedAt: essay.published_at ? new Date(essay.published_at).toISOString() : null,
     issue: essay.issue,
+    likes,
     bannerUrl: essayBannerUrl(essay),
     initialReleased: isReleasedLocally(
       { publish_on: essay.publish_on, published_at: essay.published_at },
@@ -123,9 +127,10 @@ export default async function ArchivePage({
   const { lang } = await params;
   const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
 
-  const [published, archived] = await Promise.all([
+  const [published, archived, likes] = await Promise.all([
     getPublishedEssays(),
     getArchived2025(),
+    getLikeCounts(),
   ]);
 
   const translations = await getTranslationsMap(
@@ -167,8 +172,19 @@ export default async function ArchivePage({
       <main className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
         <ThemeSwitcher />
         <ArchiveList
-          current={published.map((essay) => toEntry(essay, now, translations.get(essay._id)))}
-          legacy={archived.map((essay) => toEntry(essay, now, translations.get(essay._id)))}
+          // Pre-sorted into the default order so the first paint already
+          // matches what the client renders after hydration.
+          current={sortEntries(
+            published.map((essay) =>
+              toEntry(essay, now, translations.get(essay._id), likes[essay._id] ?? 0)
+            ),
+            DEFAULT_SORT
+          )}
+          // The 2025 archive keeps its own newest-first order: it sits apart
+          // from the catalogue, and its essays predate reactions entirely.
+          legacy={archived.map((essay) =>
+            toEntry(essay, now, translations.get(essay._id), likes[essay._id] ?? 0)
+          )}
         />
       </main>
     </>

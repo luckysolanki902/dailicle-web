@@ -91,7 +91,12 @@
     "noMatch": "Nada coincide aún – la colección crece en uno cada lunes.",
     "noMatchQuery": "Nada coincide con “{query}” aún – la colección crece en uno cada lunes.",
     "clearFilters": "Limpiar filtros",
-    "legacyToggle": "Desde 2025, antes de la era semanal ({count})"
+    "legacyToggle": "Desde 2025, antes de la era semanal ({count})",
+    "sort": {
+      "label": "Orden",
+      "popular": "Populares",
+      "new": "Recientes"
+    }
   },
   "themes": {
     "psychology": "Psicología",

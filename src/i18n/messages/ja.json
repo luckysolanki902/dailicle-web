@@ -91,7 +91,12 @@
     "noMatch": "まだ一致するものはありません – コレクションは毎週月曜日に1つずつ増えます。",
     "noMatchQuery": "「{query}」に一致するものはまだありません – コレクションは毎週月曜日に1つずつ増えます。",
     "clearFilters": "フィルターをクリア",
-    "legacyToggle": "2025年から、週刊時代の前 ({count})"
+    "legacyToggle": "2025年から、週刊時代の前 ({count})",
+    "sort": {
+      "label": "並び替え",
+      "popular": "人気",
+      "new": "新着"
+    }
   },
   "themes": {
     "psychology": "心理学",

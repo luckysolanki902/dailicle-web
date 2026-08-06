@@ -91,7 +91,12 @@
     "noMatch": "Nichts passt bisher – die Sammlung wächst jeden Montag um eins.",
     "noMatchQuery": "Nichts passt bisher zu „{query}“ – die Sammlung wächst jeden Montag um eins.",
     "clearFilters": "Filter zurücksetzen",
-    "legacyToggle": "Von 2025, vor der wöchentlichen Ära ({count})"
+    "legacyToggle": "Von 2025, vor der wöchentlichen Ära ({count})",
+    "sort": {
+      "label": "Sortieren",
+      "popular": "Beliebt",
+      "new": "Neueste"
+    }
   },
   "themes": {
     "psychology": "Psychologie",

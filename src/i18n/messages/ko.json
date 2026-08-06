@@ -91,7 +91,12 @@
     "noMatch": "아직 일치하는 항목이 없습니다 – 매주 월요일마다 하나씩 컬렉션이 늘어납니다.",
     "noMatchQuery": "아직 “{query}”와 일치하는 항목이 없습니다 – 매주 월요일마다 하나씩 컬렉션이 늘어납니다.",
     "clearFilters": "필터 지우기",
-    "legacyToggle": "2025년부터, 주간 시대 이전 ({count})"
+    "legacyToggle": "2025년부터, 주간 시대 이전 ({count})",
+    "sort": {
+      "label": "정렬",
+      "popular": "인기",
+      "new": "최신"
+    }
   },
   "themes": {
     "psychology": "심리학",

@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:release": "tsc --outDir /tmp/dailicle-release-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/release.ts src/lib/release.test.ts && node --test /tmp/dailicle-release-test/release.test.js"
+    "test:release": "tsc --outDir /tmp/dailicle-release-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/release.ts src/lib/release.test.ts && node --test /tmp/dailicle-release-test/release.test.js",
+    "test:merge": "tsc --outDir /tmp/dailicle-merge-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/razorpay.ts src/lib/supporter-merge.ts src/lib/supporter-merge.test.ts && node --test /tmp/dailicle-merge-test/supporter-merge.test.js",
+    "test:archive-sort": "tsc --outDir /tmp/dailicle-archive-sort-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/archive-sort.ts src/lib/archive-sort.test.ts && node --test /tmp/dailicle-archive-sort-test/archive-sort.test.js"
   },
   "dependencies": {
     "@google-analytics/data": "^5.2.2",

@@ -91,7 +91,12 @@
     "noMatch": "Henüz eşleşen yok – koleksiyon her Pazartesi bir tane artıyor.",
     "noMatchQuery": "Henüz “{query}” ile eşleşen yok – koleksiyon her Pazartesi bir tane artıyor.",
     "clearFilters": "Filtreleri temizle",
-    "legacyToggle": "2025'ten önce, haftalık dönemden önce ({count})"
+    "legacyToggle": "2025'ten önce, haftalık dönemden önce ({count})",
+    "sort": {
+      "label": "Sırala",
+      "popular": "Popüler",
+      "new": "En yeni"
+    }
   },
   "themes": {
     "psychology": "Psikoloji",

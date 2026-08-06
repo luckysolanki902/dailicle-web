@@ -91,7 +91,12 @@
     "noMatch": "Nothing matches yet – the collection grows by one every Monday.",
     "noMatchQuery": "Nothing matches “{query}” yet – the collection grows by one every Monday.",
     "clearFilters": "Clear filters",
-    "legacyToggle": "From 2025, before the weekly era ({count})"
+    "legacyToggle": "From 2025, before the weekly era ({count})",
+    "sort": {
+      "label": "Sort",
+      "popular": "Popular",
+      "new": "Newest"
+    }
   },
   "themes": {
     "psychology": "Psychology",

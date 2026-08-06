@@ -91,7 +91,12 @@
     "noMatch": "Rien ne correspond encore – la collection s'agrandit d'un essai chaque lundi.",
     "noMatchQuery": "Rien ne correspond à “{query}” encore – la collection s'agrandit d'un essai chaque lundi.",
     "clearFilters": "Effacer les filtres",
-    "legacyToggle": "Depuis 2025, avant l'ère hebdomadaire ({count})"
+    "legacyToggle": "Depuis 2025, avant l'ère hebdomadaire ({count})",
+    "sort": {
+      "label": "Trier",
+      "popular": "Populaires",
+      "new": "Récents"
+    }
   },
   "themes": {
     "psychology": "Psychologie",
