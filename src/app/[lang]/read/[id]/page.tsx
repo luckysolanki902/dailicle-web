@@ -22,6 +22,7 @@ import {
 } from "@/i18n/config";
 import { formatDate } from "@/lib/utils";
 import { isReleasedEverywhere } from "@/lib/release";
+import { essayExcerpt, META_DESCRIPTION_LIMIT } from "@/lib/excerpt";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -71,12 +72,24 @@ export async function generateMetadata({
   const localized = localizeEssay(essay, translation);
   const slug = essay.slug || essay._id;
   const path = `/read/${slug}`;
+  const releasedEverywhere = isReleasedEverywhere({
+    publish_on: essay.publish_on,
+    published_at: essay.published_at,
+  });
 
+  // Prefer the essay's own opening words: a SERP snippet should show what the
+  // piece actually says, not the hook, which is teaser copy and reads as thin
+  // boilerplate once it is sitting under a search result. Gated on the essay
+  // being out everywhere for the same reason the body is — before that the
+  // page shows a placeholder, and the description must not leak past it.
+  // A translator-written meta_description still wins where one exists; it is
+  // deliberate per-locale copy, and only translations carry the field.
   const description = (
     translation?.meta_description ||
+    (releasedEverywhere ? essayExcerpt(localized.body) : "") ||
     localized.hook ||
     `An essay from The Dailicle. A ${essay.reading_minutes}-minute read.`
-  ).slice(0, 160);
+  ).slice(0, META_DESCRIPTION_LIMIT);
 
   const categoryLabel = await localeThemeLabel(essay.theme, locale);
 
