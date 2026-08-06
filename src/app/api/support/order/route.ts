@@ -82,6 +82,9 @@ export async function POST(request: NextRequest) {
           orderId: order.id,
           createdAt: now,
           notified: false,
+          // Lifecycle position, so later writes can only move it forward.
+          status: "created",
+          statusRank: 0,
         },
         $set: {
           amount: priced.subunits,
@@ -93,7 +96,6 @@ export async function POST(request: NextRequest) {
           referer: request.headers.get("referer") || null,
           source,
           receipt,
-          status: "created",
           updatedAt: now,
           gaClientId: str(body?.gaClientId),
           // Anonymous visitor id — the join key to the reader journey, which is

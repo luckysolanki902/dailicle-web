@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/razorpay";
 import {
-  supportersCollection,
   notifyOwnerOfPayment,
   reportPaymentToGa,
   linkPaymentToJourney,
+  recordPayment,
+  backfillContact,
+  claimNotification,
 } from "@/lib/supporters";
 
 export const runtime = "nodejs";
@@ -40,8 +42,17 @@ export async function POST(request: NextRequest) {
   const payment = event.payload?.payment?.entity;
   const eventName = event.event || "";
 
-  // Only act on real payment lifecycle events.
-  if (!payment || !["payment.captured", "payment.authorized", "order.paid"].includes(eventName)) {
+  // Only act on real payment lifecycle events. `payment.failed` is included on
+  // purpose: a failed attempt still carries the email/phone the reader typed,
+  // and readers who retry successfully often do so via a different method that
+  // hands us less. Recording it costs nothing and never overwrites better data.
+  const HANDLED = [
+    "payment.captured",
+    "payment.authorized",
+    "order.paid",
+    "payment.failed",
+  ];
+  if (!payment || !HANDLED.includes(eventName)) {
     return NextResponse.json({ received: true });
   }
 
@@ -50,52 +61,49 @@ export async function POST(request: NextRequest) {
   if (!orderId) return NextResponse.json({ received: true });
 
   const captured = eventName === "payment.captured" || eventName === "order.paid";
-  const now = new Date();
+  const status = captured
+    ? "captured"
+    : eventName === "payment.failed"
+      ? "failed"
+      : "authorized";
 
   try {
-    const col = await supportersCollection();
-    const existing = await col.findOne({ orderId });
+    const doc = await recordPayment({
+      orderId,
+      paymentId,
+      payment,
+      status,
+      via: "webhook",
+    });
 
-    await col.updateOne(
-      { orderId },
-      {
-        $setOnInsert: { orderId, createdAt: now, notified: false },
-        $set: {
+    // The webhook entity is usually complete, but not always (some methods
+    // report contact details only once settled). Go get them if they're missing.
+    if (captured && (!doc?.email || !doc?.contact)) {
+      await backfillContact(orderId);
+    }
+
+    // Notify once, only on a real capture. The claim is atomic against /verify,
+    // and the doc it returns carries whatever the backfill just recovered.
+    if (captured) {
+      const record = await claimNotification(orderId);
+      if (record) {
+        await notifyOwnerOfPayment({
+          orderId,
           paymentId,
-          status: captured ? "captured" : "authorized",
-          method: (payment.method as string) || null,
-          email: (payment.email as string) || null,
-          contact: (payment.contact as string) || null,
-          fee: (payment.fee as number) ?? null,
-          tax: (payment.tax as number) ?? null,
-          amountCaptured: (payment.amount as number) ?? null,
-          currencyCaptured: (payment.currency as string) ?? null,
-          country: existing?.country ?? null,
-          source: existing?.source ?? "webhook",
-          amount: existing?.amount ?? (payment.amount as number) ?? null,
-          currency: existing?.currency ?? (payment.currency as string) ?? null,
-          razorpay: payment,
-          capturedAt: captured ? now : existing?.capturedAt ?? null,
-          updatedAt: now,
-        },
-      },
-      { upsert: true }
-    );
-
-    // Notify once, only on a real capture.
-    if (captured && !existing?.notified) {
-      await col.updateOne({ orderId }, { $set: { notified: true } });
-      await notifyOwnerOfPayment({
-        orderId,
-        paymentId,
-        amount: (payment.amount as number) ?? 0,
-        currency: (payment.currency as string) ?? "",
-        country: (existing?.country as string | null) ?? null,
-        source: (existing?.source as string | null) ?? "webhook",
-        method: (payment.method as string) || null,
-        email: (payment.email as string) || null,
-        contact: (payment.contact as string) || null,
-      });
+          amount:
+            (record.amountCaptured as number) ?? (record.amount as number) ?? 0,
+          currency:
+            (record.currencyCaptured as string) ??
+            (record.currency as string) ??
+            "",
+          country: (record.country as string | null) ?? null,
+          source: (record.source as string | null) ?? "webhook",
+          method: (record.method as string) || null,
+          email: (record.email as string) || null,
+          contact: (record.contact as string) || null,
+          message: (record.message as string) || null,
+        });
+      }
     }
 
     // Backup conversion to GA4 for closed-tab payments (once per order).

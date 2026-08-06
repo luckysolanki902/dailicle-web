@@ -3,6 +3,13 @@ import nodemailer from "nodemailer";
 import type { Collection, Document } from "mongodb";
 import { gaConfigured, sendServerEvent } from "@/lib/ga-server";
 import { markJourneySupported } from "@/lib/journey-store";
+import {
+  contactFromPayment,
+  fetchOrderPayments,
+  fetchPayment,
+  paymentAttemptScore,
+} from "@/lib/razorpay";
+import { buildPaymentMerge, type MergeInput } from "@/lib/supporter-merge";
 
 /**
  * Persistence + owner-notification for the optional support flow. Every payment
@@ -18,6 +25,99 @@ export async function supportersCollection(): Promise<Collection<Document>> {
   await col.createIndex({ orderId: 1 }, { unique: true });
   await col.createIndex({ paymentId: 1 }, { sparse: true });
   return col;
+}
+
+/**
+ * The single write path for everything Razorpay tells us about a payment.
+ *
+ * This is a merge, not an overwrite — see `supporter-merge.ts` for the rules and
+ * why they matter. Applied as an aggregation-pipeline update so the whole
+ * compare-and-merge is atomic inside Mongo: /verify and the webhook routinely
+ * land at the same instant, and a read-then-write in Node would lose one.
+ */
+export async function recordPayment(
+  input: MergeInput
+): Promise<Document | null> {
+  if (!input.orderId) return null;
+  const { pipeline } = buildPaymentMerge(input);
+  const col = await supportersCollection();
+  return await col.findOneAndUpdate({ orderId: input.orderId }, pipeline, {
+    upsert: true,
+    returnDocument: "after",
+  });
+}
+
+/**
+ * Last-resort recovery of the reader's email/phone.
+ *
+ * If the record still has neither after the normal paths ran — the payment fetch
+ * failed, the webhook hasn't arrived, the tab closed mid-checkout — go ask
+ * Razorpay directly. With just the order id we can list every attempt made
+ * against it and take the contact details off the furthest-along one. Silent and
+ * best-effort: this must never break a payment that already succeeded.
+ */
+export async function backfillContact(orderId: string): Promise<void> {
+  if (!orderId) return;
+  try {
+    const col = await supportersCollection();
+    const doc = await col.findOne({ orderId });
+    if (doc?.email && doc?.contact) return;
+
+    // Prefer the known payment id; fall back to listing the order's attempts.
+    let candidates: Record<string, unknown>[] = [];
+    if (doc?.paymentId) {
+      try {
+        candidates = [await fetchPayment(String(doc.paymentId))];
+      } catch {
+        // Fall through to the order-level lookup.
+      }
+    }
+    if (!candidates.length) {
+      candidates = await fetchOrderPayments(orderId);
+    }
+    if (!candidates.length) return;
+
+    const best = [...candidates].sort(
+      (a, b) => paymentAttemptScore(b) - paymentAttemptScore(a)
+    )[0];
+
+    // Merge contact details from *any* attempt — a reader who mistyped a card
+    // and retried still gave us their email on the failed attempt.
+    const merged: Record<string, unknown> = { ...best };
+    for (const attempt of candidates) {
+      const { email, contact } = contactFromPayment(attempt);
+      if (email && !contactFromPayment(merged).email) merged.email = email;
+      if (contact && !contactFromPayment(merged).contact) {
+        merged.contact = contact;
+      }
+    }
+
+    await recordPayment({
+      orderId,
+      paymentId: (best.id as string) || (doc?.paymentId as string) || null,
+      payment: merged,
+      via: "backfill",
+    });
+  } catch (err) {
+    console.error("backfillContact failed:", err);
+  }
+}
+
+/**
+ * Atomically claim the right to send the owner's "new support" email. Only the
+ * first caller gets the document back; verify and the webhook both try, and
+ * without the atomic claim they can both win a plain read-then-write and the
+ * owner gets the same payment twice.
+ */
+export async function claimNotification(
+  orderId: string
+): Promise<Document | null> {
+  const col = await supportersCollection();
+  return await col.findOneAndUpdate(
+    { orderId, notified: { $ne: true } },
+    { $set: { notified: true } },
+    { returnDocument: "after" }
+  );
 }
 
 /**

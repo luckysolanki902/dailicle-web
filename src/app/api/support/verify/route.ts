@@ -5,6 +5,9 @@ import {
   notifyOwnerOfPayment,
   reportPaymentToGa,
   linkPaymentToJourney,
+  recordPayment,
+  backfillContact,
+  claimNotification,
 } from "@/lib/supporters";
 
 export const runtime = "nodejs";
@@ -38,7 +41,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Enrich with the authoritative payment record from Razorpay.
+    // Enrich with the authoritative payment record from Razorpay. This is where
+    // the reader's email/phone comes from, so a failure here is not "carry on
+    // with nulls" — recordPayment merges rather than overwrites, and the
+    // backfill below goes back for the contact details we missed.
     let payment: Record<string, unknown> = {};
     try {
       payment = await fetchPayment(paymentId);
@@ -47,44 +53,41 @@ export async function POST(request: NextRequest) {
     }
 
     const col = await supportersCollection();
-    const now = new Date();
-    const existing = await col.findOne({ orderId });
 
-    await col.updateOne(
-      { orderId },
-      {
-        $set: {
-          paymentId,
-          status: "paid",
-          verifiedAt: now,
-          updatedAt: now,
-          method: (payment.method as string) || null,
-          email: (payment.email as string) || null,
-          contact: (payment.contact as string) || null,
-          fee: (payment.fee as number) ?? null,
-          tax: (payment.tax as number) ?? null,
-          amountCaptured: (payment.amount as number) ?? null,
-          currencyCaptured: (payment.currency as string) ?? null,
-          razorpay: payment,
-        },
-      }
-    );
+    const doc = await recordPayment({
+      orderId,
+      paymentId,
+      payment,
+      status: (payment.status as string) === "captured" ? "captured" : "paid",
+      via: "verify",
+    });
+    await col.updateOne({ orderId }, { $set: { verifiedAt: new Date() } });
 
-    // Notify once. If the webhook hasn't beaten us to it, do it here.
-    if (existing && !existing.notified) {
-      await col.updateOne({ orderId }, { $set: { notified: true } });
+    // If we still don't know how to reach them, ask Razorpay again by order id.
+    if (!doc?.email || !doc?.contact) {
+      await backfillContact(orderId);
+    }
+
+    // Notify once. The claim is atomic, so if the webhook already sent the mail
+    // we get nothing back and stay quiet; the returned doc is also the freshest
+    // read, i.e. it includes anything the backfill just recovered.
+    const record = await claimNotification(orderId);
+    if (record) {
       await notifyOwnerOfPayment({
         orderId,
         paymentId,
-        amount: (payment.amount as number) ?? (existing.amount as number),
+        amount:
+          (record.amountCaptured as number) ?? (record.amount as number) ?? 0,
         currency:
-          (payment.currency as string) ?? (existing.currency as string),
-        country: existing.country as string | null,
-        source: existing.source as string | null,
-        method: (payment.method as string) || null,
-        email: (payment.email as string) || null,
-        contact: (payment.contact as string) || null,
-        message: (existing.message as string) || null,
+          (record.currencyCaptured as string) ??
+          (record.currency as string) ??
+          "",
+        country: (record.country as string | null) ?? null,
+        source: (record.source as string | null) ?? null,
+        method: (record.method as string) || null,
+        email: (record.email as string) || null,
+        contact: (record.contact as string) || null,
+        message: (record.message as string) || null,
       });
     }
 
