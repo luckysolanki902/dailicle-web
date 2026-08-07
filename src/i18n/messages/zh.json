@@ -1,0 +1,255 @@
+{
+  "common": {
+    "siteName": "The Dailicle",
+    "tagline": "每周一篇文章。别无其他。",
+    "oneEssayAWeek": "每周一篇文章 · 慢慢阅读",
+    "backHome": "返回首页",
+    "readAnother": "阅读另一篇文章",
+    "dismiss": "关闭"
+  },
+  "nav": {
+    "home": "首页",
+    "archive": "档案",
+    "manifesto": "为什么阅读？",
+    "feedback": "反馈",
+    "support": "支持"
+  },
+  "footer": {
+    "tagline": "每周一篇文章。别无其他。",
+    "subscribeLabel": "每周一通知",
+    "subscribePlaceholder": "you@example.com",
+    "subscribeHint": "每周一当新文章发布时，我们会给您发送电子邮件。",
+    "subscribeAria": "每周一当新文章发布时通知您",
+    "success": "已订阅。周一见。",
+    "already": "该电子邮件已订阅。",
+    "error": "无法订阅。请再试一次。",
+    "onList": "您在列表中。",
+    "language": "语言",
+    "themes": {
+      "light": "白天",
+      "dark": "夜晚",
+      "wooden": "学习",
+      "space": "虚空",
+      "fairytale": "梦境"
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "The Dailicle – 每周一篇文章，旨在慢慢阅读",
+      "description": "每周一篇关于思想、意义、金钱和生活方式的文章。经过仔细研究，免费阅读，无需注册 – 每周一更新。"
+    },
+    "thisWeek": {
+      "issue": "第 {issue} 期",
+      "thisWeek": "本周",
+      "readCta": "阅读本周的文章",
+      "readingLine": "{minutes} 分钟阅读 · 免费 · 无需注册",
+      "orArchive": "或从档案开始",
+      "firstIssue": "第一期 · {theme} · 将于 {date} 到达",
+      "betweenIssues": "在期与期之间",
+      "onItsWay": "下一篇文章正在路上。",
+      "browseWhileWaiting": "等待时浏览档案"
+    },
+    "nextWeek": {
+      "label": "下周一 · {date}"
+    },
+    "ethos": {
+      "title": "每周一篇文章。别无其他。",
+      "p1": "每周一，The Dailicle 关注一个单一的想法 – 关于思想、意义、金钱，以及作为一个人的奇怪事务 – 并用简单的语言仔细探讨，长度适合您实际完成。",
+      "p2": "这里没有动态，也没有注册的内容。你阅读了文章，关闭了标签页，运气好的话，这个想法会在接下来的一周里伴随你。",
+      "whyLink": "我们为什么这样发布",
+      "strandsLabel": "五个主题"
+    },
+    "readers": {
+      "eyebrow": "阅读全球",
+      "title": "安静地，在比你想象的更多地方",
+      "footnote": "以及在更多国家的安静读者。"
+    },
+    "recent": {
+      "title": "继续阅读",
+      "browseAll": "浏览所有文章",
+      "minutes": "{minutes} 分钟"
+    },
+    "closing": {
+      "title": "下一篇文章将在周一到达。",
+      "thisWeekHere": "本周的文章已经在这里。",
+      "startReading": "开始阅读",
+      "visitArchive": "访问档案",
+      "free": "免费阅读 · 无需注册 · 无广告"
+    }
+  },
+  "archive": {
+    "meta": {
+      "title": "文章 - 档案 | The Dailicle",
+      "description": "我们发布的每一篇文章 - 每周一篇，关于思想、意义、金钱和生活方式。"
+    },
+    "title": "文章",
+    "subtitle": "每周一篇，每周一。选择一个主题或直接从顶部开始。",
+    "searchPlaceholder": "搜索文章…",
+    "all": "所有",
+    "issue": "期 {issue}",
+    "minutes": "{minutes} 分钟",
+    "noMatch": "还没有匹配的内容 - 收藏每周一增长一篇。",
+    "noMatchQuery": "还没有匹配“{query}”的内容 - 收藏每周一增长一篇。",
+    "clearFilters": "清除筛选",
+    "legacyToggle": "从2025年起，周刊时代之前 ({count})",
+    "sort": {
+      "label": "排序",
+      "popular": "热门",
+      "new": "最新"
+    }
+  },
+  "themes": {
+    "psychology": "心理学",
+    "relationships": "人际关系",
+    "philosophy": "哲学",
+    "society": "社会",
+    "money": "金钱"
+  },
+  "reader": {
+    "allEssays": "所有文章",
+    "share": "分享",
+    "shareThisEssay": "分享这篇文章",
+    "shareAria": "分享文章",
+    "shareText": "\"{title}\" – 来自 The Dailicle 的一篇文章",
+    "twitter": "推特",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "copyLink": "复制链接",
+    "language": "语言",
+    "languageAria": "更改语言",
+    "copied": "已复制！",
+    "listen": "收听",
+    "listenInstead": "改为收听",
+    "audioMinutes": "{minutes} 分钟",
+    "seek": "寻找",
+    "playNarration": "播放叙述",
+    "pauseNarration": "暂停叙述",
+    "stopPlayer": "停止并关闭播放器",
+    "notReleased": "下一篇文章将在周一发布。",
+    "comeBackSoon": "请尽快回来。",
+    "comeBackTomorrow": "明天再来。",
+    "comeBackOn": "在 {date} 再来。",
+    "fromArchive": "来自2025年档案",
+    "issue": "第 {issue} 期",
+    "by": "作者 {author} · {date} · {minutes} 分钟阅读",
+    "furtherReadingIntro": "如果你想更深入地了解：",
+    "nextMonday": "下周一 · {date}",
+    "thanksReading": "感谢阅读。每周一会有新文章发布。",
+    "readMore": "浏览所有文章",
+    "byline": "The Dailicle 编辑部",
+    "keepReading": "继续阅读",
+    "minRead": "{minutes} 分钟阅读",
+    "subscribe": {
+      "eyebrow": "加入我们",
+      "heading": "每周一获取新文章。",
+      "sub": "我们每周一发布一篇文章。订阅后，我们会在文章上线的第一时间通过邮件通知你。",
+      "reassure": "免费 · 无垃圾邮件 · 随时退订",
+      "placeholder": "your@email.com",
+      "cta": "通知我",
+      "done": "你已订阅。周一见。",
+      "already": "你已经在名单上了 — 周一见。",
+      "nudge": "每周一接收通知吗？"
+    }
+  },
+  "manifesto": {
+    "meta": {
+      "title": "为什么阅读 The Dailicle？慢网的宣言",
+      "description": "对互联网噪音的反叛。每周一篇文章的哲学。"
+    },
+    "title": "为什么阅读 Dailicle？",
+    "subtitle": "慢网的宣言。",
+    "p_library": "互联网本应是一个图书馆。结果，它变成了一个赌场。",
+    "p_scroll": "想想你最后一个小时的滚动。你能记住其中的一件事吗？这些信息流是由一些最聪明的人设计的，旨在让你的拇指不停地移动，他们非常擅长自己的工作。他们所夺走的是微妙的：晚上感觉充实，而大脑却保持空虚。",
+    "p_rebellion": "The Dailicle 是对此的反叛。",
+    "h_one": "一个的哲学",
+    "p_one_1": "我们每周只发布一篇文章。不是十篇。不是信息流。每周一，一篇。",
+    "p_one_2": "稀缺是一种尊重。当只有一件事可读时，你会停止浏览，开始阅读。你全神贯注，而我们则给予它一整周的关心：每篇文章都是从数十个候选想法中挑选出来的，经过适当研究，并写成可以完成的样子。大多数需要十到十五分钟。如果你更喜欢听，还有旁白。",
+    "h_about": "这些文章的主题",
+    "p_about_1": "五个领域：心理学、哲学、视角、生活和金钱。连接它们的是一种特定的想法——一种你半认同但从未用语言表达的人类观察。你从父母那里继承的担忧。为什么有些日子消失而其他日子却永恒。保持每个选项开放的安静代价。",
+    "p_about_2": "这里的一篇好文章应该在周三仍然萦绕在你心头。",
+    "h_who": "这适合谁？",
+    "p_who_1": "好奇的人。那些仍然相信精心构造的句子可以改变你看待世界的方式的人，以及那些怀疑如果阅读不再像作业一样，他们会读得更多的人。没有注册，没有付费墙，也没有需要跟踪的东西——每周一篇文章，免费。",
+    "p_who_2": "如果你想要填补沉默的内容，很多地方会乐意满足。如果你想要在标签关闭后仍然萦绕的想法，欢迎回家。",
+    "h_writes": "谁写的？",
+    "p_writes": "这些文章是在 The Dailicle Desk 撰写和编辑的，采用统一的声音，并遵循一个标准：细心的读者是否想要再读一遍？没有追逐注意力的署名，没有客座文章，没有填充周。",
+    "h_recs": "为什么没有推荐？",
+    "p_recs_1": "推荐算法是为了参与而不是启发。我们希望你阅读、思考，然后离开。去散步。和朋友聊天。创造一些东西。",
+    "p_recs_2": "有时一篇文章会以一些指引结束，供任何想要更长时间思考这个想法的人参考。但我们绝不会让你陷入循环。",
+    "closing": "慢慢阅读。深入思考。周一再回来。"
+  },
+  "feedback": {
+    "meta": {
+      "title": "反馈",
+      "description": "帮助塑造 The Dailicle 的未来。分享你的想法、创意，或只是打个招呼。"
+    },
+    "title": "反馈",
+    "subtitle": "帮助我们塑造 Dailicle 的未来。",
+    "preferEmail": "更喜欢电子邮件？直接联系：",
+    "form": {
+      "messageLabel": "你的消息",
+      "messagePlaceholder": "你在想什么？反馈、想法或只是打个招呼。",
+      "identityLabel": "你是谁？",
+      "optional": "(可选)",
+      "identityPlaceholder": "姓名、Twitter 或电子邮件",
+      "send": "发送消息",
+      "successTitle": "消息已收到",
+      "successBody": "感谢你的想法。",
+      "error": "出现问题。请再试一次。"
+    }
+  },
+  "thankYou": {
+    "eyebrow": "The Dailicle",
+    "title": "谢谢你，真的。",
+    "body": "因为有你，桌子会亮得久一点。文章将继续每周一送达，缓慢、细致，并且对每个人免费，正如之前一样。",
+    "note": "你并不需要这样做。这正是它如此重要的原因。"
+  },
+  "support": {
+    "title": "这里的一切都是免费的。它可以保持这样。",
+    "body": "没有付费墙，没有广告，没有需要注册的东西，每周一篇文章，慢慢写。如果它曾让你停下脚步，你可以帮助它继续。只有在你愿意的情况下。",
+    "tiers": {
+      "t1": "一杯咖啡",
+      "t2": "一个安静的赞助人",
+      "t3": "一个信徒"
+    },
+    "anotherAmount": "另一个金额",
+    "notePlaceholder": "如果愿意，可以留个备注（可选）",
+    "cta": "支持 The Dailicle",
+    "processing": "正在打开安全结账…",
+    "maybeLater": "也许下次吧",
+    "secure": "通过 Razorpay 安全支付 · 一次性感谢，不是订阅",
+    "thanksTitle": "谢谢你，真的。",
+    "thanksBody": "因为你，桌子上的灯光会亮得更久。文章将继续如往常一样，免费提供给每个人。",
+    "backToReading": "返回阅读",
+    "close": "关闭",
+    "checkoutDescription": "保持桌子亮着，谢谢。",
+    "errMin": "至少输入 {amount}。",
+    "errCheckout": "无法加载安全结账。",
+    "errStart": "无法开始支付。",
+    "errGeneric": "出现了问题。请再试一次。",
+    "securePaypal": "通过 PayPal 安全支付 · 一次性感谢，不是订阅"
+  },
+  "prefs": {
+    "aria": "阅读偏好",
+    "title": "阅读舒适度",
+    "close": "关闭",
+    "textSize": "文本大小",
+    "comfortable": "舒适",
+    "large": "大",
+    "veryLarge": "非常大",
+    "bodyTypeface": "正文字体",
+    "sans": "无衬线",
+    "serif": "有衬线",
+    "lineSpacing": "行间距",
+    "normal": "正常",
+    "relaxed": "放松"
+  },
+  "reactions": {
+    "prompt": "这篇文章对你有帮助吗？",
+    "yes": "是的，这篇文章有帮助",
+    "no": "不太",
+    "noted": "已记录 – 谢谢。"
+  },
+  "themeSwitcher": {
+    "switchTo": "切换到 {theme} 主题"
+  }
+}

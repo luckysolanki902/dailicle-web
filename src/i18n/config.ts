@@ -27,6 +27,10 @@ export const LOCALES: Record<string, LocaleMeta> = {
   ko: { native: "한국어", english: "Korean", ogLocale: "ko_KR", htmlLang: "ko" },
   ru: { native: "Русский", english: "Russian", ogLocale: "ru_RU", htmlLang: "ru" },
   tr: { native: "Türkçe", english: "Turkish", ogLocale: "tr_TR", htmlLang: "tr" },
+  // Simplified script. htmlLang is zh-Hans rather than zh-CN because the
+  // hreflang targets the writing system, not the country: it should match a
+  // Simplified reader in Singapore as readily as one in Beijing.
+  zh: { native: "中文", english: "Chinese", ogLocale: "zh_CN", htmlLang: "zh-Hans" },
 };
 
 export const LOCALE_CODES = Object.keys(LOCALES);
@@ -56,6 +60,9 @@ export const COUNTRY_TO_LOCALE: Record<string, Locale> = {
   KR: "ko",
   RU: "ru", KZ: "ru", BY: "ru", KG: "ru",
   TR: "tr",
+  // Simplified-script regions only. TW, HK and MO read Traditional and stay on
+  // English until there is a zh-Hant catalog to send them to.
+  CN: "zh", SG: "zh",
 };
 
 /**

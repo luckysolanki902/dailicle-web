@@ -15,6 +15,7 @@ const catalogs: Record<string, () => Promise<{ default: Messages }>> = {
   ko: () => import("@/i18n/messages/ko.json"),
   ru: () => import("@/i18n/messages/ru.json"),
   tr: () => import("@/i18n/messages/tr.json"),
+  zh: () => import("@/i18n/messages/zh.json"),
 };
 
 /**
