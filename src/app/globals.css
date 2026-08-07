@@ -103,17 +103,32 @@ body {
 }
 
 /*
-  Text fields get a single, clean focus treatment instead of the button-style
-  offset outline: the border turns accent and a soft ring hugs it (no gap, no
-  second concentric line). This overrides the generic :focus-visible outline
-  above so inputs never show the doubled ring.
+  Form fields draw nothing of their own, in any state. Whatever box a field
+  appears to sit in belongs to the component around it, which is the only thing
+  that knows the right shape: the amount field sits inside a rounded pill, and a
+  global ring hugging the bare <input> painted a second, square outline inside
+  it. Fields are frequently nested like that, so the global layer stays out of
+  it entirely rather than guessing.
+
+  Note this also drops the keyboard focus indicator on inputs — buttons and
+  links still get the :focus-visible outline above, but a keyboard user tabbing
+  through a form now has nothing marking where they are.
+
+  These rules are deliberately unlayered: Tailwind v4 puts utilities in a
+  @layer, and unlayered CSS beats layered CSS regardless of specificity, so a
+  component cannot accidentally reintroduce a ring with a utility class.
 */
+input,
+textarea,
+select,
+input:focus,
+textarea:focus,
+select:focus,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
   outline: none;
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: none;
 }
 
 /*

@@ -149,7 +149,7 @@ export function Footer() {
                 }}
                 placeholder={t("footer.subscribePlaceholder")}
                 autoComplete="email"
-                className="min-w-0 flex-1 bg-transparent py-2.5 text-sm outline-none focus-visible:shadow-none placeholder:text-foreground/30"
+                className="min-w-0 flex-1 bg-transparent py-2.5 text-sm placeholder:text-foreground/30"
               />
               <button
                 type="submit"

@@ -519,7 +519,7 @@ export function SupportDialog({
                         setCustom(e.target.value.replace(/[^0-9]/g, ""))
                       }
                       placeholder={t("support.anotherAmount")}
-                      className="min-w-0 flex-1 bg-transparent text-sm outline-none focus-visible:shadow-none placeholder:text-foreground/35"
+                      className="min-w-0 flex-1 bg-transparent text-sm placeholder:text-foreground/35"
                     />
                   </button>
 
