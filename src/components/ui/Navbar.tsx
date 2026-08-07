@@ -41,10 +41,13 @@ export function Navbar() {
             <span className="absolute -bottom-1 left-0 w-0 h-px bg-foreground transition-all group-hover:w-full" />
           </Link>
         ))}
+        {/* Set apart from the links: this is the one thing on the bar that
+            asks something of the reader rather than moving them around. */}
         <SupportButton
           source="navbar"
+          variant="pill"
           label={t("nav.support")}
-          className="text-sm font-medium text-foreground/40 hover:text-foreground"
+          className="text-[13px] font-medium"
         />
       </div>
     </motion.nav>

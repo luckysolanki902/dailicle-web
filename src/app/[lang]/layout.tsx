@@ -5,6 +5,7 @@ import "../globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { SupportProvider } from "@/components/support/SupportProvider";
 import { Navbar } from "@/components/ui/Navbar";
+import { MobileSupportPill } from "@/components/support/MobileSupportPill";
 import { Footer } from "@/components/ui/Footer";
 import { Analytics } from "@vercel/analytics/next";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
@@ -169,6 +170,7 @@ export default async function RootLayout({
           <ThemeProvider>
             <SupportProvider>
               <Navbar />
+              <MobileSupportPill />
               {children}
               <Footer />
               <Analytics />

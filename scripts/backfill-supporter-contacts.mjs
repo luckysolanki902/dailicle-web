@@ -29,6 +29,24 @@ const DAYS = Number(
   process.argv.find((a) => a.startsWith("--days="))?.slice(7) || 365
 );
 
+/**
+ * Payments that are real on the gateway but are not real supporters — our own
+ * test transactions. The reconcile pass exists precisely to resurrect payments
+ * missing from Mongo, so deleting one of these by hand does not stick: the next
+ * run finds it on Razorpay again and puts it straight back. They have to be
+ * named here to stay deleted.
+ *
+ * Add the order id, not the payment id — reconcile keys off the order.
+ */
+const IGNORED_ORDER_IDS = new Set([
+  // ₹99 UPI, 2026-07-17 — the owner's own test of the live Razorpay checkout.
+  "order_TEf2iz2STeKcnD",
+  ...(process.env.SUPPORT_IGNORE_ORDERS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+]);
+
 function loadEnv() {
   const raw = readFileSync(join(__dirname, "..", ".env"), "utf8");
   for (const line of raw.split("\n")) {
@@ -136,6 +154,10 @@ async function main() {
   let recovered = 0;
   for (const p of payments) {
     if (!p.order_id) continue;
+    if (IGNORED_ORDER_IDS.has(p.order_id)) {
+      console.log(`  – ${p.order_id} skipped (listed as a test payment)`);
+      continue;
+    }
     const doc = await col.findOne({ orderId: p.order_id });
     // Already reconciled if we know the payment and its lifecycle moved past
     // "created" (i.e. something other than /api/support/order wrote to it).
@@ -214,6 +236,7 @@ async function main() {
 
   let filled = 0;
   for (const doc of docs) {
+    if (IGNORED_ORDER_IDS.has(doc.orderId)) continue;
     let attempts = [];
     try {
       const body = await razorpayGet(`/orders/${doc.orderId}/payments`);
