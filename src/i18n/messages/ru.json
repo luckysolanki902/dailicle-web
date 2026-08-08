@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "Продолжайте читать",
+      "popularLabel": "Самое читаемое",
+      "recentLabel": "Недавно опубликовано",
       "browseAll": "Просмотреть все эссе",
       "minutes": "{minutes} мин"
     },

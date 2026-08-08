@@ -6,6 +6,7 @@ import {
   essayBannerInfo,
 } from "@/lib/essays";
 import { getReadersByCountry } from "@/lib/readers";
+import { getLikeCounts } from "@/lib/reactions";
 import { buildHomeView, type LandingEssay, type QueuedTopic } from "@/lib/home-view";
 import { makeThemeLabel } from "@/lib/themes";
 import { getTranslations } from "@/i18n/getMessages";
@@ -66,10 +67,11 @@ export default async function Home({
   const { lang } = await params;
   const locale: Locale = isLocale(lang) ? lang : DEFAULT_LOCALE;
 
-  const [published, queued, readers] = await Promise.all([
+  const [published, queued, readers, likes] = await Promise.all([
     getPublishedCandidates(20),
     getQueuedTopics(5),
     getReadersByCountry(),
+    getLikeCounts(),
   ]);
 
   // One join to pull every listed essay's translated title/hook for this locale.
@@ -104,7 +106,13 @@ export default async function Home({
 
   // Compute the time/timezone-dependent view once on the server so the client
   // can replay it verbatim on first render (see HomeClient / lib/home-view).
-  const initialView = buildHomeView(landingEssays, queuedTopics, new Date(), labelFor);
+  const initialView = buildHomeView(
+    landingEssays,
+    queuedTopics,
+    new Date(),
+    labelFor,
+    likes
+  );
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -134,6 +142,7 @@ export default async function Home({
         queued={queuedTopics}
         initialView={initialView}
         readers={readers}
+        likes={likes}
       />
     </>
   );

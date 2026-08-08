@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "Sigue leyendo",
+      "popularLabel": "Lo más leído",
+      "recentLabel": "Publicado recientemente",
       "browseAll": "Explora todos los ensayos",
       "minutes": "{minutes} min"
     },

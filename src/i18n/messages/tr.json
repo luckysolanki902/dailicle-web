@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "Okumaya devam et",
+      "popularLabel": "En çok okunanlar",
+      "recentLabel": "Yakın zamanda yayımlananlar",
       "browseAll": "Tüm denemeleri göz at",
       "minutes": "{minutes} dk"
     },

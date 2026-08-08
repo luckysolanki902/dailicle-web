@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "Weiterlesen",
+      "popularLabel": "Am meisten gelesen",
+      "recentLabel": "Kürzlich erschienen",
       "browseAll": "Alle Essays durchsuchen",
       "minutes": "{minutes} Min"
     },

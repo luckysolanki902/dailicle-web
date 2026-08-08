@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "继续阅读",
+      "popularLabel": "最多人閱讀",
+      "recentLabel": "最近發布",
       "browseAll": "浏览所有文章",
       "minutes": "{minutes} 分钟"
     },

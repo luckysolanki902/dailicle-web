@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "Keep reading",
+      "popularLabel": "Most popular",
+      "recentLabel": "Recently published",
       "browseAll": "Browse all the essays",
       "minutes": "{minutes} min"
     },

@@ -31,9 +31,21 @@ interface HomeClientProps {
    * verbatim on the first client render, then recompute with the local clock.
    */
   initialView: HomeView;
+  /**
+   * Like counts by essay `_id`. Passed down so the post-mount recompute ranks
+   * "most popular" from the same numbers the server did — without them the
+   * group would fall back to newest-first and visibly reshuffle after hydration.
+   */
+  likes: Record<string, number>;
 }
 
-export function HomeClient({ published, queued, initialView, readers }: HomeClientProps) {
+export function HomeClient({
+  published,
+  queued,
+  initialView,
+  readers,
+  likes,
+}: HomeClientProps) {
   const t = useT();
   const [mounted, setMounted] = useState(false);
 
@@ -44,12 +56,12 @@ export function HomeClient({ published, queued, initialView, readers }: HomeClie
     return () => window.clearTimeout(id);
   }, []);
 
-  const { hero, tease, cards } = useMemo(
+  const { hero, tease, popular, cards } = useMemo(
     () =>
       mounted
-        ? buildHomeView(published, queued, new Date(), makeThemeLabel(t))
+        ? buildHomeView(published, queued, new Date(), makeThemeLabel(t), likes)
         : initialView,
-    [mounted, published, queued, initialView, t]
+    [mounted, published, queued, initialView, t, likes]
   );
 
   return (
@@ -61,7 +73,7 @@ export function HomeClient({ published, queued, initialView, readers }: HomeClie
       <Ethos />
       <ReadersByCountry countries={readers} />
       <ReaderWord />
-      <RecentEssays essays={cards} />
+      <RecentEssays popular={popular} essays={cards} />
 
       <section className="py-24 px-6 text-center border-t border-foreground/10">
         <div className="max-w-xl mx-auto space-y-6">

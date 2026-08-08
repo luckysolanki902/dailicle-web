@@ -11,7 +11,8 @@
     "test:merge": "tsc --outDir /tmp/dailicle-merge-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/payment-facts.ts src/lib/razorpay.ts src/lib/paypal.ts src/lib/supporter-merge.ts src/lib/supporter-merge.test.ts && node --test /tmp/dailicle-merge-test/supporter-merge.test.js",
     "test:archive-sort": "tsc --outDir /tmp/dailicle-archive-sort-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/archive-sort.ts src/lib/archive-sort.test.ts && node --test /tmp/dailicle-archive-sort-test/archive-sort.test.js",
     "test:excerpt": "tsc --outDir /tmp/dailicle-excerpt-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/excerpt.ts src/lib/excerpt.test.ts && node --test /tmp/dailicle-excerpt-test/excerpt.test.js",
-    "test:trigger": "tsc --outDir /tmp/dailicle-trigger-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/support-trigger.ts src/lib/support-trigger.test.ts && node --test /tmp/dailicle-trigger-test/support-trigger.test.js"
+    "test:trigger": "tsc --outDir /tmp/dailicle-trigger-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/support-trigger.ts src/lib/support-trigger.test.ts && node --test /tmp/dailicle-trigger-test/support-trigger.test.js",
+    "test:title-size": "tsc --outDir /tmp/dailicle-title-size-test --module commonjs --moduleResolution node --target es2022 --esModuleInterop src/lib/title-size.ts src/lib/title-size.test.ts && node --test /tmp/dailicle-title-size-test/title-size.test.js"
   },
   "dependencies": {
     "@google-analytics/data": "^5.2.2",

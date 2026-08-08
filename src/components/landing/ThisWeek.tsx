@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { LocalizedLink as Link } from "@/i18n/Link";
 import { EssayBanner } from "@/components/ui/EssayBanner";
+import { heroTitleClass } from "@/lib/title-size";
 import { useT } from "@/i18n/I18nProvider";
 
 interface ThisWeekProps {
@@ -104,7 +105,7 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.35, ease }}
-                className="font-display text-[2.6rem] md:text-6xl lg:text-[4.4rem] leading-[1.06] tracking-tight text-balance"
+                className={`font-display ${heroTitleClass(essay.title)} leading-[1.06] tracking-tight text-balance`}
               >
                 {essay.title}
               </motion.h1>
@@ -175,7 +176,9 @@ export function ThisWeek({ essay, upcoming }: ThisWeekProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.35, ease }}
-                className="font-display text-[2.4rem] md:text-6xl leading-[1.06] tracking-tight text-balance"
+                className={`font-display ${heroTitleClass(
+                  upcoming ? upcoming.title : t("home.thisWeek.onItsWay")
+                )} leading-[1.06] tracking-tight text-balance`}
               >
                 {upcoming ? upcoming.title : t("home.thisWeek.onItsWay")}
               </motion.h1>

@@ -1,5 +1,6 @@
 import { formatDate } from "@/lib/utils";
 import { themeLabel } from "@/lib/themes";
+import { sortEntries } from "@/lib/archive-sort";
 import {
   isReleasedLocally,
   localReleaseDate,
@@ -58,8 +59,14 @@ export interface RecentCard {
 export interface HomeView {
   hero: HeroCard | null;
   tease: TeaseCard | null;
+  /** Ranked by likes — the strongest thing to hand someone who just finished. */
+  popular: RecentCard[];
   cards: RecentCard[];
 }
+
+/** How many essays each group in "keep reading" shows. */
+const POPULAR_COUNT = 3;
+const RECENT_COUNT = 3;
 
 function hrefFor(essay: LandingEssay): string {
   return `/read/${essay.slug || essay._id}`;
@@ -86,7 +93,9 @@ export function buildHomeView(
   published: LandingEssay[],
   queued: QueuedTopic[],
   now: Date,
-  labelFor: (theme: string) => string = themeLabel
+  labelFor: (theme: string) => string = themeLabel,
+  /** Like counts keyed by essay `_id`, exactly as the archive keys them. */
+  likes: Record<string, number> = {}
 ): HomeView {
   const released = published
     .filter((essay) => isReleasedLocally(essay, now))
@@ -130,16 +139,41 @@ export function buildHomeView(
         }
       : null;
 
-  const cards: RecentCard[] = released
-    .filter((essay) => essay._id !== thisWeek?._id)
-    .slice(0, 3)
-    .map((essay) => ({
-      href: hrefFor(essay),
-      title: essay.title,
-      hook: essay.hook,
-      themeLabel: labelFor(essay.theme),
-      readingMinutes: essay.reading_minutes,
-    }));
+  const toCard = (essay: LandingEssay): RecentCard => ({
+    href: hrefFor(essay),
+    title: essay.title,
+    hook: essay.hook,
+    themeLabel: labelFor(essay.theme),
+    readingMinutes: essay.reading_minutes,
+  });
 
-  return { hero, tease, cards };
+  // Everything already on the page is off the table — the hero is right there,
+  // and an essay listed twice under two different headings reads as a bug.
+  const rest = released.filter((essay) => essay._id !== thisWeek?._id);
+
+  // Ranked by the same comparator the archive uses, so "most popular" means the
+  // same thing in both places. With no likes yet it degrades to newest-first,
+  // which is still a defensible order rather than an arbitrary one.
+  const popularEssays = sortEntries(
+    rest.map((essay) => ({
+      essay,
+      href: hrefFor(essay),
+      likes: likes[essay._id] ?? 0,
+      publishOn: essay.publish_on ?? null,
+      publishedAt: essay.published_at ?? null,
+    })),
+    "popular"
+  )
+    .slice(0, POPULAR_COUNT)
+    .map((entry) => entry.essay);
+
+  const popularIds = new Set(popularEssays.map((essay) => essay._id));
+  const popular: RecentCard[] = popularEssays.map(toCard);
+
+  const cards: RecentCard[] = rest
+    .filter((essay) => !popularIds.has(essay._id))
+    .slice(0, RECENT_COUNT)
+    .map(toCard);
+
+  return { hero, tease, popular, cards };
 }

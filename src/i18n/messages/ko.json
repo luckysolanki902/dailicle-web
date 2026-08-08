@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "계속 읽기",
+      "popularLabel": "많이 읽은 글",
+      "recentLabel": "최근에 발행한 글",
       "browseAll": "모든 에세이 보기",
       "minutes": "{minutes} 분"
     },

@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "読み続ける",
+      "popularLabel": "よく読まれている記事",
+      "recentLabel": "最近公開された記事",
       "browseAll": "すべてのエッセイを閲覧",
       "minutes": "{minutes} 分"
     },

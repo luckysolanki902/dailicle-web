@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "Continua a leggere",
+      "popularLabel": "I più letti",
+      "recentLabel": "Pubblicati di recente",
       "browseAll": "Sfoglia tutti i saggi",
       "minutes": "{minutes} min"
     },

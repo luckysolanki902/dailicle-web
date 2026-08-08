@@ -66,6 +66,8 @@
     },
     "recent": {
       "title": "Continuez à lire",
+      "popularLabel": "Les plus lus",
+      "recentLabel": "Publié récemment",
       "browseAll": "Parcourez tous les essais",
       "minutes": "{minutes} min"
     },
