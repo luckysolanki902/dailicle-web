@@ -209,6 +209,10 @@
   "support": {
     "title": "Tudo aqui é gratuito. Pode continuar assim.",
     "body": "Sem paywall, sem anúncios, nada para se inscrever para apenas um ensaio por semana, escrito devagar. Se já te fez pausar, você pode ajudar a mantê-lo. Somente se quiser.",
+    "weeklyZero": "0 contribuições concluídas esta semana. Seja a primeira pessoa a ajudar a manter The Dailicle independente.",
+    "weeklyOne": "1 contribuição concluída esta semana. Uma pessoa ajudou — ainda há espaço para a sua.",
+    "weeklyMany": "{count} contribuições concluídas esta semana. Junte-se aos leitores que mantêm The Dailicle gratuito.",
+    "weeklyVerified": "Contagem ao vivo · pagamentos verificados",
     "tiers": {
       "t1": "Um café",
       "t2": "Um patrono silencioso",

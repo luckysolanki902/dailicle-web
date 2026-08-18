@@ -209,6 +209,10 @@
   "support": {
     "title": "Tout ici est gratuit. Ça peut rester ainsi.",
     "body": "Pas de mur payant, pas de publicités, rien à s'inscrire pour un essai par semaine, écrit lentement. Si cela vous a déjà fait réfléchir, vous pouvez aider à le maintenir. Seulement si vous le souhaitez.",
+    "weeklyZero": "0 contribution réussie cette semaine. Soyez la première personne à aider The Dailicle à rester indépendant.",
+    "weeklyOne": "1 contribution réussie cette semaine. Une personne a répondu présente — la vôtre peut encore la rejoindre.",
+    "weeklyMany": "{count} contributions réussies cette semaine. Rejoignez les lecteurs qui gardent The Dailicle gratuit.",
+    "weeklyVerified": "Compteur en direct · paiements vérifiés",
     "tiers": {
       "t1": "Un café",
       "t2": "Un patron discret",

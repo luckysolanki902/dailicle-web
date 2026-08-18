@@ -208,6 +208,10 @@
   "support": {
     "title": "Everything here is free. It can stay that way.",
     "body": "No paywall, no ads, nothing to sign up for just one essay a week, written slowly. If it's ever made you pause, you can help keep it going. Only if you want to.",
+    "weeklyZero": "0 successful contributions this week. Be the first to help keep The Dailicle independent.",
+    "weeklyOne": "1 successful contribution this week. One reader stepped in — there’s still room for yours.",
+    "weeklyMany": "{count} successful contributions this week. Join the readers keeping The Dailicle free.",
+    "weeklyVerified": "Live count · verified payments",
     "tiers": {
       "t1": "A coffee",
       "t2": "A quiet patron",

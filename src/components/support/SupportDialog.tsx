@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import type { SupportSource } from "./SupportProvider";
 import { track, getGaClientId, getCurrentEssay } from "@/lib/analytics";
 import { getVisitorId, getJourneySessionId, journeyEvent } from "@/lib/journey";
-import { useT } from "@/i18n/I18nProvider";
+import { useI18n } from "@/i18n/I18nProvider";
 import { PaypalButtons } from "./PaypalButtons";
 
 type TierId = "t1" | "t2" | "t3";
@@ -24,6 +24,8 @@ interface Config {
   /** Their real currency, when PayPal cannot settle it and we quoted USD. */
   originalCurrency?: string | null;
   paypalClientId?: string | null;
+  /** Successful ledger entries since Monday 00:00 IST. */
+  weeklySuccessfulSupports?: number | null;
 }
 
 // Minimal typing for the Razorpay Checkout global loaded from their CDN.
@@ -84,6 +86,17 @@ function readAccent(): string {
 
 type Status = "idle" | "processing" | "success" | "error";
 
+function weeklyMessageKey(locale: string, count: number): string {
+  if (count === 0) return "support.weeklyZero";
+  if (count === 1) return "support.weeklyOne";
+  if (locale === "ru") {
+    const form = new Intl.PluralRules("ru").select(count);
+    if (form === "one") return "support.weeklyManyOne";
+    if (form === "few") return "support.weeklyManyFew";
+  }
+  return "support.weeklyMany";
+}
+
 export function SupportDialog({
   isOpen,
   source,
@@ -95,7 +108,7 @@ export function SupportDialog({
   onClose: () => void;
   onSupported: () => void;
 }) {
-  const t = useT();
+  const { locale, t } = useI18n();
   const router = useRouter();
   const [config, setConfig] = useState<Config | null>(null);
   const [selected, setSelected] = useState<TierId | "custom">("t2");
@@ -106,9 +119,10 @@ export function SupportDialog({
 
   const MESSAGE_MAX = 500;
 
-  // Fetch pricing the first time the dialog is opened.
+  // Refresh the live weekly count whenever the dialog opens. Pricing comes in
+  // the same small response, so it stays current too.
   useEffect(() => {
-    if (!isOpen || config) return;
+    if (!isOpen) return;
     let cancelled = false;
     fetch("/api/support/config")
       .then((r) => r.json())
@@ -132,7 +146,7 @@ export function SupportDialog({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, config]);
+  }, [isOpen]);
 
   // Reset transient state whenever the dialog closes.
   useEffect(() => {
@@ -459,6 +473,26 @@ export function SupportDialog({
                   <p className="mt-2 font-serif text-[15px] leading-relaxed text-foreground/60">
                     {t("support.body")}
                   </p>
+
+                  {typeof config?.weeklySuccessfulSupports === "number" && (
+                    <div
+                      className="mt-4 rounded-2xl border border-accent/25 bg-accent/[0.07] px-4 py-3"
+                      role="status"
+                    >
+                      <p className="text-sm font-semibold leading-snug text-foreground/85">
+                        {t(
+                          weeklyMessageKey(
+                            locale,
+                            config.weeklySuccessfulSupports
+                          ),
+                          { count: config.weeklySuccessfulSupports }
+                        )}
+                      </p>
+                      <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-foreground/40">
+                        {t("support.weeklyVerified")}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Tiers */}
                   <div className="mt-6 grid grid-cols-3 gap-2.5">

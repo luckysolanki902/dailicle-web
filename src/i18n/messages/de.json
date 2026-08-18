@@ -209,6 +209,10 @@
   "support": {
     "title": "Alles hier ist kostenlos. Es kann so bleiben.",
     "body": "Kein Paywall, keine Werbung, nichts, wofür man sich anmelden muss, nur ein Essay pro Woche, langsam geschrieben. Wenn es dich jemals zum Nachdenken gebracht hat, kannst du helfen, es am Laufen zu halten. Nur wenn du möchtest.",
+    "weeklyZero": "0 erfolgreiche Beiträge diese Woche. Sei die erste Person, die The Dailicle unabhängig hält.",
+    "weeklyOne": "1 erfolgreicher Beitrag diese Woche. Eine Person ist eingesprungen — deiner kann dazukommen.",
+    "weeklyMany": "{count} erfolgreiche Beiträge diese Woche. Unterstütze die Leser, die The Dailicle kostenlos halten.",
+    "weeklyVerified": "Live-Zahl · verifizierte Zahlungen",
     "tiers": {
       "t1": "Ein Kaffee",
       "t2": "Ein stiller Förderer",

@@ -209,6 +209,10 @@
   "support": {
     "title": "Todo aquí es gratis. Puede seguir así.",
     "body": "Sin muro de pago, sin anuncios, nada que registrarse para un ensayo a la semana, escrito lentamente. Si alguna vez te ha hecho pausar, puedes ayudar a mantenerlo. Solo si quieres.",
+    "weeklyZero": "0 contribuciones exitosas esta semana. Sé la primera persona en ayudar a mantener independiente a The Dailicle.",
+    "weeklyOne": "1 contribución exitosa esta semana. Una persona dio el paso; aún hay sitio para la tuya.",
+    "weeklyMany": "{count} contribuciones exitosas esta semana. Únete a quienes mantienen gratis The Dailicle.",
+    "weeklyVerified": "Conteo en vivo · pagos verificados",
     "tiers": {
       "t1": "Un café",
       "t2": "Un patrocinador silencioso",
