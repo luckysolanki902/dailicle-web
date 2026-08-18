@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getClientCountry } from "@/lib/request";
 import { supportPlanFor } from "@/lib/support-provider";
 import { getPaypalClientId, isLive, paypalConfigured } from "@/lib/paypal";
+import { countSuccessfulSupportsSince } from "@/lib/supporters";
+import { startOfCurrentSupportWeek } from "@/lib/support-week";
 
 export const runtime = "nodejs";
 
@@ -15,6 +17,17 @@ export const runtime = "nodejs";
 export async function GET(request: NextRequest) {
   const country = getClientCountry(request);
   const { provider, cfg, originalCurrency } = supportPlanFor(country);
+  let weeklySuccessfulSupports: number | null = null;
+
+  // The count is persuasion backed by the payment ledger, never a fabricated
+  // scarcity number. Pricing must still load if Mongo is briefly unavailable.
+  try {
+    weeklySuccessfulSupports = await countSuccessfulSupportsSince(
+      startOfCurrentSupportWeek()
+    );
+  } catch (error) {
+    console.error("support/config weekly count error:", error);
+  }
 
   return NextResponse.json({
     provider,
@@ -32,5 +45,6 @@ export async function GET(request: NextRequest) {
     paypalClientId:
       provider === "paypal" && paypalConfigured() ? getPaypalClientId() : null,
     paypalEnv: provider === "paypal" ? (isLive() ? "live" : "sandbox") : null,
+    weeklySuccessfulSupports,
   });
 }

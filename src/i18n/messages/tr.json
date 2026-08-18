@@ -209,6 +209,10 @@
   "support": {
     "title": "Buradaki her şey ücretsiz. Böyle kalabilir.",
     "body": "Bir makale için hiçbir ödeme duvarı, reklam yok, sadece yavaş yazılmış bir makale. Eğer sizi durdurduysa, devam etmesine yardımcı olabilirsiniz. İsterseniz.",
+    "weeklyZero": "Bu hafta 0 başarılı katkı var. The Dailicle'ın bağımsız kalmasına yardım eden ilk kişi olun.",
+    "weeklyOne": "Bu hafta 1 başarılı katkı var. Bir okur destek oldu — sizinki de ona katılabilir.",
+    "weeklyMany": "Bu hafta {count} başarılı katkı var. The Dailicle'ı ücretsiz tutan okurlara katılın.",
+    "weeklyVerified": "Canlı sayı · doğrulanmış ödemeler",
     "tiers": {
       "t1": "Bir kahve",
       "t2": "Sessiz bir destekçi",

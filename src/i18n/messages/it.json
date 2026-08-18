@@ -209,6 +209,10 @@
   "support": {
     "title": "Tutto qui è gratuito. Può rimanere così.",
     "body": "Nessun paywall, nessuna pubblicità, niente da registrarsi per un solo saggio a settimana, scritto lentamente. Se ti ha mai fatto fermare, puoi aiutare a mantenerlo attivo. Solo se vuoi.",
+    "weeklyZero": "0 contributi riusciti questa settimana. Sii la prima persona ad aiutare The Dailicle a restare indipendente.",
+    "weeklyOne": "1 contributo riuscito questa settimana. Una persona ha dato una mano — c’è ancora spazio per il tuo.",
+    "weeklyMany": "{count} contributi riusciti questa settimana. Unisciti ai lettori che mantengono gratuito The Dailicle.",
+    "weeklyVerified": "Conteggio in tempo reale · pagamenti verificati",
     "tiers": {
       "t1": "Un caffè",
       "t2": "Un patrono silenzioso",

@@ -30,6 +30,35 @@ export async function supportersCollection(): Promise<Collection<Document>> {
 }
 
 /**
+ * Count successful contributions since a given instant. The payment ledger is
+ * the source of truth; `verifiedAt` is preferred, then the webhook capture
+ * time, with `createdAt` retained for older records.
+ */
+export async function countSuccessfulSupportsSince(
+  since: Date
+): Promise<number> {
+  const col = await supportersCollection();
+  const rows = await col
+    .aggregate<{ count: number }>([
+      { $match: { status: { $in: ["paid", "captured"] } } },
+      {
+        $addFields: {
+          _successfulAt: {
+            $ifNull: [
+              "$verifiedAt",
+              { $ifNull: ["$capturedAt", "$createdAt"] },
+            ],
+          },
+        },
+      },
+      { $match: { _successfulAt: { $gte: since } } },
+      { $count: "count" },
+    ])
+    .toArray();
+  return rows[0]?.count ?? 0;
+}
+
+/**
  * The single write path for everything Razorpay tells us about a payment.
  *
  * This is a merge, not an overwrite — see `supporter-merge.ts` for the rules and
