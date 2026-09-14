@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { LocalizedLink as Link } from "@/i18n/Link";
 import { ChevronDown, Search, X } from "lucide-react";
 import { THEMES, makeThemeLabel } from "@/lib/themes";
@@ -325,23 +325,31 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
             />
           </button>
 
-          <AnimatePresence initial={false}>
-            {showLegacy && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.35, ease: "easeInOut" }}
-                className="overflow-hidden"
-              >
-                <div className="pt-4">
-                  {legacy.map((entry, i) => (
-                    <EntryRow key={entry.href} entry={entry} index={i} muted />
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/*
+            Always mounted, collapsed to height 0 — never conditionally
+            rendered. Unmounting the drawer kept these essays out of the
+            server HTML entirely, so the only path to them was the sitemap and
+            Google left the lot in "Discovered - currently not indexed". The
+            drawer still opens and closes exactly as before; the difference is
+            that the links now exist for a crawler that never clicks.
+          */}
+          <motion.div
+            initial={false}
+            animate={
+              showLegacy
+                ? { height: "auto", opacity: 1 }
+                : { height: 0, opacity: 0 }
+            }
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="overflow-hidden"
+            aria-hidden={!showLegacy}
+          >
+            <div className="pt-4">
+              {legacy.map((entry, i) => (
+                <EntryRow key={entry.href} entry={entry} index={i} muted />
+              ))}
+            </div>
+          </motion.div>
         </section>
       )}
     </div>

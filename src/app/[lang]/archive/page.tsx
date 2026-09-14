@@ -16,6 +16,7 @@ import { getTranslations } from "@/i18n/getMessages";
 import {
   DEFAULT_LOCALE,
   LOCALES,
+  SITE_URL,
   isLocale,
   localeUrl,
   hreflangAlternates,
@@ -61,7 +62,7 @@ export async function generateMetadata({
       type: "website",
       images: [
         {
-          url: "https://dailicle.com/og-archive.png",
+          url: `${SITE_URL}/og-archive.png`,
           width: 1200,
           height: 630,
           alt: "The Dailicle Archive",
@@ -74,7 +75,7 @@ export async function generateMetadata({
       site: "@dailicle",
       title,
       description,
-      images: { url: "https://dailicle.com/og-archive.png", alt: "The Dailicle Archive" },
+      images: { url: `${SITE_URL}/og-archive.png`, alt: "The Dailicle Archive" },
     },
     alternates: {
       canonical: localeUrl("/archive", locale),

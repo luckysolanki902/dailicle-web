@@ -344,6 +344,48 @@ export async function getTranslationsMap(
 }
 
 /**
+ * Which languages an essay has actually been translated into. Drives hreflang
+ * and the sitemap: we only advertise a locale URL once there is real text
+ * behind it, otherwise the page serves English at a /es/ URL and Google files
+ * it as a duplicate.
+ *
+ * Only non-empty bodies count — a translation row that exists but never got a
+ * body would otherwise render the English fallback under a foreign URL, which
+ * is the exact case this is here to prevent.
+ */
+export async function getTranslatedLocales(essayId: string): Promise<string[]> {
+  const col = await translationsCollection();
+  const docs = await col
+    .find({ essayId, body: { $nin: [null, ""] } }, { projection: { lang: 1 } })
+    .toArray();
+  return docs.map((d) => d.lang as string).filter(Boolean);
+}
+
+/** Same, for many essays at once (the sitemap) → map keyed by essayId. */
+export async function getTranslatedLocalesMap(
+  essayIds: string[]
+): Promise<Map<string, string[]>> {
+  const map = new Map<string, string[]>();
+  if (essayIds.length === 0) return map;
+  const col = await translationsCollection();
+  const docs = await col
+    .find(
+      { essayId: { $in: essayIds }, body: { $nin: [null, ""] } },
+      { projection: { essayId: 1, lang: 1 } }
+    )
+    .toArray();
+  for (const doc of docs) {
+    const id = doc.essayId as string;
+    const lang = doc.lang as string;
+    if (!id || !lang) continue;
+    const list = map.get(id);
+    if (list) list.push(lang);
+    else map.set(id, [lang]);
+  }
+  return map;
+}
+
+/**
  * Overlay a translation onto an English essay. Title/hook/body switch to the
  * translated text; everything else (slug, dates, banner, audio) stays. When the
  * translation is null (missing or English), the essay is returned untouched, so

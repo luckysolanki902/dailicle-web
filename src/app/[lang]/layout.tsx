@@ -11,7 +11,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { getMessages } from "@/i18n/getMessages";
-import { LOCALES, LOCALE_CODES, isLocale, type Locale } from "@/i18n/config";
+import { LOCALES, LOCALE_CODES, SITE_URL, isLocale, type Locale } from "@/i18n/config";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -39,7 +39,7 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://dailicle.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "The Dailicle - One Essay a Week, Written to Be Read Slowly",
     template: "%s | The Dailicle"
@@ -84,13 +84,14 @@ export const metadata: Metadata = {
   alternates: {
     types: {
       "application/rss+xml": [
-        { url: "https://dailicle.com/feed.xml", title: "The Dailicle – weekly essay" },
+        { url: `${SITE_URL}/feed.xml`, title: "The Dailicle – weekly essay" },
       ],
     },
   },
-  verification: {
-    google: "google-site-verification-code",
-  },
+  // No `verification` block: the property is a domain property, verified over
+  // DNS. The placeholder that used to sit here shipped a literal
+  // <meta name="google-site-verification" content="google-site-verification-code">
+  // on every page, which verifies nothing and is just a broken tag.
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -159,8 +160,8 @@ export default async function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "The Dailicle",
-              url: "https://dailicle.com",
-              logo: "https://dailicle.com/logo.png",
+              url: SITE_URL,
+              logo: `${SITE_URL}/logo.png`,
               description:
                 "A weekly essay on the mind, meaning, money, and how to live. Written to be read slowly.",
             }),

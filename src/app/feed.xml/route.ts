@@ -1,5 +1,6 @@
 import { getPublishedEssays } from "@/lib/essays";
 import { themeLabel } from "@/lib/themes";
+import { SITE_URL } from "@/i18n/config";
 
 export const revalidate = 3600;
 
@@ -22,7 +23,7 @@ export async function GET() {
 
   const items = essays
     .map((essay) => {
-      const url = `https://dailicle.com/read/${essay.slug || essay._id}`;
+      const url = `${SITE_URL}/read/${essay.slug || essay._id}`;
       const pubDate = essay.published_at
         ? new Date(essay.published_at).toUTCString()
         : new Date().toUTCString();
@@ -41,8 +42,8 @@ export async function GET() {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>The Dailicle</title>
-    <link>https://dailicle.com</link>
-    <atom:link href="https://dailicle.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <link>${SITE_URL}</link>
+    <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
     <description>One essay a week on the mind, meaning, money, and how to live. Written to be read slowly.</description>
     <language>en-us</language>
     <ttl>1440</ttl>

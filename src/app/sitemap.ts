@@ -1,15 +1,26 @@
 import { MetadataRoute } from 'next'
-import { getAllReadable } from '@/lib/essays'
-import { LOCALE_CODES, localeUrl, hreflangAlternates } from '@/i18n/config'
+import { getAllReadable, getTranslatedLocalesMap } from '@/lib/essays'
+import {
+  DEFAULT_LOCALE,
+  LOCALE_CODES,
+  localeUrl,
+  hreflangAlternates,
+} from '@/i18n/config'
 
 /**
- * A localized sitemap: every page is emitted once per locale (its own <url>),
- * and each entry carries the full hreflang alternates set so search engines can
+ * A localized sitemap: a page is emitted once per locale it genuinely exists
+ * in, and each entry carries the matching hreflang set so search engines can
  * map the language versions to one another. English lives at the unprefixed
  * URL; the others under /es, /de, ... (see i18n/config).
+ *
+ * Essays are gated on having a real translation. Listing all 11 locales for
+ * every essay inflated this file ~10x with URLs that served English text under
+ * a foreign prefix — duplicates that burn the crawl budget this site needs for
+ * the English originals.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const essays = await getAllReadable()
+  const translated = await getTranslatedLocalesMap(essays.map((e) => e._id))
   const latestEssayDate = essays[0]?.published_at
     ? new Date(essays[0].published_at)
     : new Date()
@@ -20,10 +31,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     path: string,
     lastModified: Date,
     changeFrequency: 'weekly' | 'monthly' | 'yearly',
-    priority: number
+    priority: number,
+    // Locales this path actually has content for. Defaults to all of them:
+    // the static pages are fully covered by the message catalogs.
+    available: readonly string[] = LOCALE_CODES
   ) => {
-    const languages = hreflangAlternates(path)
-    for (const code of LOCALE_CODES) {
+    const codes = [DEFAULT_LOCALE, ...available.filter((c) => c !== DEFAULT_LOCALE)]
+    const languages = hreflangAlternates(path, codes)
+    for (const code of codes) {
       entries.push({
         url: localeUrl(path, code),
         lastModified,
@@ -44,7 +59,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       `/read/${essay.slug || essay._id}`,
       essay.published_at ? new Date(essay.published_at) : new Date(),
       'monthly',
-      0.8
+      0.8,
+      translated.get(essay._id) ?? []
     )
   }
 

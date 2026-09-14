@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+import { SITE_URL } from '@/i18n/config'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -19,7 +20,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/_next/'],
       },
     ],
-    sitemap: 'https://dailicle.com/sitemap.xml',
-    host: 'https://dailicle.com',
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   }
 }

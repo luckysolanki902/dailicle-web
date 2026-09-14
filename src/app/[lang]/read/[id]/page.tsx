@@ -7,6 +7,7 @@ import {
   localizeEssay,
   getRelatedEssays,
   getAllReadable,
+  getTranslatedLocales,
   essayBannerUrl,
   essayBannerInfo,
 } from "@/lib/essays";
@@ -15,6 +16,7 @@ import { getTranslations } from "@/i18n/getMessages";
 import {
   DEFAULT_LOCALE,
   LOCALES,
+  SITE_URL,
   isLocale,
   localeUrl,
   hreflangAlternates,
@@ -97,7 +99,7 @@ export async function generateMetadata({
   // for every language); fall back to the dynamic OG card with the translated
   // title otherwise.
   const banner = essayBannerUrl(essay);
-  const ogImageUrl = new URL("https://dailicle.com/api/og");
+  const ogImageUrl = new URL(`${SITE_URL}/api/og`);
   ogImageUrl.searchParams.set("title", localized.title);
   ogImageUrl.searchParams.set("category", categoryLabel);
   ogImageUrl.searchParams.set("minimal", "true");
@@ -112,8 +114,11 @@ export async function generateMetadata({
         type: "image/png",
       };
 
+  // Only the bare title: the root layout's template already appends
+  // "| The Dailicle", and adding the suffix here too rendered every tab and
+  // every SERP line as "... - The Dailicle | The Dailicle".
   return {
-    title: `${localized.title} - The Dailicle`,
+    title: localized.title,
     description,
     keywords: [
       categoryLabel,
@@ -122,7 +127,7 @@ export async function generateMetadata({
       "long-form writing",
       "thoughtful reading",
     ],
-    authors: [{ name: "The Dailicle Desk", url: "https://dailicle.com" }],
+    authors: [{ name: "The Dailicle Desk", url: SITE_URL }],
     publisher: "The Dailicle",
     openGraph: {
       title: `${localized.title} | The Dailicle`,
@@ -132,6 +137,7 @@ export async function generateMetadata({
       locale: LOCALES[locale].ogLocale,
       type: "article",
       publishedTime: formatDate(essay.published_at, "iso"),
+      modifiedTime: formatDate(essay.published_at, "iso"),
       authors: ["The Dailicle Desk"],
       section: categoryLabel,
       images: [ogImage],
@@ -145,7 +151,10 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: localeUrl(path, locale),
-      languages: hreflangAlternates(path),
+      // Only the languages this essay is really translated into. A blanket list
+      // pointed at English-under-/es/ URLs, and Google discards an entire
+      // hreflang group when its members look like duplicates.
+      languages: hreflangAlternates(path, await getTranslatedLocales(essay._id)),
     },
   };
 }
@@ -187,26 +196,34 @@ export default async function ReadPage({
     })
   );
 
+  const banner = essayBannerUrl(essay);
+  // The essay has no revision history, so the publish date is the only honest
+  // value for dateModified — Google treats a missing one as "unknown" and a
+  // fabricated recent one as a freshness signal we haven't earned.
+  const publishedIso = formatDate(essay.published_at, "iso");
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: localized.title,
     description: localized.hook,
+    ...(banner ? { image: [banner] } : {}),
     author: {
       "@type": "Organization",
       name: "The Dailicle",
-      url: "https://dailicle.com",
+      url: SITE_URL,
     },
     publisher: {
       "@type": "Organization",
       name: "The Dailicle",
-      url: "https://dailicle.com",
+      url: SITE_URL,
       logo: {
         "@type": "ImageObject",
-        url: "https://dailicle.com/logo.png",
+        url: `${SITE_URL}/logo.png`,
       },
     },
-    datePublished: formatDate(essay.published_at, "iso"),
+    datePublished: publishedIso,
+    dateModified: publishedIso,
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": localeUrl(`/read/${slug}`, locale),
