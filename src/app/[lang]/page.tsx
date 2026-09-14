@@ -13,6 +13,7 @@ import { getTranslations } from "@/i18n/getMessages";
 import {
   DEFAULT_LOCALE,
   LOCALES,
+  SITE_URL,
   isLocale,
   localeUrl,
   hreflangAlternates,
@@ -126,7 +127,7 @@ export default async function Home({
       name: "The Dailicle",
       logo: {
         "@type": "ImageObject",
-        url: "https://dailicle.com/logo.png",
+        url: `${SITE_URL}/logo.png`,
       },
     },
   };

@@ -87,7 +87,17 @@ export function localeHref(path: string, locale: Locale): string {
   return `/${locale}${clean}`;
 }
 
-const SITE_URL = "https://dailicle.com";
+/**
+ * The single canonical origin for the whole site. Every canonical tag, hreflang,
+ * sitemap <loc>, RSS link and JSON-LD @id is built from this, so it must match
+ * the host the CDN actually serves 200s on — if it doesn't, every URL we hand a
+ * crawler is a redirect and the self-referencing canonical points away from the
+ * page it sits on. Override with NEXT_PUBLIC_SITE_URL to move hosts without a
+ * code change.
+ */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.dailicle.com"
+).replace(/\/+$/, "");
 
 /** Absolute URL for a locale-less path in a given locale. */
 export function localeUrl(path: string, locale: Locale): string {
@@ -95,13 +105,25 @@ export function localeUrl(path: string, locale: Locale): string {
 }
 
 /**
- * The hreflang alternates map for a locale-less path: every locale's URL plus an
- * x-default pointing at English. Feed straight into Next's
- * `alternates.languages`.
+ * The hreflang alternates map for a locale-less path: one entry per locale that
+ * genuinely has content, plus an x-default pointing at English.
+ *
+ * `available` must list only the locales a translation actually exists for.
+ * Announcing a locale we can't serve publishes the English text under a foreign
+ * URL, which reads as duplicate content and makes Google drop the whole
+ * annotation group — so the site chrome being localized is not enough, the
+ * essay itself has to be. Omit the argument for pages that are fully localized
+ * by the message catalogs alone (home, archive, manifesto, feedback).
  */
-export function hreflangAlternates(path: string): Record<string, string> {
+export function hreflangAlternates(
+  path: string,
+  available: readonly string[] = LOCALE_CODES
+): Record<string, string> {
   const langs: Record<string, string> = {};
+  // English is the source text and always exists, whatever `available` says.
+  const codes = new Set<string>([DEFAULT_LOCALE, ...available]);
   for (const code of LOCALE_CODES) {
+    if (!codes.has(code)) continue;
     langs[LOCALES[code].htmlLang] = localeUrl(path, code);
   }
   langs["x-default"] = localeUrl(path, DEFAULT_LOCALE);

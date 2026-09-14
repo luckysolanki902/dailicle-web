@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import { useT } from "@/i18n/I18nProvider";
+import { SITE_URL } from "@/i18n/config";
 
 export default function ManifestoPage() {
   const t = useT();
@@ -17,9 +18,9 @@ export default function ManifestoPage() {
     publisher: {
       "@type": "Organization",
       name: "The Dailicle",
-      logo: { "@type": "ImageObject", url: "https://dailicle.com/logo.png" },
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
     },
-    mainEntityOfPage: { "@type": "WebPage", "@id": "https://dailicle.com/manifesto" },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/manifesto` },
     articleBody: `${t("manifesto.p_library")} ${t("manifesto.p_rebellion")}`,
   };
 
