@@ -199,6 +199,23 @@
       "error": "Something went wrong. Please try again."
     }
   },
+  "unsubscribe": {
+    "meta": {
+      "title": "Unsubscribe",
+      "description": "Stop receiving the Monday email from The Dailicle."
+    },
+    "title": "Unsubscribe",
+    "subtitle": "No hard feelings. Enter your email and the Monday essays will stop.",
+    "note": "The essays stay free to read at dailicle.com. You can subscribe again any time.",
+    "form": {
+      "emailLabel": "Your email",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Unsubscribe",
+      "successTitle": "You're unsubscribed",
+      "successBody": "If that address was on the list, it isn't any more. Thank you for the Mondays you spent with us.",
+      "error": "Something went wrong. Please try again."
+    }
+  },
   "thankYou": {
     "eyebrow": "The Dailicle",
     "title": "Thank you, truly.",
