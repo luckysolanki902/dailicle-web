@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { motion } from "framer-motion";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
-import { UnsubscribeForm } from "@/components/subscribe/UnsubscribeForm";
+import { UnsubscribeConfirm } from "@/components/subscribe/UnsubscribeConfirm";
 import { useT } from "@/i18n/I18nProvider";
 
 export default function UnsubscribePage() {
@@ -26,7 +26,7 @@ export default function UnsubscribePage() {
 
           {/* useSearchParams needs a boundary so the shell can still prerender. */}
           <Suspense fallback={null}>
-            <UnsubscribeForm />
+            <UnsubscribeConfirm />
           </Suspense>
 
           <p className="pt-12 text-center text-sm text-foreground/40">

@@ -205,15 +205,18 @@
       "description": "Stop receiving the Monday email from The Dailicle."
     },
     "title": "Unsubscribe",
-    "subtitle": "No hard feelings. Enter your email and the Monday essays will stop.",
+    "subtitle": "No hard feelings. One click and the Monday essays will stop.",
     "note": "The essays stay free to read at dailicle.com. You can subscribe again any time.",
     "form": {
-      "emailLabel": "Your email",
-      "emailPlaceholder": "you@example.com",
+      "addressLabel": "This will unsubscribe",
       "submit": "Unsubscribe",
       "successTitle": "You're unsubscribed",
-      "successBody": "If that address was on the list, it isn't any more. Thank you for the Mondays you spent with us.",
+      "successBody": "That address is off the list. Thank you for the Mondays you spent with us.",
       "error": "Something went wrong. Please try again."
+    },
+    "invalid": {
+      "title": "This link isn't valid",
+      "body": "Open the unsubscribe link from one of our emails, or write to us and we'll take you off the list ourselves."
     }
   },
   "thankYou": {
