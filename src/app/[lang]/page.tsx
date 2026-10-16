@@ -21,7 +21,10 @@ import {
 } from "@/i18n/config";
 import type { Metadata } from "next";
 
-export const revalidate = 3600; // weekly cadence – hourly revalidation is plenty
+// Essays publish weekly, so a daily window is ample. Hourly regeneration across
+// every locale was a large, pointless share of our ISR writes; the admin's
+// on-demand revalidation still refreshes this immediately on publish.
+export const revalidate = 86400;
 
 export async function generateMetadata({
   params,

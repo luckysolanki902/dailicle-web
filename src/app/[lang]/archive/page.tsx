@@ -24,11 +24,11 @@ import {
 } from "@/i18n/config";
 import type { Metadata } from "next";
 
-// Match the homepage cadence: a new essay ships weekly, but the essay is
-// written to the DB out-of-band (the publish cron), so a day-long window left
-// the archive showing the previous week on publish day. Hourly revalidation
-// keeps it fresh within an hour of a publish, same as the homepage.
-export const revalidate = 3600;
+// Match the homepage cadence: a new essay ships weekly. The publish cron writes
+// the essay to the DB out-of-band and calls on-demand revalidation, so the
+// archive refreshes immediately on publish without paying for hourly
+// regeneration across every locale (a large share of our ISR writes).
+export const revalidate = 86400;
 
 export async function generateMetadata({
   params,

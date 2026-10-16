@@ -25,7 +25,7 @@ import {
 import { formatDate } from "@/lib/utils";
 import { isReleasedEverywhere } from "@/lib/release";
 import { essayExcerpt, META_DESCRIPTION_LIMIT } from "@/lib/excerpt";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 // Essays change at most weekly, so there's no reason to revalidate hourly.
@@ -170,6 +170,18 @@ export default async function ReadPage({
 
   if (!essay || !essay.body) {
     notFound();
+  }
+
+  // A non-English request for an essay that has no translation in that language
+  // used to render the English text under a foreign prefix: a duplicate page
+  // Google discards, and — because every one is its own on-demand ISR entry —
+  // the main driver of our ISR write volume. Send it to the canonical English
+  // URL instead, so only locales with genuine translations get cached variants.
+  if (locale !== DEFAULT_LOCALE) {
+    const translatedLocales = await getTranslatedLocales(essay._id);
+    if (!translatedLocales.includes(locale)) {
+      redirect(localeUrl(`/read/${essay.slug || essay._id}`, DEFAULT_LOCALE));
+    }
   }
 
   const translation = await getEssayTranslation(essay._id, locale);
