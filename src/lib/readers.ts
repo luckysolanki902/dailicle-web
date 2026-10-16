@@ -29,10 +29,14 @@ export interface ReadersData {
 }
 
 const PROPERTY = `properties/${process.env.GA_PROPERTY_ID || ""}`;
-const WINDOW_DAYS = 365; // a year of readership, so the long tail is real
+// A trailing month, not a year: a year's mix barely moves, so the chart looked
+// frozen. Thirty days reflects *current* readership — it shifts week to week as
+// traffic moves — while still reaching ~100 countries, so it reads as live and
+// genuine rather than decorative.
+const WINDOW_DAYS = 30;
 const TOP_N = 12;
-// Comfortably above the true country count (~130), so counting the returned
-// rows gives the real total; we still only render the top TOP_N as bars.
+// Comfortably above the true country count (~110 in a month), so counting the
+// returned rows gives the real total; we still only render the top TOP_N bars.
 const FETCH_LIMIT = 300;
 
 let client: BetaAnalyticsDataClient | null = null;
@@ -106,6 +110,6 @@ async function fetchReadersByCountry(): Promise<ReadersData> {
  */
 export const getReadersByCountry = unstable_cache<() => Promise<ReadersData>>(
   fetchReadersByCountry,
-  ["readers-by-country-v2"],
+  ["readers-by-country-v3"],
   { revalidate: 86400, tags: ["readers-by-country"] }
 );

@@ -67,7 +67,7 @@
       "title": "Quietly, in more places than you'd think",
       "footnote": "Reader locations from recent analytics, when available.",
       "noData": "Readers find these essays from many places. A current country breakdown is unavailable.",
-      "reach": "Read in {count} countries this past year."
+      "reach": "Read in {count} countries in the last 30 days."
     },
     "recent": {
       "title": "Keep reading",

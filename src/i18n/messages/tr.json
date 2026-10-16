@@ -63,7 +63,7 @@
       "eyebrow": "Dünya genelinde oku",
       "title": "Sessizce, düşündüğünden daha fazla yerde",
       "footnote": "ve daha birçok ülkede sessiz okuyucular.",
-      "reach": "Geçen yıl {count} ülkede okundu."
+      "reach": "Son 30 günde {count} ülkede okundu."
     },
     "recent": {
       "title": "Okumaya devam et",
