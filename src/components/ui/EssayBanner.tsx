@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -8,7 +11,9 @@ import { cn } from "@/lib/utils";
  *  - transparent: for PNGs with a transparent background, the subject floats
  *    directly on the page (no card), so it blends into any theme.
  *
- * Renders nothing without a source, so every caller keeps its plain layout.
+ * Renders nothing without a source — or if the source fails to load — so a
+ * missing image never leaves a broken-image icon; the caller's plain,
+ * bannerless layout shows through instead.
  */
 export function EssayBanner({
   src,
@@ -27,7 +32,8 @@ export function EssayBanner({
   transparent?: boolean;
   rounded?: string;
 }) {
-  if (!src) return null;
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) return null;
 
   // Transparent PNG: the subject floats directly on the page — no card, so it
   // blends on every theme. A soft drop shadow follows the alpha shape.
@@ -40,6 +46,7 @@ export function EssayBanner({
           fill
           sizes={sizes}
           priority={priority}
+          onError={() => setFailed(true)}
           style={{opacity: 0.8}}
           className="object-contain [filter:drop-shadow(0_12px_22px_rgba(0,0,0,0.16))]"
         />
@@ -61,6 +68,7 @@ export function EssayBanner({
         fill
         sizes={sizes}
         priority={priority}
+        onError={() => setFailed(true)}
         className="object-cover"
       />
     </div>
