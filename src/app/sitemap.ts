@@ -1,11 +1,20 @@
 import { MetadataRoute } from 'next'
 import { getAllReadable, getTranslatedLocalesMap } from '@/lib/essays'
+import { releaseSourceDate } from '@/lib/release'
 import {
   DEFAULT_LOCALE,
   LOCALE_CODES,
   localeUrl,
   hreflangAlternates,
 } from '@/i18n/config'
+
+// This metadata route otherwise stays cached across weekly database publishes.
+export const dynamic = 'force-dynamic'
+
+const isPublicForSearch = (essay: { published_at?: string | Date | null }) => {
+  const date = releaseSourceDate(essay)
+  return !date || date.getTime() <= Date.now()
+}
 
 /**
  * A localized sitemap: a page is emitted once per locale it genuinely exists
@@ -19,7 +28,7 @@ import {
  * the English originals.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const essays = await getAllReadable()
+  const essays = (await getAllReadable()).filter(isPublicForSearch)
   const translated = await getTranslatedLocalesMap(essays.map((e) => e._id))
   const latestEssayDate = essays[0]?.published_at
     ? new Date(essays[0].published_at)
@@ -52,6 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   push('/', latestEssayDate, 'weekly', 1)
   push('/archive', latestEssayDate, 'weekly', 0.9)
   push('/manifesto', new Date('2026-07-04'), 'yearly', 0.7)
+  push('/why-support', new Date('2026-10-16'), 'monthly', 0.5, [DEFAULT_LOCALE])
   push('/feedback', new Date('2026-07-04'), 'yearly', 0.3)
 
   for (const essay of essays) {

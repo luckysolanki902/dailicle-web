@@ -1,8 +1,9 @@
 import { getPublishedEssays } from "@/lib/essays";
 import { themeLabel } from "@/lib/themes";
 import { SITE_URL } from "@/i18n/config";
+import { releaseSourceDate } from "@/lib/release";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 function escapeXml(value: string): string {
   return value
@@ -19,7 +20,10 @@ function escapeXml(value: string): string {
  */
 export async function GET() {
   // Current era only – the feed is the publication, not the attic.
-  const essays = await getPublishedEssays(60);
+  const essays = (await getPublishedEssays(60)).filter((essay) => {
+    const release = releaseSourceDate(essay);
+    return !release || release.getTime() <= Date.now();
+  });
 
   const items = essays
     .map((essay) => {
@@ -54,7 +58,7 @@ ${items}
   return new Response(xml, {
     headers: {
       "Content-Type": "application/rss+xml; charset=utf-8",
-      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      "Cache-Control": "public, max-age=0, s-maxage=300",
     },
   });
 }
