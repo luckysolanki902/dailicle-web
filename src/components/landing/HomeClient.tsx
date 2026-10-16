@@ -7,6 +7,7 @@ import { ThisWeek } from "@/components/landing/ThisWeek";
 import { NextWeek } from "@/components/landing/NextWeek";
 import { Ethos } from "@/components/landing/Ethos";
 import { ReadersByCountry } from "@/components/landing/ReadersByCountry";
+import type { ReadersData } from "@/lib/readers";
 import { ReaderWord } from "@/components/landing/ReaderWord";
 import { RecentEssays } from "@/components/landing/RecentEssays";
 import { SupportButton } from "@/components/support/SupportButton";
@@ -23,8 +24,9 @@ import {
 interface HomeClientProps {
   published: LandingEssay[];
   queued: QueuedTopic[];
-  /** Top readerships from GA (empty ⇒ the section falls back to static data). */
-  readers: { name: string; flag: string; share: number }[];
+  /** Top readerships from GA plus the total country count (empty ⇒ the section
+   *  shows its "unavailable" line). */
+  readers: ReadersData;
   /**
    * The view computed on the server. The release calendar is the reader's
    * LOCAL calendar and the page is cached, so recomputing it during hydration
@@ -72,7 +74,7 @@ export function HomeClient({
       <ThisWeek essay={hero} upcoming={!hero ? tease : null} />
       {hero && <NextWeek topic={tease} />}
       <Ethos />
-      <ReadersByCountry countries={readers} />
+      <ReadersByCountry data={readers} />
       <ReaderWord />
       <RecentEssays popular={popular} essays={cards} />
 

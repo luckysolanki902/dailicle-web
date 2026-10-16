@@ -17,9 +17,23 @@ export interface ReaderCountry {
   share: number;
 }
 
+export interface ReadersData {
+  /** The top readerships, for the ranked bars. */
+  countries: ReaderCountry[];
+  /** How many distinct countries had a reader in the window. A reach figure,
+   *  not a scale one — it flatters breadth without exposing audience size, and
+   *  being a real, specific number it reads as genuine rather than decorative. */
+  countryCount: number;
+  /** The window those figures cover, in days, so the copy can stay honest. */
+  windowDays: number;
+}
+
 const PROPERTY = `properties/${process.env.GA_PROPERTY_ID || ""}`;
 const WINDOW_DAYS = 365; // a year of readership, so the long tail is real
 const TOP_N = 12;
+// Comfortably above the true country count (~130), so counting the returned
+// rows gives the real total; we still only render the top TOP_N as bars.
+const FETCH_LIMIT = 300;
 
 let client: BetaAnalyticsDataClient | null = null;
 function ga(): BetaAnalyticsDataClient | null {
@@ -51,9 +65,11 @@ function flagOf(countryId: string): string {
   return String.fromCodePoint(A + cc.charCodeAt(0) - 65, A + cc.charCodeAt(1) - 65);
 }
 
-async function fetchReadersByCountry(): Promise<ReaderCountry[]> {
+const EMPTY: ReadersData = { countries: [], countryCount: 0, windowDays: WINDOW_DAYS };
+
+async function fetchReadersByCountry(): Promise<ReadersData> {
   const c = ga();
-  if (!c) return [];
+  if (!c) return EMPTY;
   try {
     const [res] = await c.runReport({
       property: PROPERTY,
@@ -61,21 +77,25 @@ async function fetchReadersByCountry(): Promise<ReaderCountry[]> {
       dimensions: [{ name: "country" }, { name: "countryId" }],
       metrics: [{ name: "activeUsers" }],
       orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
-      limit: TOP_N,
+      limit: FETCH_LIMIT,
     });
 
-    return (res.rows || [])
+    const all = (res.rows || [])
       .map((r) => ({
         name: r.dimensionValues?.[0]?.value || "",
         countryId: r.dimensionValues?.[1]?.value || "",
         share: Number(r.metricValues?.[0]?.value || 0),
       }))
-      .filter(
-        (r) => r.name && r.name !== "(not set)" && r.share > 0
-      )
+      .filter((r) => r.name && r.name !== "(not set)" && r.share > 0)
       .map((r) => ({ name: r.name, flag: flagOf(r.countryId), share: r.share }));
+
+    return {
+      countries: all.slice(0, TOP_N),
+      countryCount: all.length,
+      windowDays: WINDOW_DAYS,
+    };
   } catch {
-    return [];
+    return EMPTY;
   }
 }
 
@@ -84,8 +104,8 @@ async function fetchReadersByCountry(): Promise<ReaderCountry[]> {
  * and shifts glacially, so one GA call per day is plenty. Revalidate on demand
  * with the "readers-by-country" tag if ever needed.
  */
-export const getReadersByCountry = unstable_cache(
+export const getReadersByCountry = unstable_cache<() => Promise<ReadersData>>(
   fetchReadersByCountry,
-  ["readers-by-country"],
+  ["readers-by-country-v2"],
   { revalidate: 86400, tags: ["readers-by-country"] }
 );

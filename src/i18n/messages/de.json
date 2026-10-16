@@ -62,7 +62,8 @@
     "readers": {
       "eyebrow": "Weltweit lesen",
       "title": "Leise, an mehr Orten als du denkst",
-      "footnote": "und stille Leser in Dutzenden weiterer Länder."
+      "footnote": "und stille Leser in Dutzenden weiterer Länder.",
+      "reach": "Im vergangenen Jahr in {count} Ländern gelesen."
     },
     "recent": {
       "title": "Weiterlesen",

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useT } from "@/i18n/I18nProvider";
+import type { ReadersData } from "@/lib/readers";
 
 /**
  * Where the desk is read. A quiet, ranked bar chart no numbers, just the
@@ -9,22 +10,21 @@ import { useT } from "@/i18n/I18nProvider";
  * least. Bars use a perceptual (sqrt) scale of each country's share: strictly
  * order-preserving, but it keeps the long tail visible instead of collapsing
  * every country after the US into an invisible sliver. Theme-based via --accent.
+ *
+ * The one number shown is the *count of countries* reached — a reach figure, not
+ * an audience-size one, so it reads as genuine (and flattering) without turning
+ * into a scoreboard. No per-country or absolute reader counts.
  */
-interface Country {
-  name: string;
-  flag: string;
-  /** Share of readers, in percent. Only the *ordering* and *ratios* show. */
-  share: number;
-}
 
 /** Perceptual width in %, order-preserving, with a floor so bars stay visible. */
 function barWidth(share: number, max: number): number {
   return Math.max(7, Math.round(Math.sqrt(share / max) * 100));
 }
 
-export function ReadersByCountry({ countries }: { countries?: Country[] }) {
+export function ReadersByCountry({ data: readers }: { data?: ReadersData }) {
   const t = useT();
-  const data = countries ?? [];
+  const data = readers?.countries ?? [];
+  const countryCount = readers?.countryCount ?? 0;
   const max = data[0]?.share ?? 1;
 
   return (
@@ -77,9 +77,13 @@ export function ReadersByCountry({ countries }: { countries?: Country[] }) {
           ))}
         </div>
 
-        {data.length > 0 && <p className="mt-8 text-center text-xs italic text-foreground/35">
-          {t("home.readers.footnote")}
-        </p>}
+        {data.length > 0 && (
+          <p className="mt-8 text-center text-xs italic text-foreground/35">
+            {countryCount > data.length
+              ? t("home.readers.reach", { count: countryCount })
+              : t("home.readers.footnote")}
+          </p>
+        )}
       </div>
     </section>
   );
