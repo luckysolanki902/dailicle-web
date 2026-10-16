@@ -181,6 +181,7 @@ export function Footer() {
             <Link href="/" className="hover:text-foreground transition-colors">{t("nav.home")}</Link>
             <Link href="/archive" className="hover:text-foreground transition-colors">{t("nav.archive")}</Link>
             <Link href="/manifesto" className="hover:text-foreground transition-colors">{t("nav.manifesto")}</Link>
+            <Link href="/why-support" className="hover:text-foreground transition-colors">{t("support.aboutLink")}</Link>
             <Link href="/feedback" className="hover:text-foreground transition-colors">{t("nav.feedback")}</Link>
             <SupportButton source="footer" label={t("nav.support")} className="hover:text-foreground" />
             <LanguageSwitcher variant="inline" align="left" />

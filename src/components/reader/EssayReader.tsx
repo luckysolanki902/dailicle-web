@@ -30,7 +30,7 @@ import { EssayBanner } from "@/components/ui/EssayBanner";
 import { ReactionBar } from "@/components/reader/ReactionBar";
 import { SubscribeForm } from "@/components/reader/SubscribeForm";
 import { ScrollSubscribeNudge } from "@/components/reader/ScrollSubscribeNudge";
-import { ReadingSupportTrigger } from "@/components/support/ReadingSupportTrigger";
+import { EssaySupportCard } from "@/components/support/EssaySupportCard";
 import { isReleasedLocally, localReleaseDate } from "@/lib/release";
 import {
   track,
@@ -375,7 +375,6 @@ export function EssayReader({
   return (
     <article className="min-h-screen py-12 md:py-20 px-4 md:px-6 overflow-x-hidden">
       <ReadingProgress />
-      <ReadingSupportTrigger />
       <ScrollSubscribeNudge />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -579,8 +578,10 @@ export function EssayReader({
             <ReactionBar essayId={essayId} />
           </div>
 
+          <EssaySupportCard essayId={essayId} title={essay.title} />
+
           {/* Free-subscribe box — the primary ask at the high-intent moment */}
-          <div className="rounded-3xl border border-foreground/10 bg-foreground/[0.02] px-6 py-8 text-center sm:px-10">
+          <div id="essay-subscribe" className="rounded-3xl border border-foreground/10 bg-foreground/[0.02] px-6 py-8 text-center sm:px-10">
             <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-accent">
               {t("reader.subscribe.eyebrow")}
             </p>

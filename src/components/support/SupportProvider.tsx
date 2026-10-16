@@ -52,8 +52,7 @@ export function SupportProvider({ children }: { children: React.ReactNode }) {
       const essay = getCurrentEssay();
       track("support_dialog_open", {
         source: src,
-        // The reading trigger is the only "reader" caller and is automatic.
-        trigger_type: src === "reader" ? "auto" : "click",
+        trigger_type: "click",
         page_path:
           typeof window !== "undefined" ? window.location.pathname : undefined,
         essay_id: essay?.id,

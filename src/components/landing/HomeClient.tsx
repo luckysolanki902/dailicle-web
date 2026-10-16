@@ -9,6 +9,7 @@ import { Ethos } from "@/components/landing/Ethos";
 import { ReadersByCountry } from "@/components/landing/ReadersByCountry";
 import { ReaderWord } from "@/components/landing/ReaderWord";
 import { RecentEssays } from "@/components/landing/RecentEssays";
+import { SupportButton } from "@/components/support/SupportButton";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import { useT } from "@/i18n/I18nProvider";
 import { makeThemeLabel } from "@/lib/themes";
@@ -74,6 +75,18 @@ export function HomeClient({
       <ReadersByCountry countries={readers} />
       <ReaderWord />
       <RecentEssays popular={popular} essays={cards} />
+
+      <section className="mx-auto max-w-2xl px-6 pb-16 text-center">
+        <p className="font-serif text-base leading-relaxed text-foreground/60">
+          {t("home.editorNote")}
+        </p>
+        <div className="mt-4 flex flex-wrap justify-center gap-5 text-sm text-accent">
+          <Link href="/why-support" className="underline-offset-4 hover:underline">
+            {t("home.aboutSupport")}
+          </Link>
+          <SupportButton source="footer" label={t("home.keepIndependent")} showIcon={false} className="underline-offset-4 hover:underline" />
+        </div>
+      </section>
 
       <section className="py-24 px-6 text-center border-t border-foreground/10">
         <div className="max-w-xl mx-auto space-y-6">

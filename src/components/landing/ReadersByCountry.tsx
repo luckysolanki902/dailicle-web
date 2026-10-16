@@ -17,23 +17,6 @@ interface Country {
   share: number;
 }
 
-// Fallback readerships (already sorted high → low), used only when live GA data
-// is unavailable so the section never renders empty.
-const FALLBACK: Country[] = [
-  { name: "United States", flag: "🇺🇸", share: 41.1 },
-  { name: "United Kingdom", flag: "🇬🇧", share: 6.42 },
-  { name: "Germany", flag: "🇩🇪", share: 5.48 },
-  { name: "India", flag: "🇮🇳", share: 5.13 },
-  { name: "Canada", flag: "🇨🇦", share: 4.35 },
-  { name: "Netherlands", flag: "🇳🇱", share: 2.92 },
-  { name: "Switzerland", flag: "🇨🇭", share: 2.84 },
-  { name: "France", flag: "🇫🇷", share: 2.33 },
-  { name: "Italy", flag: "🇮🇹", share: 2.06 },
-  { name: "Sweden", flag: "🇸🇪", share: 1.94 },
-  { name: "Saudi Arabia", flag: "🇸🇦", share: 1.79 },
-  { name: "Spain", flag: "🇪🇸", share: 1.48 },
-];
-
 /** Perceptual width in %, order-preserving, with a floor so bars stay visible. */
 function barWidth(share: number, max: number): number {
   return Math.max(7, Math.round(Math.sqrt(share / max) * 100));
@@ -41,8 +24,8 @@ function barWidth(share: number, max: number): number {
 
 export function ReadersByCountry({ countries }: { countries?: Country[] }) {
   const t = useT();
-  const data = countries && countries.length > 0 ? countries : FALLBACK;
-  const max = data[0].share;
+  const data = countries ?? [];
+  const max = data[0]?.share ?? 1;
 
   return (
     <section className="px-6 py-24">
@@ -56,6 +39,11 @@ export function ReadersByCountry({ countries }: { countries?: Country[] }) {
           </h2>
         </div>
 
+        {data.length === 0 && (
+          <p className="text-center font-serif text-foreground/55">
+            {t("home.readers.noData")}
+          </p>
+        )}
         <div className="space-y-3">
           {data.map((c, i) => (
             <motion.div
@@ -89,9 +77,9 @@ export function ReadersByCountry({ countries }: { countries?: Country[] }) {
           ))}
         </div>
 
-        <p className="mt-8 text-center text-xs italic text-foreground/35">
+        {data.length > 0 && <p className="mt-8 text-center text-xs italic text-foreground/35">
           {t("home.readers.footnote")}
-        </p>
+        </p>}
       </div>
     </section>
   );

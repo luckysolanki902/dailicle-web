@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { track } from "@/lib/analytics";
+import { journeyEvent } from "@/lib/journey";
 
 /**
  * PayPal's own buttons, rendered inside the support dialog for readers outside
@@ -114,6 +116,8 @@ export function PaypalButtons({
       const ok = await loadSdk(clientId, currency);
       if (cancelled) return;
       if (!ok || !window.paypal || !container.current) {
+        track("support_paypal_error", { stage: "sdk" });
+        journeyEvent("paypal_error", { source: "sdk" });
         setFailed(true);
         return;
       }
@@ -139,12 +143,18 @@ export function PaypalButtons({
           });
           const data = await res.json();
           if (!res.ok || !data?.orderId) {
+            track("support_paypal_error", { stage: "order", status: res.status });
+            journeyEvent("paypal_error", { source: `order:${res.status}` });
             throw new Error(data?.message || "order-failed");
           }
+          track("support_paypal_order_created");
+          journeyEvent("paypal_order_created");
           return data.orderId as string;
         },
 
         onApprove: async (data: { orderID: string }) => {
+          track("support_paypal_approved");
+          journeyEvent("paypal_approved");
           // The capture is the charge, so a failure here matters: tell the
           // reader rather than showing a success they did not get.
           const res = await fetch("/api/support/paypal/capture", {
@@ -154,9 +164,13 @@ export function PaypalButtons({
           });
           const body = await res.json().catch(() => null);
           if (!res.ok || !body?.success) {
+            track("support_paypal_error", { stage: "capture", status: res.status });
+            journeyEvent("paypal_error", { source: `capture:${res.status}` });
             handlers.current.onError(body?.message || labels.failed);
             return;
           }
+          track("support_paypal_captured");
+          journeyEvent("paypal_capture_confirmed");
           handlers.current.onSuccess();
         },
 
@@ -168,15 +182,23 @@ export function PaypalButtons({
             return;
           }
           console.error("paypal button error:", err);
+          track("support_paypal_error", { stage: "button" });
+          journeyEvent("paypal_error", { source: "button" });
           handlers.current.onError(labels.failed);
         },
       });
 
       try {
         await instance.render(container.current);
-        if (!cancelled) setReady(true);
+        if (!cancelled) {
+          setReady(true);
+          track("support_paypal_sdk_ready");
+          journeyEvent("paypal_sdk_ready");
+        }
       } catch (err) {
         console.error("paypal render failed:", err);
+        track("support_paypal_error", { stage: "render" });
+        journeyEvent("paypal_error", { source: "render" });
         if (!cancelled) setFailed(true);
       }
     })();

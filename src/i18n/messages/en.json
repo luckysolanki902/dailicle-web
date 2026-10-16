@@ -34,6 +34,9 @@
     }
   },
   "home": {
+    "editorNote": "A small, independent desk makes The Dailicle. AI assists with drafts and parts of the weekly production. We welcome corrections and keep every essay open to read.",
+    "aboutSupport": "How it works and why support matters",
+    "keepIndependent": "Keep this independent",
     "meta": {
       "title": "The Dailicle – One essay a week, written to be read slowly",
       "description": "A weekly essay on the mind, meaning, money, and how to live. Carefully researched, free to read, nothing to sign up for – a new one every Monday."
@@ -62,7 +65,8 @@
     "readers": {
       "eyebrow": "Read around the world",
       "title": "Quietly, in more places than you'd think",
-      "footnote": "and quiet readers in dozens more countries."
+      "footnote": "Reader locations from recent analytics, when available.",
+      "noData": "Readers find these essays from many places. A current country breakdown is unavailable."
     },
     "recent": {
       "title": "Keep reading",
@@ -173,7 +177,7 @@
     "p_who_1": "The curious. People who still believe a well-crafted sentence can change how you see the world, and people who suspect they would read more if reading felt less like homework. There is no signup, no paywall, and nothing to keep track of – one essay, once a week, free.",
     "p_who_2": "If you want content to fill the silence, plenty of places will happily oblige. If you want ideas that linger after the tab closes, welcome home.",
     "h_writes": "Who writes it?",
-    "p_writes": "The essays are written and edited at The Dailicle Desk, in one house voice, and held to a single bar: would a careful reader want to read this twice? No bylines chasing attention, no guest posts, no filler weeks.",
+    "p_writes": "The Dailicle is run by one person. AI tools help draft essays and automate parts of translation, audio, and publishing. The weekly release is automated, and a human review before publication is not guaranteed. If you spot an error, please tell us so it can be corrected.",
     "h_recs": "Why no recommendations?",
     "p_recs_1": "Recommendation algorithms are built for engagement, not enlightenment. We want you to read, think, and then leave. Go for a walk. Talk to a friend. Build something.",
     "p_recs_2": "Sometimes an essay ends with a few pointers for anyone who wants to sit with the idea longer. But we will never trap you in a loop.",
@@ -226,19 +230,35 @@
     "note": "You didn't have to. That's exactly why it means so much."
   },
   "support": {
-    "title": "Everything here is free. It can stay that way.",
-    "body": "No paywall, no ads, nothing to sign up for just one essay a week, written slowly. If it's ever made you pause, you can help keep it going. Only if you want to.",
+    "aboutLink": "Why support?",
+    "cardEyebrow": "Keep this independent",
+    "cardTitle": "This essay was free to read. Help the next one stay that way.",
+    "cardReturningTitle": "You came back to read. Help keep these essays coming.",
+    "cardBody": "If it gave you a thought you’ll carry into the week, a one-time contribution helps cover the work of publishing The Dailicle for everyone.",
+    "cardEssay": "You just read: {title}",
+    "cardCta": "Support once",
+    "cardSubscribe": "Get the next essay",
+    "cardKeepReading": "Keep reading",
+    "cardDismiss": "Hide this invitation for a month",
+    "aboutTitle": "Why support The Dailicle?",
+    "aboutIntro": "The essays are free, with no paywall or ads. One person runs the publication, using AI tools to help draft essays and automate parts of publishing, translation, and audio. The weekly release is automated; a pre-publication human review is not guaranteed.",
+    "aboutPurpose": "Reader contributions help pay for hosting, writing tools, translation, audio, and delivery. They make it easier to keep the archive and new essays open to everyone.",
+    "aboutHonesty": "There is no public supporter count or funding target here because those numbers would need reliable accounting and context. Contributions are optional and do not buy a subscription or special access.",
+    "aboutCorrections": "Found an error or have a question about an essay? Write to read@dailicle.com. Corrections and reader feedback matter more than pretending every issue is flawless.",
+    "title": "Help keep the next essay free.",
+    "body": "A one-time contribution helps cover the publishing, translation, audio, and site costs behind The Dailicle. Every essay remains free for every reader.",
     "weeklyZero": "0 successful contributions this week. Be the first to help keep The Dailicle independent.",
     "weeklyOne": "1 successful contribution this week. One reader stepped in — there’s still room for yours.",
     "weeklyMany": "{count} successful contributions this week. Join the readers keeping The Dailicle free.",
     "weeklyVerified": "Live count · verified payments",
     "tiers": {
-      "t1": "A coffee",
-      "t2": "A quiet patron",
-      "t3": "A believer"
+      "t1": "A small thank-you",
+      "t2": "Help with the next issue",
+      "t3": "Keep it going"
     },
     "anotherAmount": "Another amount",
     "notePlaceholder": "Leave a note, if you'd like (optional)",
+    "addNote": "Add an optional note",
     "cta": "Support The Dailicle",
     "processing": "Opening secure checkout…",
     "maybeLater": "Maybe another time",

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Check, Heart, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SupportSource } from "./SupportProvider";
@@ -24,8 +24,6 @@ interface Config {
   /** Their real currency, when PayPal cannot settle it and we quoted USD. */
   originalCurrency?: string | null;
   paypalClientId?: string | null;
-  /** Successful ledger entries since Monday 00:00 IST. */
-  weeklySuccessfulSupports?: number | null;
 }
 
 // Minimal typing for the Razorpay Checkout global loaded from their CDN.
@@ -86,17 +84,6 @@ function readAccent(): string {
 
 type Status = "idle" | "processing" | "success" | "error";
 
-function weeklyMessageKey(locale: string, count: number): string {
-  if (count === 0) return "support.weeklyZero";
-  if (count === 1) return "support.weeklyOne";
-  if (locale === "ru") {
-    const form = new Intl.PluralRules("ru").select(count);
-    if (form === "one") return "support.weeklyManyOne";
-    if (form === "few") return "support.weeklyManyFew";
-  }
-  return "support.weeklyMany";
-}
-
 export function SupportDialog({
   isOpen,
   source,
@@ -108,10 +95,12 @@ export function SupportDialog({
   onClose: () => void;
   onSupported: () => void;
 }) {
-  const { locale, t } = useI18n();
+  const { t } = useI18n();
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [config, setConfig] = useState<Config | null>(null);
-  const [selected, setSelected] = useState<TierId | "custom">("t2");
+  const [selected, setSelected] = useState<TierId | "custom">("t1");
   const [custom, setCustom] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -119,34 +108,28 @@ export function SupportDialog({
 
   const MESSAGE_MAX = 500;
 
-  // Refresh the live weekly count whenever the dialog opens. Pricing comes in
-  // the same small response, so it stays current too.
+  // Pricing and provider are always resolved by the server for this reader.
   useEffect(() => {
     if (!isOpen) return;
     let cancelled = false;
     fetch("/api/support/config")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`Support config unavailable: ${r.status}`);
+        return r.json();
+      })
       .then((c: Config) => {
+        if (c.provider !== "razorpay" && c.provider !== "paypal") {
+          throw new Error("Support provider missing");
+        }
         if (!cancelled) setConfig(c);
       })
       .catch(() => {
-        if (!cancelled)
-          setConfig({
-            // The endpoint is what knows about gateways; if it is unreachable
-            // fall back to Razorpay, which is the one that works without any
-            // extra client-side setup.
-            provider: "razorpay",
-            currency: "USD",
-            symbol: "$",
-            presets: { t1: 3, t2: 5, t3: 15 },
-            min: 1,
-            max: 10000,
-          });
+        if (!cancelled) setError(t("support.errStart"));
       });
     return () => {
       cancelled = true;
     };
-  }, [isOpen]);
+  }, [isOpen, t]);
 
   // Reset transient state whenever the dialog closes.
   useEffect(() => {
@@ -155,6 +138,7 @@ export function SupportDialog({
         setStatus("idle");
         setError("");
         setMessage("");
+        setConfig(null);
       }, 250);
       return () => clearTimeout(t);
     }
@@ -164,11 +148,37 @@ export function SupportDialog({
   useEffect(() => {
     if (!isOpen) return;
     const prev = document.body.style.overflow;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
+    const focusTimer = window.setTimeout(() => dialogRef.current?.focus(), 0);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const items = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), a[href]'
+      )).filter((item) => item.getClientRects().length > 0);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogRef.current)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
-  }, [isOpen]);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prev;
+      previouslyFocused?.focus();
+    };
+  }, [isOpen, onClose]);
 
   interface SupportPayload {
     tier?: TierId;
@@ -255,8 +265,12 @@ export function SupportDialog({
       });
       const order = await orderRes.json();
       if (!orderRes.ok) {
+        track("support_razorpay_error", { stage: "order", status: orderRes.status });
+        journeyEvent("razorpay_error", { source: "order" });
         throw new Error(order?.message || t("support.errStart"));
       }
+      track("support_razorpay_order_created");
+      journeyEvent("razorpay_order_created", { source });
 
       const rzp = new window.Razorpay({
         key: order.keyId,
@@ -315,6 +329,8 @@ export function SupportDialog({
         },
       });
       rzp.open();
+      track("support_razorpay_opened");
+      journeyEvent("razorpay_opened", { source });
       track("support_checkout_opened", {
         source,
         tier: payload.tier,
@@ -393,6 +409,7 @@ export function SupportDialog({
         amount:
           tier === "custom" ? Number(custom) || undefined : config?.presets[tier],
       });
+      journeyEvent("tier_select", { source: `${source}:${tier}` });
     },
     [source, custom, config]
   );
@@ -401,13 +418,14 @@ export function SupportDialog({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={reduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4"
           aria-modal="true"
           role="dialog"
+          aria-labelledby="support-dialog-title"
         >
           {/* Scrim */}
           <div
@@ -416,11 +434,13 @@ export function SupportDialog({
           />
 
           <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 24, scale: 0.98 }}
-            transition={{ type: "spring", damping: 26, stiffness: 260 }}
-            className="relative w-full max-w-md overflow-hidden rounded-3xl border border-foreground/10 bg-background text-foreground shadow-[0_40px_120px_-20px_rgba(0,0,0,0.55)]"
+            ref={dialogRef}
+            tabIndex={-1}
+            initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.22 }}
+            className="relative max-h-[calc(100dvh-1.5rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-3xl border border-foreground/10 bg-background text-foreground shadow-[0_40px_120px_-20px_rgba(0,0,0,0.55)]"
           >
             {/* Soft accent wash at the top */}
             <div
@@ -433,7 +453,7 @@ export function SupportDialog({
 
             <button
               onClick={onClose}
-              className="absolute right-4 top-4 z-10 rounded-full p-1.5 text-foreground/40 transition-colors hover:bg-foreground/5 hover:text-foreground"
+              className="sticky top-4 z-20 ml-auto mr-4 -mb-8 block w-max rounded-full bg-background/90 p-1.5 text-foreground/60 transition-colors hover:bg-foreground/5 hover:text-foreground"
               aria-label={t("support.close")}
             >
               <X size={18} />
@@ -445,7 +465,7 @@ export function SupportDialog({
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent">
                     <Check size={26} />
                   </div>
-                  <h2 className="font-display text-2xl tracking-tight">
+                  <h2 id="support-dialog-title" className="font-display text-2xl tracking-tight">
                     {t("support.thanksTitle")}
                   </h2>
                   <p className="max-w-xs font-serif text-foreground/60">
@@ -467,32 +487,12 @@ export function SupportDialog({
                     </span>
                   </div>
 
-                  <h2 className="mt-4 font-display text-2xl leading-snug tracking-tight text-balance">
+                  <h2 id="support-dialog-title" className="mt-4 font-display text-2xl leading-snug tracking-tight text-balance">
                     {t("support.title")}
                   </h2>
                   <p className="mt-2 font-serif text-[15px] leading-relaxed text-foreground/60">
                     {t("support.body")}
                   </p>
-
-                  {typeof config?.weeklySuccessfulSupports === "number" && (
-                    <div
-                      className="mt-4 rounded-2xl border border-accent/25 bg-accent/[0.07] px-4 py-3"
-                      role="status"
-                    >
-                      <p className="text-sm font-semibold leading-snug text-foreground/85">
-                        {t(
-                          weeklyMessageKey(
-                            locale,
-                            config.weeklySuccessfulSupports
-                          ),
-                          { count: config.weeklySuccessfulSupports }
-                        )}
-                      </p>
-                      <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-foreground/40">
-                        {t("support.weeklyVerified")}
-                      </p>
-                    </div>
-                  )}
 
                   {/* Tiers */}
                   <div className="mt-6 grid grid-cols-3 gap-2.5">
@@ -533,8 +533,7 @@ export function SupportDialog({
                   </div>
 
                   {/* Custom amount */}
-                  <button
-                    onClick={() => chooseTier("custom")}
+                  <div
                     className={cn(
                       "mt-2.5 flex w-full items-center gap-2 rounded-2xl border px-4 py-3 transition-all",
                       selected === "custom"
@@ -555,10 +554,11 @@ export function SupportDialog({
                       placeholder={t("support.anotherAmount")}
                       className="min-w-0 flex-1 bg-transparent text-sm placeholder:text-foreground/35"
                     />
-                  </button>
+                  </div>
 
                   {/* Optional note to the writer */}
-                  <div className="mt-2.5">
+                  <details className="mt-3 text-sm text-foreground/60">
+                    <summary className="cursor-pointer">{t("support.addNote")}</summary>
                     <textarea
                       value={message}
                       onChange={(e) =>
@@ -566,14 +566,14 @@ export function SupportDialog({
                       }
                       rows={2}
                       placeholder={t("support.notePlaceholder")}
-                      className="w-full resize-none rounded-2xl border border-foreground/10 bg-transparent px-4 py-3 text-sm outline-none transition-colors placeholder:text-foreground/35 focus:border-accent/60"
+                      className="mt-2 w-full resize-none rounded-2xl border border-foreground/10 bg-transparent px-4 py-3 text-sm outline-none transition-colors placeholder:text-foreground/35 focus:border-accent/60"
                     />
                     {message.trim() && (
                       <p className="mt-1 pr-1 text-right text-[10px] text-foreground/30">
                         {message.length}/{MESSAGE_MAX}
                       </p>
                     )}
-                  </div>
+                  </details>
 
                   {error && (
                     <p className="mt-3 text-center text-xs text-red-500">
