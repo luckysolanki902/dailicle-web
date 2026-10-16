@@ -5,6 +5,7 @@ import {
   paypalFacts,
   fromPaypalAmount,
   getPaypalOrder,
+  capturePaypalOrder,
 } from "@/lib/paypal";
 import { emptyFacts } from "@/lib/payment-facts";
 import {
@@ -13,6 +14,7 @@ import {
   linkPaymentToJourney,
   recordPayment,
   claimNotification,
+  supportersCollection,
 } from "@/lib/supporters";
 
 export const runtime = "nodejs";
@@ -70,6 +72,7 @@ export async function POST(request: NextRequest) {
   const HANDLED = [
     "PAYMENT.CAPTURE.COMPLETED",
     "PAYMENT.CAPTURE.DENIED",
+    "PAYMENT.CAPTURE.DECLINED",
     "PAYMENT.CAPTURE.REFUNDED",
     "CHECKOUT.ORDER.APPROVED",
   ];
@@ -78,14 +81,34 @@ export async function POST(request: NextRequest) {
   const orderId = orderIdFromResource(resource);
   if (!orderId) return NextResponse.json({ received: true });
 
-  const captured = type === "PAYMENT.CAPTURE.COMPLETED";
-
   try {
+    const col = await supportersCollection();
+    const original = await col.findOne({ orderId, provider: "paypal" });
+    if (!original) return NextResponse.json({ received: true });
+
+    // Approval is not a charge. If the buyer closes the browser before its
+    // /capture call, recover here with the same idempotency key as that route.
+    let effectiveResource = resource;
+    let captured = type === "PAYMENT.CAPTURE.COMPLETED";
+    if (type === "CHECKOUT.ORDER.APPROVED") {
+      try {
+        effectiveResource = await capturePaypalOrder(orderId);
+      } catch (err) {
+        console.error("paypal webhook capture failed, re-reading order:", err);
+        effectiveResource = await getPaypalOrder(orderId);
+      }
+      captured = String(effectiveResource.status || "").toUpperCase() === "COMPLETED";
+      if (!captured && String(effectiveResource.status || "").toUpperCase() === "APPROVED") {
+        // Retry while the order is still approved and uncharged.
+        return NextResponse.json({ message: "Capture pending." }, { status: 503 });
+      }
+    }
+
     // A capture event describes the capture, not the payer. Fetch the order so
     // we get the payer's email too — the whole reason this integration exists.
     let facts = emptyFacts("paypal");
-    if (Array.isArray(resource.purchase_units)) {
-      facts = paypalFacts(resource);
+    if (Array.isArray(effectiveResource.purchase_units)) {
+      facts = paypalFacts(effectiveResource);
     } else {
       try {
         facts = paypalFacts(await getPaypalOrder(orderId));
@@ -102,7 +125,7 @@ export async function POST(request: NextRequest) {
     }
 
     const status =
-      type === "PAYMENT.CAPTURE.DENIED"
+      type === "PAYMENT.CAPTURE.DENIED" || type === "PAYMENT.CAPTURE.DECLINED"
         ? "failed"
         : captured
           ? "captured"
@@ -117,6 +140,7 @@ export async function POST(request: NextRequest) {
       via: "webhook",
     });
     if (!doc) return NextResponse.json({ received: true });
+    await col.updateOne({ orderId }, { $set: { paypalWebhookAt: new Date(), paypalWebhookEvent: type } });
 
     if (captured) {
       const record = await claimNotification(orderId);
