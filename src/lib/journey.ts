@@ -30,8 +30,19 @@ const FLUSH_MS = 20000;
 export type JourneyEventType =
   | "page"
   | "support_open"
+  | "support_card_view"
+  | "support_card_click"
+  | "tier_select"
   | "checkout_start"
   | "checkout_dismiss"
+  | "paypal_sdk_ready"
+  | "paypal_order_created"
+  | "paypal_approved"
+  | "paypal_capture_confirmed"
+  | "paypal_error"
+  | "razorpay_order_created"
+  | "razorpay_opened"
+  | "razorpay_error"
   | "payment_success"
   | "subscribe";
 
@@ -51,6 +62,7 @@ interface JourneyEvent {
 interface Entry {
   path: string;
   referrer: string | null;
+  acquisitionSource: string | null;
   utmSource: string | null;
   utmMedium: string | null;
   utmCampaign: string | null;
@@ -150,10 +162,21 @@ export function getJourneySessionId(): string {
 function captureEntry(): Entry {
   const params = new URLSearchParams(window.location.search);
   const ref = document.referrer || "";
+  let host = "";
+  try { host = new URL(ref).hostname.toLowerCase().replace(/^www\./, ""); } catch { /* direct */ }
+  const tagged = params.get("utm_source")?.toLowerCase().slice(0, 80) || "";
+  const aiSource = /(^|\.)(chatgpt\.com|chat\.openai\.com)$/.test(host) ? "chatgpt"
+    : /(^|\.)(perplexity\.ai)$/.test(host) ? "perplexity"
+    : /(^|\.)(claude\.ai)$/.test(host) ? "claude"
+    : /(^|\.)(copilot\.microsoft\.com)$/.test(host) ? "copilot"
+    : null;
   return {
     path: window.location.pathname,
     // Self-referrals are navigation, not acquisition.
     referrer: ref && !ref.startsWith(window.location.origin) ? ref.slice(0, 300) : null,
+    // AI apps often suppress referrers. Tagged links are preserved, and a
+    // missing referrer remains unknown rather than being guessed as direct.
+    acquisitionSource: tagged || aiSource || host || null,
     utmSource: params.get("utm_source")?.slice(0, 80) || null,
     utmMedium: params.get("utm_medium")?.slice(0, 80) || null,
     utmCampaign: params.get("utm_campaign")?.slice(0, 80) || null,

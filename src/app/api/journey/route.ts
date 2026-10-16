@@ -144,6 +144,7 @@ export async function POST(request: NextRequest) {
       ? {
           path: str(body.entry.path, 300),
           referrer: str(body.entry.referrer, 300),
+          acquisitionSource: str(body.entry.acquisitionSource, 80),
           utmSource: str(body.entry.utmSource, 80),
           utmMedium: str(body.entry.utmMedium, 80),
           utmCampaign: str(body.entry.utmCampaign, 80),
