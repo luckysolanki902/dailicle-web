@@ -79,6 +79,8 @@ export interface Essay {
   issue?: number | null;
   publish_on?: Date | null;
   published_at?: Date | null;
+  release_immediately?: boolean;
+  byline?: string;
   created_at?: Date;
   further_reading?: FurtherReadingItem[];
   /** Relative S3 key for the narration MP3; the client prepends CloudFront. */
@@ -103,6 +105,7 @@ const LIST_PROJECTION = {
   issue: 1,
   publish_on: 1,
   published_at: 1,
+  release_immediately: 1,
   banner_enabled: 1,
   banner_image_id: 1,
   banner_images: 1,
@@ -123,6 +126,9 @@ function noEmDash(value: string): string {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function serialize(doc: any): Essay {
   const essay = { ...doc, _id: doc._id.toString() } as Essay;
+  // The weekly jobs use the stored published_at to identify the weekly issue.
+  // Standalone issues keep their actual release timestamp in publish_on.
+  if (essay.release_immediately && essay.publish_on) essay.published_at = essay.publish_on;
   if (essay.title) essay.title = noEmDash(essay.title);
   if (essay.hook) essay.hook = noEmDash(essay.hook);
   if (essay.body) essay.body = noEmDash(essay.body);
@@ -223,10 +229,14 @@ export async function getRelatedEssays(
   limit = 2
 ): Promise<Essay[]> {
   const col = await collection();
+  const now = new Date();
   const base: Record<string, unknown> = {
     status: { $in: ["published", "archived"] },
     unlisted: { $ne: true },
-    published_at: { $lte: new Date() },
+    $or: [
+      { release_immediately: { $ne: true }, published_at: { $lte: now } },
+      { release_immediately: true, publish_on: { $lte: now } },
+    ],
   };
 
   const picked: Essay[] = [];
@@ -410,7 +420,7 @@ export async function getAllReadable(): Promise<Essay[]> {
   const docs = await col
     .find(
       { status: { $in: ["published", "archived"] }, unlisted: { $ne: true } },
-      { projection: { slug: 1, published_at: 1 } }
+      { projection: { slug: 1, publish_on: 1, published_at: 1, release_immediately: 1 } }
     )
     .sort({ published_at: -1 })
     .toArray();

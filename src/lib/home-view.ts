@@ -19,6 +19,7 @@ export interface LandingEssay {
   issue?: number | null;
   publish_on?: string | null;
   published_at?: string | null;
+  release_immediately?: boolean;
   /** Resolved CDN banner URL, if the essay has an enabled banner. */
   bannerUrl?: string | null;
   bannerTransparent?: boolean;

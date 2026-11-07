@@ -74,10 +74,8 @@ export async function generateMetadata({
   const localized = localizeEssay(essay, translation);
   const slug = essay.slug || essay._id;
   const path = `/read/${slug}`;
-  const releasedEverywhere = isReleasedEverywhere({
-    publish_on: essay.publish_on,
-    published_at: essay.published_at,
-  });
+  const releasedEverywhere = isReleasedEverywhere(essay);
+  const author = essay.byline || "The Dailicle Desk";
 
   // Prefer the essay's own opening words: a SERP snippet should show what the
   // piece actually says, not the hook, which is teaser copy and reads as thin
@@ -127,7 +125,7 @@ export async function generateMetadata({
       "long-form writing",
       "thoughtful reading",
     ],
-    authors: [{ name: "The Dailicle Desk", url: SITE_URL }],
+    authors: [{ name: author, url: SITE_URL }],
     publisher: "The Dailicle",
     openGraph: {
       title: `${localized.title} | The Dailicle`,
@@ -138,7 +136,7 @@ export async function generateMetadata({
       type: "article",
       publishedTime: formatDate(essay.published_at, "iso"),
       modifiedTime: formatDate(essay.published_at, "iso"),
-      authors: ["The Dailicle Desk"],
+      authors: [author],
       section: categoryLabel,
       images: [ogImage],
     },
@@ -222,7 +220,7 @@ export default async function ReadPage({
     ...(banner ? { image: [banner] } : {}),
     author: {
       "@type": "Organization",
-      name: "The Dailicle",
+      name: essay.byline || "The Dailicle",
       url: SITE_URL,
     },
     publisher: {
@@ -264,6 +262,7 @@ export default async function ReadPage({
             title: localized.title,
             hook: localized.hook,
             body: localized.body as string,
+            byline: essay.byline,
             dateLabel: formatDate(essay.published_at, "medium"),
             readingMinutes: essay.reading_minutes,
             themeLabel: categoryLabel,
@@ -279,10 +278,8 @@ export default async function ReadPage({
           related={relatedProps}
           publishOn={essay.publish_on ? new Date(essay.publish_on).toISOString() : null}
           publishedAt={essay.published_at ? new Date(essay.published_at).toISOString() : null}
-          releasedEverywhere={isReleasedEverywhere({
-            publish_on: essay.publish_on,
-            published_at: essay.published_at,
-          })}
+          releaseImmediately={essay.release_immediately}
+          releasedEverywhere={isReleasedEverywhere(essay)}
         />
       </main>
     </>

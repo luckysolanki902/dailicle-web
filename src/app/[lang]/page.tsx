@@ -94,6 +94,7 @@ export default async function Home({
       issue: essay.issue,
       publish_on: essay.publish_on ? new Date(essay.publish_on).toISOString() : null,
       published_at: essay.published_at ? new Date(essay.published_at).toISOString() : null,
+      release_immediately: essay.release_immediately,
       bannerUrl: essayBannerInfo(essay)?.url ?? null,
       bannerTransparent: essayBannerInfo(essay)?.transparent ?? false,
     };

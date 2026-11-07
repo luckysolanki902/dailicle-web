@@ -26,6 +26,7 @@ export interface ArchiveEntry {
   dateLabel: string;
   publishOn?: string | null;
   publishedAt?: string | null;
+  releaseImmediately?: boolean;
   issue?: number | null;
   /**
    * How many readers liked the essay. Used only to order the list — the number
@@ -172,7 +173,11 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
   const releasedCurrent = current.filter((entry) =>
     mounted
       ? isReleasedLocally(
-          { publish_on: entry.publishOn, published_at: entry.publishedAt },
+          {
+            publish_on: entry.publishOn,
+            published_at: entry.publishedAt,
+            release_immediately: entry.releaseImmediately,
+          },
           new Date()
         )
       : entry.initialReleased ?? true

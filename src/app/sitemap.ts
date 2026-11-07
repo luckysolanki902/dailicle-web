@@ -12,7 +12,7 @@ import {
 export const dynamic = 'force-dynamic'
 
 const isPublicForSearch = (essay: { published_at?: string | Date | null }) => {
-  const date = releaseSourceDate(essay)
+  const date = releaseSourceDate({ published_at: essay.published_at })
   return !date || date.getTime() <= Date.now()
 }
 
@@ -30,9 +30,10 @@ const isPublicForSearch = (essay: { published_at?: string | Date | null }) => {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const essays = (await getAllReadable()).filter(isPublicForSearch)
   const translated = await getTranslatedLocalesMap(essays.map((e) => e._id))
-  const latestEssayDate = essays[0]?.published_at
-    ? new Date(essays[0].published_at)
-    : new Date()
+  const latestEssayTimestamp = Math.max(0, ...essays.map((essay) =>
+    releaseSourceDate({ published_at: essay.published_at })?.getTime() ?? 0
+  ))
+  const latestEssayDate = new Date(latestEssayTimestamp || Date.now())
 
   const entries: MetadataRoute.Sitemap = []
 

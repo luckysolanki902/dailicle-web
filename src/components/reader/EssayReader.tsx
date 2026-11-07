@@ -53,6 +53,7 @@ export interface EssayReaderProps {
     title: string;
     hook?: string;
     body: string;
+    byline?: string;
     dateLabel: string;
     readingMinutes: number;
     themeLabel: string;
@@ -78,6 +79,7 @@ export interface EssayReaderProps {
   }[];
   publishOn?: string | null;
   publishedAt?: string | null;
+  releaseImmediately?: boolean;
   /**
    * True when the release moment has passed in every timezone, so there is no
    * reader left to withhold the essay from. The server then renders the full
@@ -115,6 +117,7 @@ export function EssayReader({
   related,
   publishOn,
   publishedAt,
+  releaseImmediately,
   releasedEverywhere = false,
 }: EssayReaderProps) {
   const t = useT();
@@ -252,7 +255,11 @@ export function EssayReader({
   ]);
 
   useEffect(() => {
-    const release = { publish_on: publishOn, published_at: publishedAt };
+    const release = {
+      publish_on: publishOn,
+      published_at: publishedAt,
+      release_immediately: releaseImmediately,
+    };
     const checkRelease = () => setIsReleased(isReleasedLocally(release));
     checkRelease();
 
@@ -261,10 +268,14 @@ export function EssayReader({
 
     const timer = window.setTimeout(checkRelease, releaseAt.getTime() - Date.now());
     return () => window.clearTimeout(timer);
-  }, [publishOn, publishedAt]);
+  }, [publishOn, publishedAt, releaseImmediately]);
 
   if (!isReleased) {
-    const releaseAt = localReleaseDate({ publish_on: publishOn, published_at: publishedAt });
+    const releaseAt = localReleaseDate({
+      publish_on: publishOn,
+      published_at: publishedAt,
+      release_immediately: releaseImmediately,
+    });
     // Keep server and first-client render identical. Once the browser has
     // checked its own clock, show the useful local calendar date.
     const message =
@@ -510,7 +521,7 @@ export function EssayReader({
 
           <p className="text-xs text-foreground/45 pt-1">
             {t("reader.by", {
-              author: BYLINE,
+              author: essay.byline || BYLINE,
               date: essay.dateLabel,
               minutes: essay.readingMinutes,
             })}
