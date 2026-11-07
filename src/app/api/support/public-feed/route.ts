@@ -4,6 +4,24 @@ import { supportersCollection } from "@/lib/supporters";
 
 export const runtime = "nodejs";
 
+async function usdRates(): Promise<Record<string, number>> {
+  try {
+    const response = await fetch("https://open.er-api.com/v6/latest/USD", {
+      next: { revalidate: 86_400 },
+      signal: AbortSignal.timeout(4_000),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.result === "success" && data.base_code === "USD" && data.rates) {
+        return data.rates;
+      }
+    }
+  } catch {
+    // The feed can still show payments originally made in USD.
+  }
+  return {};
+}
+
 export async function GET() {
   try {
     const collection = await supportersCollection();
@@ -48,14 +66,22 @@ export async function GET() {
       },
     ]).toArray();
 
-    const contributions = captured.map(({ day, country, currency, subunits }) => ({
-      day,
-      country: typeof country === "string" && /^[A-Z]{2}$/.test(country) && country !== "ZZ"
-        ? country
-        : null,
-      currency,
-      amount: subunitsToMajor(subunits, currency),
-    }));
+    const rates = captured.some(({ currency }) => currency !== "USD") ? await usdRates() : {};
+    const contributions = captured.flatMap(({ day, country, currency, subunits }) => {
+      const converted = currency !== "USD";
+      const rate = converted ? rates[currency] : 1;
+      if (!Number.isFinite(rate) || rate <= 0) return [];
+      const amount = Math.round((subunitsToMajor(subunits, currency) / rate) * 100) / 100;
+      return [{
+        day,
+        country: typeof country === "string" && /^[A-Z]{2}$/.test(country) && country !== "ZZ"
+          ? country
+          : null,
+        currency: "USD" as const,
+        amount,
+        converted,
+      }];
+    });
 
     return NextResponse.json({ contributions }, {
       headers: { "Cache-Control": "public, max-age=0, s-maxage=300, stale-while-revalidate=300" },

@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
 
-type Contribution = { day: string; country: string | null; currency: string; amount: number };
+type Contribution = { day: string; country: string | null; currency: "USD"; amount: number; converted: boolean };
 
 function flag(country: string) {
   return String.fromCodePoint(...Array.from(country, (letter) => 0x1f1a5 + letter.charCodeAt(0)));
@@ -18,7 +18,9 @@ export function SupportThanks() {
     const controller = new AbortController();
     fetch("/api/support/public-feed", { signal: controller.signal })
       .then((response) => response.ok ? response.json() : null)
-      .then((feed) => setContributions(feed?.contributions ?? []))
+      .then((feed: { contributions: Contribution[] } | null) => {
+        setContributions(feed?.contributions.filter(({ currency }) => currency === "USD") ?? []);
+      })
       .catch(() => {});
     return () => controller.abort();
   }, []);
@@ -34,6 +36,7 @@ export function SupportThanks() {
 
   const regions = new Intl.DisplayNames([locale], { type: "region" });
   const dates = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "UTC" });
+  const dollars = new Intl.NumberFormat(locale, { style: "currency", currency: "USD", minimumFractionDigits: 0 });
 
   return (
     <section
@@ -72,7 +75,7 @@ export function SupportThanks() {
               </time>
             </div>
             <ul className="space-y-1.5">
-              {entries.map(({ country, currency, amount }, index) => (
+              {entries.map(({ country, amount, converted }, index) => (
                 <li
                   key={index}
                   className="relative ms-1.5 w-fit max-w-[calc(100%-0.375rem)] rounded-2xl rounded-ss-[0.3rem] border border-foreground/10 bg-background px-2.5 py-2 text-[0.8125rem] leading-relaxed text-foreground/85 shadow-sm sm:px-3 sm:text-sm before:absolute before:start-[-5px] before:top-[5px] before:size-2 before:rotate-45 before:border-b before:border-l before:border-foreground/10 before:bg-background before:content-['']"
@@ -81,7 +84,7 @@ export function SupportThanks() {
                     ? t("home.supportThanksFrom", { country: `${flag(country)} ${regions.of(country) ?? country}` })
                     : t("home.supportThanksUnknown")}{" "}
                   <strong className="whitespace-nowrap font-semibold tabular-nums text-foreground">
-                    {new Intl.NumberFormat(locale, { style: "currency", currency, minimumFractionDigits: 0 }).format(amount)}
+                    {converted && "≈"}{dollars.format(amount)}
                   </strong>
                 </li>
               ))}
@@ -90,9 +93,14 @@ export function SupportThanks() {
         ))}
       </div>
 
-      <p className="px-4 py-3 text-end text-xs text-foreground/65 sm:px-5">
-        {t("home.supportThanksSignature")}
-      </p>
+      <footer className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-3 text-foreground/65 sm:px-5">
+        {contributions.some(({ converted }) => converted) && (
+          <a href="https://www.exchangerate-api.com" className="text-[0.65rem] underline-offset-2 hover:underline">
+            Rates By Exchange Rate API
+          </a>
+        )}
+        <p className="ms-auto text-xs">{t("home.supportThanksSignature")}</p>
+      </footer>
     </section>
   );
 }
