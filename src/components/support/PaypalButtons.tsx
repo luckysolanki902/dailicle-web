@@ -86,7 +86,7 @@ export function PaypalButtons({
   onSuccess: () => void;
   onError: (message: string) => void;
   onCancel: () => void;
-  labels: { loading: string; failed: string; pending: string };
+  labels: { loading: string; failed: string; pending: string; declined: string };
 }) {
   const container = useRef<HTMLDivElement | null>(null);
   /** Set when we threw on purpose, so onError knows not to talk over us. */
@@ -173,7 +173,7 @@ export function PaypalButtons({
           if (!res.ok || !body?.success) {
             track("support_paypal_error", { stage: "capture", status: res.status });
             journeyEvent("paypal_error", { source: `capture:${res.status}` });
-            handlers.current.onError(body?.message || labels.failed);
+            handlers.current.onError(body?.status === "declined" ? labels.declined : body?.message || labels.failed);
             return;
           }
           track("support_paypal_captured");
@@ -218,7 +218,7 @@ export function PaypalButtons({
         /* the SDK throws if it was never rendered; nothing to do */
       }
     };
-  }, [clientId, currency, labels.failed]);
+  }, [clientId, currency, labels.failed, labels.declined]);
 
   return (
     <div className="mt-5">

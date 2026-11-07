@@ -294,7 +294,7 @@ export function SupportDialog({
             }
             if (verification && verification.status < 500 && result?.status !== "pending") {
               setStatus("error");
-              setError(t("support.errGeneric"));
+              setError(t(result?.status === "declined" ? "support.paymentDeclined" : "support.errGeneric"));
             } else {
               setStatus("pending");
             }
@@ -610,6 +610,7 @@ export function SupportDialog({
                         loading: t("support.processing"),
                         failed: t("support.errCheckout"),
                         pending: t("support.paymentPending"),
+                        declined: t("support.paymentDeclined"),
                       }}
                     />
                   ) : (
