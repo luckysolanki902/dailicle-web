@@ -359,6 +359,8 @@ export function SupportDialog({
     const essay = getCurrentEssay();
     const payload = buildPayload();
     if (!payload) return null;
+    setStatus("idle");
+    setError("");
     track("support_checkout_start", {
       source,
       tier: payload.tier,
