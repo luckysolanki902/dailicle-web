@@ -13,6 +13,8 @@ import { PaypalButtons } from "./PaypalButtons";
 
 type TierId = "t1" | "t2" | "t3";
 
+import { normalizeEmailBasic } from "@/lib/payment-facts";
+
 interface Config {
   /** Which gateway this reader gets — decided server-side from their country. */
   provider: "razorpay" | "paypal";
@@ -103,6 +105,7 @@ export function SupportDialog({
   const [selected, setSelected] = useState<TierId | "custom">("t1");
   const [custom, setCustom] = useState("");
   const [message, setMessage] = useState("");
+  const [reminderEmail, setReminderEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
 
@@ -138,6 +141,7 @@ export function SupportDialog({
         setStatus("idle");
         setError("");
         setMessage("");
+        setReminderEmail("");
         setConfig(null);
       }, 250);
       return () => clearTimeout(t);
@@ -190,6 +194,7 @@ export function SupportDialog({
     essayId?: string;
     category?: string;
     message?: string;
+    reminderEmail?: string;
   }
 
   /**
@@ -211,6 +216,14 @@ export function SupportDialog({
       category: essay?.category,
       message: message.trim() || undefined,
     };
+    if (config.provider === "paypal" && reminderEmail.trim()) {
+      const email = normalizeEmailBasic(reminderEmail);
+      if (!email) {
+        setError(t("support.reminderEmailInvalid"));
+        return null;
+      }
+      payload.reminderEmail = email;
+    }
     if (selected === "custom") {
       const n = Number(custom);
       if (!Number.isFinite(n) || n < config.min) {
@@ -223,7 +236,7 @@ export function SupportDialog({
       payload.tier = selected;
     }
     return payload;
-  }, [config, source, message, selected, custom, t]);
+  }, [config, source, message, reminderEmail, selected, custom, t]);
 
   const pay = useCallback(async () => {
     if (!config || status === "processing") return;
@@ -503,6 +516,27 @@ export function SupportDialog({
                   <p className="mt-2 font-serif text-[15px] leading-relaxed text-foreground/60">
                     {t("support.body")}
                   </p>
+
+                  {config?.provider === "paypal" && (
+                    <div className="mt-5">
+                      <label htmlFor="support-reminder-email" className="text-sm font-medium">
+                        {t("support.reminderEmail")}
+                      </label>
+                      <input
+                        id="support-reminder-email"
+                        type="email"
+                        autoComplete="email"
+                        maxLength={254}
+                        aria-describedby="support-reminder-description"
+                        value={reminderEmail}
+                        onChange={(event) => setReminderEmail(event.target.value)}
+                        className="mt-1 w-full rounded-xl border border-foreground/15 bg-transparent px-3 py-2 text-sm"
+                      />
+                      <p id="support-reminder-description" className="mt-1 text-xs text-foreground/60">
+                        {t("support.reminderEmailHelp")}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Tiers */}
                   <div className="mt-6 grid grid-cols-3 gap-2.5">

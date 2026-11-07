@@ -37,6 +37,10 @@
     "editorNote": "A small, independent desk makes The Dailicle. AI assists with drafts and parts of the weekly production. We welcome corrections and keep every essay open to read.",
     "aboutSupport": "How it works and why support matters",
     "keepIndependent": "Keep this independent",
+    "supportThanksTitle": "Thank you for keeping The Dailicle going",
+    "supportThanksBody": "Readers have chipped in to keep the essays free for everyone.",
+    "supportThanksTotal": "Total contributions to date",
+    "supportThanksSignature": "With thanks, Team Dailicle",
     "meta": {
       "title": "The Dailicle – One essay a week, written to be read slowly",
       "description": "A weekly essay on the mind, meaning, money, and how to live. Carefully researched, free to read, nothing to sign up for – a new one every Monday."
@@ -273,6 +277,9 @@
     "errCheckout": "Could not load the secure checkout.",
     "paymentDeclined": "The payment was declined. Try another payment method.",
     "paymentPending": "The payment provider is still confirming this payment. Check your payment activity before trying again.",
+    "reminderEmail": "Email for a checkout reminder (optional)",
+    "reminderEmailHelp": "If you leave checkout unfinished, we’ll send one reminder to this address.",
+    "reminderEmailInvalid": "Enter a valid email address or leave it blank.",
     "errStart": "Could not start the payment.",
     "errGeneric": "Something went wrong. Try again.",
     "securePaypal": "Secure payment by PayPal · a one-time thank-you, not a subscription"

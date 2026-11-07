@@ -3,6 +3,7 @@ import { getClientCountry, getClientIp } from "@/lib/request";
 import { resolveAmount } from "@/lib/pricing";
 import { supportPlanFor } from "@/lib/support-provider";
 import { createPaypalOrder, paypalConfigured } from "@/lib/paypal";
+import { normalizeEmailBasic } from "@/lib/payment-facts";
 import { supportersCollection } from "@/lib/supporters";
 
 export const runtime = "nodejs";
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
       essayId?: unknown;
       category?: unknown;
       message?: unknown;
+      reminderEmail?: unknown;
     } | null;
 
     const str = (v: unknown, max = 128): string | null =>
@@ -66,6 +68,11 @@ export async function POST(request: NextRequest) {
         { message: "Please choose an amount to support with." },
         { status: 400 }
       );
+    }
+
+    const reminderEmail = normalizeEmailBasic(body?.reminderEmail);
+    if (body?.reminderEmail && !reminderEmail) {
+      return NextResponse.json({ message: "Enter a valid email address or leave it blank." }, { status: 400 });
     }
 
     const source =
@@ -117,6 +124,7 @@ export async function POST(request: NextRequest) {
           essayId: str(body?.essayId),
           category: str(body?.category, 32),
           message: str(body?.message, 500),
+          ...(reminderEmail ? { reminderEmail } : {}),
         },
       },
       { upsert: true }
