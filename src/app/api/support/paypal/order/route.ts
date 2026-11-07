@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getClientCountry, getClientIp } from "@/lib/request";
 import { resolveAmount } from "@/lib/pricing";
 import { supportPlanFor } from "@/lib/support-provider";
-import { createPaypalOrder } from "@/lib/paypal";
+import { createPaypalOrder, paypalConfigured } from "@/lib/paypal";
 import { supportersCollection } from "@/lib/supporters";
 
 export const runtime = "nodejs";
@@ -52,6 +52,10 @@ export async function POST(request: NextRequest) {
         { message: "PayPal is not available for this region." },
         { status: 400 }
       );
+    }
+
+    if (!paypalConfigured()) {
+      return NextResponse.json({ message: "PayPal checkout is temporarily unavailable." }, { status: 503 });
     }
 
     let priced;

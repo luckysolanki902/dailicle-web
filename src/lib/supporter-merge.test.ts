@@ -3,11 +3,11 @@ import test from "node:test";
 import { buildPaymentMerge } from "./supporter-merge";
 import { normalizeContact, normalizeEmail, razorpayFacts } from "./razorpay";
 import { emptyFacts } from "./payment-facts";
-import { paypalFacts, toPaypalAmount, fromPaypalAmount } from "./paypal";
+import { paypalFacts, paypalCaptureStatus, toPaypalAmount, fromPaypalAmount } from "./paypal";
 
 /**
  * A minimal evaluator for the handful of aggregation operators the merge
- * pipeline uses ($set with field paths, $literal, $ifNull, $cond, $gt, $max).
+ * pipeline uses ($set with field paths, $literal, $ifNull, $cond, $gt, $gte, $max).
  * It models MongoDB's documented semantics — notably that a path to a missing
  * field evaluates to "missing", and that assigning a missing value leaves the
  * field absent — so the tests below can assert what a document actually looks
@@ -34,12 +34,13 @@ function evalExpr(expr: unknown, doc: Record<string, unknown>): unknown {
     const [c, t, f] = e.$cond as [unknown, unknown, unknown];
     return evalExpr(c, doc) ? evalExpr(t, doc) : evalExpr(f, doc);
   }
-  if ("$gt" in e) {
-    const [a, b] = e.$gt as [unknown, unknown];
+  if ("$gt" in e || "$gte" in e) {
+    const [a, b] = (e.$gt ?? e.$gte) as [unknown, unknown];
     const l = evalExpr(a, doc);
     const r = evalExpr(b, doc);
-    return (l === MISSING ? -Infinity : (l as number)) >
-      (r === MISSING ? -Infinity : (r as number));
+    const left = l === MISSING ? -Infinity : l as number;
+    const right = r === MISSING ? -Infinity : r as number;
+    return "$gte" in e ? left >= right : left > right;
   }
   if ("$max" in e) {
     const vals = (e.$max as unknown[])
@@ -409,4 +410,34 @@ test("an unapproved PayPal order still yields the intended amount", () => {
   assert.equal(pending.amountSubunits, 500);
   assert.equal(pending.currency, "EUR");
   assert.equal(pending.paymentId, null);
+});
+
+
+test("a completed PayPal order does not prove that its capture completed", () => {
+  const order = {
+    status: "COMPLETED",
+    payment_source: { paypal: { email_address: "Reader@example.com" } },
+    purchase_units: [{ payments: { captures: [{ id: "cap_1", status: "PENDING" }] } }],
+  };
+  assert.equal(paypalCaptureStatus(order), "PENDING");
+  assert.equal(paypalCaptureStatus({ status: "COMPLETED" }), null);
+  assert.equal(paypalFacts(order).email, "reader@example.com");
+});
+
+test("a PayPal decline ends a pending capture and a stale approval cannot revive it", () => {
+  const write = (doc: Record<string, unknown>, status: "authorized" | "failed" | "captured") =>
+    apply(doc, buildPaymentMerge({
+      orderId: "order_pp",
+      facts: emptyFacts("paypal"),
+      status,
+      via: "webhook",
+    }).pipeline);
+
+  const pending = write({}, "authorized");
+  const declined = write(pending, "failed");
+  assert.equal(declined.status, "failed");
+  assert.equal(write(declined, "authorized").status, "failed");
+  const captured = write(declined, "captured");
+  assert.equal(captured.status, "captured");
+  assert.equal(write(captured, "failed").status, "captured");
 });

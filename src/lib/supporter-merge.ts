@@ -85,7 +85,11 @@ export function buildPaymentMerge(
   const learnedContact = Boolean(facts.email || facts.contact);
   const paymentId = input.paymentId ?? facts.paymentId;
 
-  const rank = input.status ? STATUS_RANK[input.status] : undefined;
+  // A terminal PayPal decline can arrive after an order was marked authorized.
+  // Store it at the same rank so a late approval cannot revive the decline.
+  const paypalDeclined = facts.provider === "paypal" && input.status === "failed";
+  const rank = paypalDeclined ? STATUS_RANK.authorized
+    : input.status ? STATUS_RANK[input.status] : undefined;
   const captured = input.status === "captured" || input.status === "paid";
   const currentRank = { $ifNull: ["$statusRank", -1] };
 
@@ -129,7 +133,7 @@ export function buildPaymentMerge(
   // Rule 2: advance the lifecycle, never rewind it.
   if (rank !== undefined) {
     set.status = {
-      $cond: [{ $gt: [rank, currentRank] }, input.status, "$status"],
+      $cond: [{ [paypalDeclined ? "$gte" : "$gt"]: [rank, currentRank] }, input.status, "$status"],
     };
     set.statusRank = { $max: [rank, currentRank] };
   }

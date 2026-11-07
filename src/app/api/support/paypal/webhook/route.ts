@@ -3,6 +3,7 @@ import {
   verifyPaypalWebhook,
   paypalWebhookConfigured,
   paypalFacts,
+  paypalCaptureStatus,
   fromPaypalAmount,
   getPaypalOrder,
   capturePaypalOrder,
@@ -71,6 +72,7 @@ export async function POST(request: NextRequest) {
 
   const HANDLED = [
     "PAYMENT.CAPTURE.COMPLETED",
+    "PAYMENT.CAPTURE.PENDING",
     "PAYMENT.CAPTURE.DENIED",
     "PAYMENT.CAPTURE.DECLINED",
     "PAYMENT.CAPTURE.REFUNDED",
@@ -90,6 +92,7 @@ export async function POST(request: NextRequest) {
     // /capture call, recover here with the same idempotency key as that route.
     let effectiveResource = resource;
     let captured = type === "PAYMENT.CAPTURE.COMPLETED";
+    let declined = type === "PAYMENT.CAPTURE.DENIED" || type === "PAYMENT.CAPTURE.DECLINED";
     if (type === "CHECKOUT.ORDER.APPROVED") {
       try {
         effectiveResource = await capturePaypalOrder(orderId);
@@ -97,8 +100,10 @@ export async function POST(request: NextRequest) {
         console.error("paypal webhook capture failed, re-reading order:", err);
         effectiveResource = await getPaypalOrder(orderId);
       }
-      captured = String(effectiveResource.status || "").toUpperCase() === "COMPLETED";
-      if (!captured && String(effectiveResource.status || "").toUpperCase() === "APPROVED") {
+      const captureStatus = paypalCaptureStatus(effectiveResource);
+      captured = captureStatus === "COMPLETED";
+      declined = captureStatus === "DECLINED" || captureStatus === "FAILED";
+      if (!captureStatus && effectiveResource.status === "APPROVED") {
         // Retry while the order is still approved and uncharged.
         return NextResponse.json({ message: "Capture pending." }, { status: 503 });
       }
@@ -124,12 +129,7 @@ export async function POST(request: NextRequest) {
       if (Object.keys(facts.raw).length === 0) facts.raw = resource;
     }
 
-    const status =
-      type === "PAYMENT.CAPTURE.DENIED" || type === "PAYMENT.CAPTURE.DECLINED"
-        ? "failed"
-        : captured
-          ? "captured"
-          : "authorized";
+    const status = declined ? "failed" : captured ? "captured" : "authorized";
 
     const doc = await recordPayment({
       orderId,

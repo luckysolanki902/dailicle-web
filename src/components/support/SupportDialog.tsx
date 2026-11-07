@@ -82,7 +82,7 @@ function readAccent(): string {
   return v || "#8a5a2b";
 }
 
-type Status = "idle" | "processing" | "success" | "error";
+type Status = "idle" | "processing" | "pending" | "success" | "error";
 
 export function SupportDialog({
   isOpen,
@@ -281,6 +281,25 @@ export function SupportDialog({
         description: t("support.checkoutDescription"),
         theme: { color: readAccent() },
         handler: async (resp) => {
+          const verification = await fetch("/api/support/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(resp),
+          }).catch(() => null);
+          const result = await verification?.json().catch(() => null);
+          if (!result?.success) {
+            if (result?.status !== "pending") {
+              track("support_razorpay_error", { stage: "verify", status: verification?.status });
+              journeyEvent("razorpay_error", { source: "verify" });
+            }
+            if (verification && verification.status < 500 && result?.status !== "pending") {
+              setStatus("error");
+              setError(t("support.errGeneric"));
+            } else {
+              setStatus("pending");
+            }
+            return;
+          }
           onSupported();
           track("support_payment_success", {
             source,
@@ -297,17 +316,6 @@ export function SupportDialog({
             title: essay?.title,
             category: essay?.category,
           });
-          // Confirm to the server (the webhook is a redundant safety net if
-          // this fails), then send the reader to the thank-you page.
-          try {
-            await fetch("/api/support/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(resp),
-            });
-          } catch {
-            // Payment likely still succeeded; the webhook records it.
-          }
           setStatus("success");
           router.push("/thank-you");
         },
@@ -581,6 +589,12 @@ export function SupportDialog({
                     </p>
                   )}
 
+                  {status === "pending" && (
+                    <p role="status" className="mt-3 text-center text-sm text-foreground/65">
+                      {t("support.paymentPending")}
+                    </p>
+                  )}
+
                   {config?.provider === "paypal" && config.paypalClientId ? (
                     <PaypalButtons
                       clientId={config.paypalClientId}
@@ -595,12 +609,13 @@ export function SupportDialog({
                       labels={{
                         loading: t("support.processing"),
                         failed: t("support.errCheckout"),
+                        pending: t("support.paymentPending"),
                       }}
                     />
                   ) : (
                     <button
                       onClick={pay}
-                      disabled={status === "processing" || !config}
+                      disabled={status === "processing" || status === "pending" || !config}
                       className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {status === "processing" ? (

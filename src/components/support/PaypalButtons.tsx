@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { track } from "@/lib/analytics";
+import { getGaClientId, track } from "@/lib/analytics";
 import { journeyEvent } from "@/lib/journey";
 
 /**
@@ -41,33 +41,28 @@ function sdkUrl(clientId: string, currency: string): string {
   return `https://www.paypal.com/sdk/js?${params.toString()}`;
 }
 
-/**
- * Load the SDK once per (client id, currency). PayPal keys its global on the
- * currency baked into the script URL, so switching currency needs a fresh
- * script — but within a session the currency never changes, so in practice this
- * loads exactly once.
- */
+/** One SDK load per page. A failed load is released so reopening can retry. */
+let sdkLoad: Promise<boolean> | undefined;
 function loadSdk(clientId: string, currency: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof window === "undefined") return resolve(false);
-    const src = sdkUrl(clientId, currency);
-    if (window.paypal) return resolve(true);
-
-    const existing = document.querySelector<HTMLScriptElement>(
-      `script[src="${src}"]`
-    );
-    if (existing) {
-      existing.addEventListener("load", () => resolve(true));
-      existing.addEventListener("error", () => resolve(false));
-      return;
-    }
-    const s = document.createElement("script");
-    s.src = src;
-    s.async = true;
-    s.onload = () => resolve(true);
-    s.onerror = () => resolve(false);
-    document.body.appendChild(s);
+  if (window.paypal) return Promise.resolve(true);
+  sdkLoad ??= new Promise<boolean>((resolve) => {
+    const script = document.createElement("script");
+    script.src = sdkUrl(clientId, currency);
+    script.async = true;
+    const finish = (loaded: boolean) => {
+      window.clearTimeout(timeout);
+      if (!loaded) script.remove();
+      resolve(loaded);
+    };
+    const timeout = window.setTimeout(() => finish(false), 15_000);
+    script.onload = () => finish(Boolean(window.paypal));
+    script.onerror = () => finish(false);
+    document.body.appendChild(script);
+  }).then((loaded) => {
+    if (!loaded) sdkLoad = undefined;
+    return loaded;
   });
+  return sdkLoad;
 }
 
 export function PaypalButtons({
@@ -91,13 +86,14 @@ export function PaypalButtons({
   onSuccess: () => void;
   onError: (message: string) => void;
   onCancel: () => void;
-  labels: { loading: string; failed: string };
+  labels: { loading: string; failed: string; pending: string };
 }) {
   const container = useRef<HTMLDivElement | null>(null);
   /** Set when we threw on purpose, so onError knows not to talk over us. */
   const suppressError = useRef(false);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [pending, setPending] = useState(false);
 
   // Keep the callbacks fresh without re-rendering the buttons. Written in an
   // effect rather than during render: PayPal's iframe reads these long after
@@ -126,6 +122,7 @@ export function PaypalButtons({
         style: { layout: "vertical", shape: "pill", label: "paypal", height: 46 },
 
         createOrder: async () => {
+          suppressError.current = false;
           const payload = handlers.current.getPayload();
           if (!payload) {
             // The dialog has already shown the reader a precise reason (an
@@ -139,13 +136,15 @@ export function PaypalButtons({
           const res = await fetch("/api/support/paypal/order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-          const data = await res.json();
-          if (!res.ok || !data?.orderId) {
-            track("support_paypal_error", { stage: "order", status: res.status });
-            journeyEvent("paypal_error", { source: `order:${res.status}` });
-            throw new Error(data?.message || "order-failed");
+            body: JSON.stringify({ ...payload, gaClientId: (await getGaClientId()) || undefined }),
+          }).catch(() => null);
+          const data = await res?.json().catch(() => null);
+          if (!res?.ok || !data?.orderId) {
+            track("support_paypal_error", { stage: "order", status: res?.status });
+            journeyEvent("paypal_error", { source: `order:${res?.status ?? "network"}` });
+            suppressError.current = true;
+            handlers.current.onError(data?.message || labels.failed);
+            throw new Error("order-failed");
           }
           track("support_paypal_order_created");
           journeyEvent("paypal_order_created");
@@ -161,8 +160,16 @@ export function PaypalButtons({
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ orderId: data.orderID }),
-          });
-          const body = await res.json().catch(() => null);
+          }).catch(() => null);
+          const body = await res?.json().catch(() => null);
+          if (!res || res.status >= 500 || body?.status === "pending") {
+            if (!res || res.status >= 500) {
+              track("support_paypal_error", { stage: "capture", status: res?.status });
+              journeyEvent("paypal_error", { source: `capture:${res?.status ?? "network"}` });
+            }
+            setPending(true);
+            return;
+          }
           if (!res.ok || !body?.success) {
             track("support_paypal_error", { stage: "capture", status: res.status });
             journeyEvent("paypal_error", { source: `capture:${res.status}` });
@@ -224,9 +231,12 @@ export function PaypalButtons({
       {failed && (
         <p className="py-3 text-center text-xs text-red-500">{labels.failed}</p>
       )}
+      {pending && (
+        <p role="status" className="py-3 text-center text-sm text-foreground/65">{labels.pending}</p>
+      )}
       {/* PayPal renders into this node. Kept mounted even while loading so the
           SDK always has a target to draw into. */}
-      <div ref={container} className={failed ? "hidden" : undefined} />
+      <div ref={container} className={failed || pending ? "hidden" : undefined} />
     </div>
   );
 }

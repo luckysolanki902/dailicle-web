@@ -3,6 +3,7 @@ import {
   capturePaypalOrder,
   getPaypalOrder,
   paypalFacts,
+  paypalCaptureStatus,
 } from "@/lib/paypal";
 import {
   supportersCollection,
@@ -63,21 +64,26 @@ export async function POST(request: NextRequest) {
     }
 
     const facts = paypalFacts(captured);
-    const completed = String(captured.status || "").toUpperCase() === "COMPLETED";
+    const captureStatus = paypalCaptureStatus(captured);
+    const completed = captureStatus === "COMPLETED";
+    const declined = captureStatus === "DECLINED" || captureStatus === "FAILED";
+    const approved = captured.status === "APPROVED" || captureStatus === "PENDING";
 
     await recordPayment({
       orderId,
       facts,
-      status: completed ? "captured" : "authorized",
+      status: completed ? "captured" : declined ? "failed" : approved ? "authorized" : undefined,
       via: "capture",
     });
-    await col.updateOne({ orderId }, { $set: { verifiedAt: new Date() } });
 
     if (!completed) {
-      // Approved but not captured — the webhook will finish the job if PayPal
-      // completes it asynchronously.
-      return NextResponse.json({ success: false, status: captured.status });
+      return NextResponse.json(
+        { success: false, status: declined ? "declined" : "pending" },
+        { status: declined ? 422 : 202 }
+      );
     }
+
+    await col.updateOne({ orderId, verifiedAt: null }, { $set: { verifiedAt: new Date() } });
 
     // Notify once. The claim is atomic against the webhook: if it already sent
     // the mail we get nothing back and stay quiet.

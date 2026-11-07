@@ -291,6 +291,11 @@ function firstCapture(order: Record<string, unknown>): Record<string, unknown> |
   return null;
 }
 
+/** The order can be COMPLETED while its actual capture is still PENDING. */
+export function paypalCaptureStatus(order: Record<string, unknown>): string | null {
+  return str(firstCapture(order)?.status, 32)?.toUpperCase() ?? null;
+}
+
 /**
  * Flatten a PayPal order (or capture response) into the provider-neutral shape
  * the supporter merge understands.
@@ -309,7 +314,10 @@ export function paypalFacts(
   facts.method = "paypal";
 
   const payer = (order.payer ?? {}) as Record<string, unknown>;
-  facts.email = normalizeEmailBasic(payer.email_address);
+  const source = (order.payment_source ?? {}) as Record<string, unknown>;
+  const wallet = (source.paypal ?? {}) as Record<string, unknown>;
+  facts.email = normalizeEmailBasic(payer.email_address)
+    ?? normalizeEmailBasic(wallet.email_address);
 
   const phone = (payer.phone ?? {}) as Record<string, unknown>;
   const number = (phone.phone_number ?? {}) as Record<string, unknown>;

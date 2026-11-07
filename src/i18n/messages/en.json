@@ -271,6 +271,7 @@
     "checkoutDescription": "Keep the desk lit, thank you.",
     "errMin": "Enter at least {amount}.",
     "errCheckout": "Could not load the secure checkout.",
+    "paymentPending": "The payment provider is still confirming this payment. Check your payment activity before trying again.",
     "errStart": "Could not start the payment.",
     "errGeneric": "Something went wrong. Try again.",
     "securePaypal": "Secure payment by PayPal · a one-time thank-you, not a subscription"

@@ -58,14 +58,25 @@ export async function POST(request: NextRequest) {
 
     const col = await supportersCollection();
 
+    const providerStatus = payment.status;
+    const status = providerStatus === "captured" || providerStatus === "authorized" || providerStatus === "failed"
+      ? providerStatus
+      : undefined;
     const doc = await recordPayment({
       orderId,
       paymentId,
       facts: razorpayFacts(payment),
-      status: (payment.status as string) === "captured" ? "captured" : "paid",
+      status,
       via: "verify",
     });
-    await col.updateOne({ orderId }, { $set: { verifiedAt: new Date() } });
+    if (doc?.status !== "captured") {
+      const failed = providerStatus === "failed";
+      return NextResponse.json(
+        { success: false, status: failed ? "declined" : "pending" },
+        { status: failed ? 422 : 202 }
+      );
+    }
+    await col.updateOne({ orderId, verifiedAt: null }, { $set: { verifiedAt: new Date() } });
 
     // If we still don't know how to reach them, ask Razorpay again by order id.
     if (!doc?.email || !doc?.contact) {

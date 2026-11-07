@@ -1,5 +1,5 @@
 import { priceConfigFor, type PriceConfig } from "@/lib/pricing";
-import { PAYPAL_CURRENCIES, paypalConfigured } from "@/lib/paypal";
+import { PAYPAL_CURRENCIES } from "@/lib/paypal";
 import type { PaymentProvider } from "@/lib/payment-facts";
 
 /**
@@ -40,17 +40,11 @@ export function isIndianReader(country: string | null): boolean {
   return (country ?? "").trim().toUpperCase() === "IN";
 }
 
-/**
- * Decide the gateway and price table for a reader's country.
- *
- * If PayPal is not configured at all, everything falls back to Razorpay. That
- * is deliberately the *safe* failure: a missing env var degrades to the old
- * behaviour rather than showing a checkout that cannot work.
- */
+/** Decide the gateway and price table for a reader's country. */
 export function supportPlanFor(country: string | null): SupportPlan {
   const local = priceConfigFor(country);
 
-  if (isIndianReader(country) || !paypalConfigured()) {
+  if (isIndianReader(country)) {
     return { provider: "razorpay", cfg: local, originalCurrency: null };
   }
 

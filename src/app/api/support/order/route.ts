@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getClientCountry, getClientIp } from "@/lib/request";
-import { priceConfigFor, resolveAmount } from "@/lib/pricing";
+import { resolveAmount } from "@/lib/pricing";
+import { supportPlanFor } from "@/lib/support-provider";
 import { createOrder, getKeyId } from "@/lib/razorpay";
 import { supportersCollection } from "@/lib/supporters";
 
@@ -39,7 +40,10 @@ export async function POST(request: NextRequest) {
       typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null;
 
     const country = getClientCountry(request);
-    const cfg = priceConfigFor(country);
+    const { provider, cfg } = supportPlanFor(country);
+    if (provider !== "razorpay") {
+      return NextResponse.json({ message: "Razorpay checkout is available in India." }, { status: 400 });
+    }
 
     let priced;
     try {

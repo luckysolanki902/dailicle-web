@@ -15,6 +15,9 @@ export const runtime = "nodejs";
 export async function GET(request: NextRequest) {
   const country = getClientCountry(request);
   const { provider, cfg, originalCurrency } = supportPlanFor(country);
+  if (provider === "paypal" && !paypalConfigured()) {
+    return NextResponse.json({ message: "PayPal checkout is temporarily unavailable." }, { status: 503 });
+  }
   return NextResponse.json({
     provider,
     currency: cfg.currency,
@@ -28,8 +31,7 @@ export async function GET(request: NextRequest) {
     originalCurrency,
     // The PayPal client id is public by design — the browser SDK needs it in a
     // script URL. The secret never leaves the server.
-    paypalClientId:
-      provider === "paypal" && paypalConfigured() ? getPaypalClientId() : null,
+    paypalClientId: provider === "paypal" ? getPaypalClientId() : null,
     paypalEnv: provider === "paypal" ? (isLive() ? "live" : "sandbox") : null,
   });
 }

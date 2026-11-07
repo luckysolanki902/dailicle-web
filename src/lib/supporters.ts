@@ -235,8 +235,8 @@ export async function linkPaymentToJourney(orderId: string): Promise<void> {
 }
 
 function money(subunits: unknown, currency: unknown): string {
-  const n = typeof subunits === "number" ? subunits / 100 : NaN;
   const cur = typeof currency === "string" ? currency : "";
+  const n = typeof subunits === "number" ? subunitsToMajor(subunits, cur) : NaN;
   return Number.isFinite(n) ? `${cur} ${n.toLocaleString()}` : String(subunits);
 }
 
