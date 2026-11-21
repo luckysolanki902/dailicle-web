@@ -12,7 +12,9 @@ type GoogleSession = StartupAccount & { _id: string; expires: Date };
 type OAuthAttempt = { _id: string; state: string; verifier: string; returnTo?: string; expires: Date };
 const sessions = async () => (await client).db("dailicle").collection<GoogleSession>("startup_google_sessions");
 const attempts = async () => (await client).db("dailicle").collection<OAuthAttempt>("startup_google_attempts");
-export const googleConfigured = () => Boolean(process.env.STARTUPS_GOOGLE_CLIENT_ID && process.env.STARTUPS_GOOGLE_CLIENT_SECRET);
+const googleClientId = () => process.env.STARTUPS_GOOGLE_CLIENT_ID?.trim() ?? "";
+const googleClientSecret = () => process.env.STARTUPS_GOOGLE_CLIENT_SECRET?.trim() ?? "";
+export const googleConfigured = () => Boolean(googleClientId() && googleClientSecret());
 
 export async function currentStartupAccount(): Promise<StartupAccount | null> {
   const token = (await cookies()).get(accountCookie)?.value ?? "";
@@ -33,7 +35,7 @@ export async function beginGoogleSignIn(callback: string, returnTo?: string) {
   await (await attempts()).insertOne({ _id: tokenHash(attempt), state, verifier, returnTo, expires: new Date(Date.now() + 600_000) });
   const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   url.search = new URLSearchParams({
-    response_type: "code", client_id: process.env.STARTUPS_GOOGLE_CLIENT_ID!,
+    response_type: "code", client_id: googleClientId(),
     redirect_uri: callback, scope: "openid email",
     state, code_challenge: challenge, code_challenge_method: "S256",
     prompt: "select_account",
@@ -49,8 +51,8 @@ export async function finishGoogleSignIn(attempt: string, state: string, code: s
     method: "POST", cache: "no-store", signal: AbortSignal.timeout(12_000),
     body: new URLSearchParams({
       code, code_verifier: pending.verifier, redirect_uri: callback, grant_type: "authorization_code",
-      client_id: process.env.STARTUPS_GOOGLE_CLIENT_ID!,
-      client_secret: process.env.STARTUPS_GOOGLE_CLIENT_SECRET!,
+      client_id: googleClientId(),
+      client_secret: googleClientSecret(),
     }),
   });
   if (!tokenResponse.ok) return null;
