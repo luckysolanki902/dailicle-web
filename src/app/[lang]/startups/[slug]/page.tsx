@@ -1,3 +1,4 @@
+import { StartupFeedback } from "@/components/startups/StartupFeedback";
 import { LOCALES } from "@/i18n/config";
 import { startupHref, startupPath } from "@/i18n/startups";
 import Link from "next/link";
@@ -54,6 +55,7 @@ export default async function StartupEssayPage({ params }: Props) {
           </section>
         )}
       </div>
+      {body && <StartupFeedback slug={slug} />}
     </article>
   );
 }

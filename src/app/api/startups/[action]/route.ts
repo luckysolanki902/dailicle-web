@@ -1,3 +1,4 @@
+import { recordStartupReadership } from "@/lib/startup-readership";
 import { timingSafeEqual } from "node:crypto";
 import { startupOrigin, startupPath } from "@/i18n/startups";
 import { NextRequest, NextResponse } from "next/server";
@@ -148,6 +149,7 @@ export async function POST(request: NextRequest, { params }: Context) {
   }
   if (request.headers.get("origin") !== appOrigin(request)) return new Response(null, { status: 403 });
   try {
+    if (action === "readership") return await recordStartupReadership(request);
     const form = await request.formData();
     if (action === "subscribe") return await start(request, form);
     if (action === "email") {
