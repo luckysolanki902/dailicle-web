@@ -1,10 +1,11 @@
+import { currentStartupAccount } from "@/lib/startup-google";
 import { StartupFeedback } from "@/components/startups/StartupFeedback";
 import { LOCALES } from "@/i18n/config";
 import { startupHref, startupPath } from "@/i18n/startups";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Markdown from "react-markdown";
-import { currentSubscription, hasStartupAccess } from "@/lib/startup-membership";
+import { hasStartupAccess, subscriptionForAccount } from "@/lib/startup-membership";
 import { startupBody, startupListing } from "@/lib/startup-essays";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,7 @@ export async function generateMetadata({ params }: Props) {
   const { lang, slug } = await params;
   const essay = await startupListing(slug, lang);
   if (!essay) return {};
+  if (essay._id > 1 && !await currentStartupAccount()) return { title: "Members’ essay", robots: { index: false, follow: true } };
   return { title: essay.title, description: essay.dek, alternates: { canonical: startupHref(slug, essay.locales.includes(lang) ? lang : "en") }, robots: { index: essay._id === 1, follow: true } };
 }
 
@@ -22,8 +24,10 @@ export default async function StartupEssayPage({ params }: Props) {
   const { lang, slug } = await params;
   const essay = await startupListing(slug, lang);
   if (!essay) notFound();
+  const account = essay._id > 1 ? await currentStartupAccount() : null;
+  if (essay._id > 1 && !account) redirect(`${startupHref()}?status=sign-in-required#membership`);
   if (!essay.locales.includes(lang)) redirect(startupHref(slug));
-  const id = essay._id > 1 ? await currentSubscription() : null;
+  const id = account ? await subscriptionForAccount(account.subject) : null;
   const paid = id ? await hasStartupAccess(id).catch(() => false) : false;
   const body = await startupBody(slug, paid, lang);
 

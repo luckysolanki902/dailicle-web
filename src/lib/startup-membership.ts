@@ -1,11 +1,9 @@
 import { createHash, randomBytes } from "node:crypto";
-import { cookies } from "next/headers";
-import nodemailer from "nodemailer";
+import type { Funnel } from "@/lib/startup-funnel";
 import client from "@/lib/mongodb";
 import { hasPublishedMembersEssay } from "@/lib/startup-essays";
 import { getPaypalStartupPlan, getPaypalStartupSubscription, getPaypalStartupTransactions, isLive, paypalConfigured } from "@/lib/paypal";
 
-export const sessionCookie = "dailicle-startup-session";
 export const checkoutCookie = "dailicle-startup-checkout";
 export const cookieOptions = { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/" } as const;
 export const newToken = () => randomBytes(24).toString("base64url");
@@ -13,19 +11,32 @@ export const tokenHash = (token: string) => createHash("sha256").update(token).d
 export const validToken = (value: string) => /^[\w-]{32}$/.test(value);
 export const validSubscription = (value: string) => /^I-[A-Z0-9]{6,32}$/.test(value);
 export const planId = () => process.env.PAYPAL_STARTUP_PLAN_ID || "";
-export const mailConfigured = () => Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
-export const membershipEnabled = () => Boolean(planId() && process.env.PAYPAL_STARTUP_WEBHOOK_ID && paypalConfigured() && mailConfigured());
+export const membershipEnabled = () => Boolean(planId() && process.env.PAYPAL_STARTUP_WEBHOOK_ID && paypalConfigured());
 const mode = () => isLive() ? "live" : "sandbox";
 
-type Member = { _id: string; subscription: string; email: string; mode: string; newsletter?: boolean; newsletter_token?: string };
-type Token = { _id: string; subscription: string; mode: string; expires: Date };
+type Member = { _id: string; subscription: string; email: string; mode: string; newsletter?: boolean; newsletter_token?: string; googleSubject?: string; joinedAt?: Date; firstPaymentEvent?: string; funnel?: Funnel };
 const db = async () => (await client).db("dailicle");
 export const startupCheckouts = async () =>
-  (await db()).collection<{ _id: string; mode: string; plan: string; subscription?: string; createdAt: Date; recoveryUntil: Date }>("startup_checkouts");
+  (await db()).collection<{ _id: string; mode: string; plan: string; subscription?: string; approvalUrl?: string; createdAt: Date; recoveryUntil: Date; googleSubject: string; googleEmail: string; funnel?: Funnel }>("startup_checkouts");
 export const paypalMode = mode;
 export const startupMembers = async () => (await db()).collection<Member>("startup_members");
-export const startupTokens = async (kind: "sessions" | "links") =>
-  (await db()).collection<Token>(`startup_${kind}`);
+export async function reserveStartupCheckoutState(subject: string, newState: string) {
+  const locks = (await db()).collection<{ _id: string; state: string; until: Date }>("startup_checkout_locks");
+  const key = `${mode()}:${subject}`;
+  const now = new Date();
+  try {
+    const reserved = await locks.findOneAndUpdate(
+      { _id: key, until: { $lte: now } },
+      { $set: { state: newState, until: new Date(now.getTime() + 3600_000) } },
+      { upsert: true, returnDocument: "after" },
+    );
+    return reserved?.state ?? null;
+  } catch (error) {
+    if ((error as { code?: number }).code !== 11000) throw error;
+    const active = await locks.findOne({ _id: key, until: { $gt: now } });
+    return active?.state ?? null;
+  }
+}
 
 export async function startupOffer() {
   if (!membershipEnabled() || (isLive() && !await hasPublishedMembersEssay())) return null;
@@ -43,18 +54,9 @@ export async function startupOffer() {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: price.currency_code, currencyDisplay: "code" }).format(Number(price.value));
 }
 
-export async function createSession(subscription: string) {
-  const token = newToken();
-  const maxAge = 60 * 60 * 24 * 90;
-  await (await startupTokens("sessions")).insertOne({ _id: tokenHash(token), subscription, mode: mode(), expires: new Date(Date.now() + maxAge * 1000) });
-  return { token, maxAge };
-}
-
-export async function currentSubscription() {
-  const token = (await cookies()).get(sessionCookie)?.value ?? "";
-  if (!validToken(token)) return null;
-  const row = await (await startupTokens("sessions")).findOne({ _id: tokenHash(token), mode: mode(), expires: { $gt: new Date() } });
-  return row?.subscription ?? null;
+export async function subscriptionForAccount(subject: string) {
+  const member = await (await startupMembers()).findOne({ googleSubject: subject, mode: mode() }, { sort: { joinedAt: -1 } });
+  return member?.subscription ?? null;
 }
 
 export async function registerStartupMember(id: string, state: string) {
@@ -63,11 +65,11 @@ export async function registerStartupMember(id: string, state: string) {
   if (!checkout || (checkout.subscription && checkout.subscription !== id) ||
       subscription.id !== id || subscription.plan_id !== checkout.plan || subscription.custom_id !== state ||
       !["ACTIVE", "APPROVED"].includes(String(subscription.status))) return false;
-  const email = (subscription.subscriber as { email_address?: string } | undefined)?.email_address?.trim().toLowerCase();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+  if (!checkout.googleSubject || !checkout.googleEmail) return false;
   await (await startupMembers()).updateOne(
-    { _id: `${mode()}:${id}` },
-    { $setOnInsert: { subscription: id, mode: mode(), email } },
+    { _id: `${mode()}:${id}`, googleSubject: checkout.googleSubject },
+    { $setOnInsert: { subscription: id, mode: mode(), email: checkout.googleEmail,
+                      googleSubject: checkout.googleSubject, joinedAt: new Date(), funnel: checkout.funnel } },
     { upsert: true },
   );
   return true;
@@ -104,43 +106,4 @@ export async function hasStartupAccess(id: string) {
       Number(gross?.value) === Number(lastPayment.amount.value);
   });
   return matching.length === 1 && matching[0].status === "COMPLETED";
-}
-
-export async function sendStartupSignIn(email: string, origin: string) {
-  if (!mailConfigured()) return;
-  const members = await (await startupMembers()).find({ email, mode: mode() }).sort({ _id: -1 }).limit(12).toArray();
-  let subscription: string | undefined;
-  for (const member of members) {
-    if (await hasStartupAccess(member.subscription)) {
-      subscription = member.subscription;
-      break;
-    }
-  }
-  if (!subscription) return;
-  const token = newToken();
-  const links = await startupTokens("links");
-  const now = new Date();
-  // One email per membership per five-minute window.
-  const throttle = (await db()).collection<{ _id: string; until: Date }>("startup_email_limits");
-  const key = `${mode()}:${subscription}`;
-  try {
-    await throttle.updateOne({ _id: key, until: { $lte: now } }, { $set: { until: new Date(now.getTime() + 300_000) } }, { upsert: true });
-  } catch (error) {
-    if ((error as { code?: number }).code === 11000) return;
-    throw error;
-  }
-  await links.insertOne({ _id: tokenHash(token), subscription, mode: mode(), expires: new Date(now.getTime() + 900_000) });
-  const url = new URL("/api/startups/sign-in", origin);
-  url.hash = token;
-  await nodemailer.createTransport({ service: "gmail", auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS } }).sendMail({
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Your Dailicle Startups sign-in link",
-    text: `Open this link to sign in to Dailicle Startups. It expires in 15 minutes.\n\n${url}\n\nIf you didn't request this link, you can ignore this email.`,
-  });
-}
-
-export async function redeemStartupLink(token: string) {
-  if (!validToken(token)) return null;
-  return (await startupTokens("links")).findOneAndDelete({ _id: tokenHash(token), mode: mode(), expires: { $gt: new Date() } });
 }

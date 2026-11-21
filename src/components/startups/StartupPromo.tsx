@@ -1,10 +1,14 @@
+"use client";
+
+import { track } from "@/lib/analytics";
 import { startupHref } from "@/i18n/startups";
 import Link from "next/link";
 
 export function StartupPromo({ inArchive = false }: { inArchive?: boolean }) {
   return (
     <aside className={inArchive ? "mb-10" : "mx-auto my-12 max-w-2xl px-6"} lang="en">
-      <Link href={startupHref()} className="group flex flex-wrap items-center justify-between gap-4 border-y border-foreground/15 py-6">
+      <Link href={`${startupHref()}?from=${inArchive ? "archive" : "home"}`}
+        onClick={() => track("startup_promo_click", { placement: inArchive ? "archive" : "home" })} className="group flex flex-wrap items-center justify-between gap-4 border-y border-foreground/15 py-6">
         <div>
           <p className="mb-1 text-xs tracking-[.16em] uppercase text-foreground/60">Dailicle Startups</p>
           <p className="font-display text-2xl">Building something of your own?</p>

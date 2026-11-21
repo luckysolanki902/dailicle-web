@@ -1,7 +1,8 @@
+import { currentStartupAccount } from "@/lib/startup-google";
 import { NextRequest, NextResponse } from "next/server";
 import client from "@/lib/mongodb";
 import { startupListing } from "@/lib/startup-essays";
-import { cookieOptions, currentSubscription, newToken, tokenHash, validToken } from "@/lib/startup-membership";
+import { cookieOptions, newToken, subscriptionForAccount, tokenHash, validToken } from "@/lib/startup-membership";
 
 const cookie = "dailicle-startup-reader";
 type Reader = { _id: string; issue: number; firstSeen: Date; likedAt?: Date };
@@ -11,7 +12,11 @@ export async function recordStartupReadership(request: NextRequest) {
   if (typeof payload?.slug !== "string" || !/^[a-z0-9-]{1,100}$/.test(payload.slug) ||
       !["view", "like", "unlike"].includes(payload.action)) return new NextResponse(null, { status: 400 });
   const essay = await startupListing(payload.slug);
-  if (!essay || (essay._id > 1 && !await currentSubscription())) return new NextResponse(null, { status: 404 });
+  if (!essay) return new NextResponse(null, { status: 404 });
+  if (essay._id > 1) {
+    const account = await currentStartupAccount();
+    if (!account || !await subscriptionForAccount(account.subject)) return new NextResponse(null, { status: 404 });
+  }
 
   const existing = request.cookies.get(cookie)?.value ?? "";
   const established = validToken(existing);
