@@ -9,7 +9,7 @@ export const oauthCookie = "dailicle-startup-google-attempt";
 const maxAge = 60 * 60 * 24 * 30;
 export type StartupAccount = { subject: string; email: string };
 type GoogleSession = StartupAccount & { _id: string; expires: Date };
-type OAuthAttempt = { _id: string; state: string; verifier: string; expires: Date };
+type OAuthAttempt = { _id: string; state: string; verifier: string; returnTo?: "archive"; expires: Date };
 const sessions = async () => (await client).db("dailicle").collection<GoogleSession>("startup_google_sessions");
 const attempts = async () => (await client).db("dailicle").collection<OAuthAttempt>("startup_google_attempts");
 export const googleConfigured = () => Boolean(process.env.STARTUPS_GOOGLE_CLIENT_ID && process.env.STARTUPS_GOOGLE_CLIENT_SECRET);
@@ -25,12 +25,12 @@ export async function clearStartupAccount(token: string) {
   if (validToken(token)) await (await sessions()).deleteOne({ _id: tokenHash(token) });
 }
 
-export async function beginGoogleSignIn(callback: string) {
+export async function beginGoogleSignIn(callback: string, returnTo?: "archive") {
   const attempt = newToken();
   const state = newToken();
   const verifier = randomBytes(32).toString("base64url");
   const challenge = createHash("sha256").update(verifier).digest("base64url");
-  await (await attempts()).insertOne({ _id: tokenHash(attempt), state, verifier, expires: new Date(Date.now() + 600_000) });
+  await (await attempts()).insertOne({ _id: tokenHash(attempt), state, verifier, returnTo, expires: new Date(Date.now() + 600_000) });
   const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   url.search = new URLSearchParams({
     response_type: "code", client_id: process.env.STARTUPS_GOOGLE_CLIENT_ID!,
@@ -72,5 +72,5 @@ export async function finishGoogleSignIn(attempt: string, state: string, code: s
     // Stable Google subject makes this a one-time welcome, even across devices.
     await queueStartupMail(`google:${tokenHash(sub)}`, "account", email.toLowerCase());
   }
-  return { session, options: { ...cookieOptions, maxAge } };
+  return { session, returnTo: pending.returnTo, options: { ...cookieOptions, maxAge } };
 }

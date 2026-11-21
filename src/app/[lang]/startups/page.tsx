@@ -4,7 +4,7 @@ import { startupHref, startupPath } from "@/i18n/startups";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { hasStartupAccess, newToken, startupOffer, subscriptionForAccount } from "@/lib/startup-membership";
-import { startupIndex } from "@/lib/startup-essays";
+import { startupOpeningEssay } from "@/lib/startup-essays";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Dailicle Startups", description: "Independent essays on starting a company and finding customers.", alternates: { canonical: startupHref() } };
@@ -28,12 +28,11 @@ export default async function Startups({ params, searchParams }: {
   const { status = "", from } = await searchParams;
   const account = await currentStartupAccount();
   const subscription = account ? await subscriptionForAccount(account.subject) : null;
-  const [essays, price, member] = await Promise.all([
-    startupIndex(),
+  const [first, price, member] = await Promise.all([
+    startupOpeningEssay(),
     account ? startupOffer().catch(() => null) : null,
     subscription ? hasStartupAccess(subscription).catch(() => false) : false,
   ]);
-  const first = essays.find((essay) => essay._id === 1)!;
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -43,24 +42,20 @@ export default async function Startups({ params, searchParams }: {
         <p className="mt-5 max-w-xl font-serif text-xl leading-relaxed text-foreground/75">
           A Friday essay about the decisions you face when you start a company.
         </p>
-        <Link href={startupPath(first.slug)} className="mt-8 inline-flex rounded-full bg-foreground px-6 py-3 text-sm text-background hover:opacity-80">
-          Read the first essay free
-        </Link>
+        <div className="mt-8 flex flex-wrap items-center gap-4">
+          {first && <Link href={startupPath(first.slug)} className="inline-flex rounded-full bg-foreground px-6 py-3 text-sm text-background hover:opacity-80">Read the free essay</Link>}
+          <Link href={startupPath("archive")} className="px-2 text-sm underline underline-offset-4">Browse the archive</Link>
+        </div>
       </header>
-      <section aria-labelledby="startup-archive" className="border-y border-foreground/15 py-8">
-        <h2 id="startup-archive" className="text-sm font-medium">Essays</h2>
-        <ul className="mt-2 divide-y divide-foreground/10">
-          {essays.filter((essay) => account || essay._id === 1).map((essay) => (
-            <li key={essay._id}>
-              <Link href={startupPath(essay.slug)} className="group block py-5">
-                <p className="text-xs text-foreground/60">{essay._id === 1 ? "Free essay" : "Members"}</p>
-                <h3 className="mt-1 font-display text-3xl group-hover:underline decoration-1 underline-offset-4">{essay.title}</h3>
-                <p className="mt-1 max-w-xl text-foreground/70">{essay.dek}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {first && (
+        <section aria-labelledby="featured-startup" className="border-y border-foreground/15 py-8">
+          <p className="mb-2 text-xs tracking-[.14em] uppercase text-foreground/60">Free essay</p>
+          <h2 id="featured-startup" className="max-w-2xl font-serif text-3xl tracking-tight sm:text-4xl">
+            <Link className="hover:underline underline-offset-4" href={startupPath(first.slug)}>{first.title}</Link>
+          </h2>
+          <p className="mt-3 max-w-xl text-foreground/70">{first.dek}</p>
+        </section>
+      )}
       <section id="membership" className="py-10">
         <h2 className="font-display text-3xl">Membership</h2>
         <p className="mt-2 max-w-xl text-foreground/75">The first essay is free. Members get the Friday edition by email and can read the full startup archive.</p>

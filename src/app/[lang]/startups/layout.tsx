@@ -10,6 +10,7 @@ export default async function StartupLayout({ children, params }: { children: Re
         <Link href={lang === "en" ? SITE_URL : `${SITE_URL}/${lang}`} className="text-foreground/70 hover:underline">The Dailicle</Link>
         <span aria-hidden="true" className="text-foreground/40">/</span>
         <Link href={startupPath()} className="font-medium hover:underline">Startups</Link>
+        <Link href={startupPath("archive")} className="ml-auto font-medium hover:underline">Archive</Link>
       </nav>
       {children}
     </main>

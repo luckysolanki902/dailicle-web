@@ -16,24 +16,25 @@ export async function generateMetadata({ params }: Props) {
   const { lang, slug } = await params;
   const essay = await startupListing(slug, lang);
   if (!essay) return {};
-  if (essay._id > 1 && !await currentStartupAccount()) return { title: "Members’ essay", robots: { index: false, follow: true } };
-  return { title: essay.title, description: essay.dek, alternates: { canonical: startupHref(slug, essay.locales.includes(lang) ? lang : "en") }, robots: { index: essay._id === 1, follow: true } };
+  if (!essay.is_free && !await currentStartupAccount()) return { title: "Members’ essay", robots: { index: false, follow: true } };
+  return { title: essay.title, description: essay.dek, alternates: { canonical: startupHref(slug, essay.locales.includes(lang) ? lang : "en") }, robots: { index: essay.is_free === true, follow: true } };
 }
 
 export default async function StartupEssayPage({ params }: Props) {
   const { lang, slug } = await params;
+  if (slug === "the-cost-of-trying-it") redirect(startupHref("second-customer", lang));
   const essay = await startupListing(slug, lang);
   if (!essay) notFound();
-  const account = essay._id > 1 ? await currentStartupAccount() : null;
-  if (essay._id > 1 && !account) redirect(`${startupHref()}?status=sign-in-required#membership`);
+  const account = !essay.is_free ? await currentStartupAccount() : null;
+  if (!essay.is_free && !account) redirect(`${startupHref()}?status=sign-in-required#membership`);
   if (!essay.locales.includes(lang)) redirect(startupHref(slug));
   const id = account ? await subscriptionForAccount(account.subject) : null;
   const paid = id ? await hasStartupAccess(id).catch(() => false) : false;
   const body = await startupBody(slug, paid, lang);
 
   return (
-    <article lang={LOCALES[lang].htmlLang} data-clarity-mask={essay._id > 1 ? "true" : undefined} className="mx-auto max-w-2xl pb-20 pt-14 sm:pt-20">
-      <p className="text-xs tracking-[.14em] uppercase text-foreground/65">{essay._id === 1 ? "Free essay" : "Members’ essay"}</p>
+    <article lang={LOCALES[lang].htmlLang} data-clarity-mask={!essay.is_free ? "true" : undefined} className="mx-auto max-w-2xl pb-20 pt-14 sm:pt-20">
+      <p className="text-xs tracking-[.14em] uppercase text-foreground/65">{essay.is_free === true ? "Free essay" : "Members’ essay"}</p>
       <h1 className="mt-3 font-serif text-5xl tracking-tight sm:text-6xl">{essay.title}</h1>
       <p className="mt-5 font-serif text-xl text-foreground/75">{essay.dek}</p>
       {essay.locales.length > 1 && (

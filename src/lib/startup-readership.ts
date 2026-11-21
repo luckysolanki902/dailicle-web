@@ -13,7 +13,7 @@ export async function recordStartupReadership(request: NextRequest) {
       !["view", "like", "unlike"].includes(payload.action)) return new NextResponse(null, { status: 400 });
   const essay = await startupListing(payload.slug);
   if (!essay) return new NextResponse(null, { status: 404 });
-  if (essay._id > 1) {
+  if (!essay.is_free) {
     const account = await currentStartupAccount();
     if (!account || !await subscriptionForAccount(account.subject)) return new NextResponse(null, { status: 404 });
   }
