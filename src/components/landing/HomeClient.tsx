@@ -10,7 +10,6 @@ import { Ethos } from "@/components/landing/Ethos";
 import { ReadersByCountry } from "@/components/landing/ReadersByCountry";
 import type { ReadersData } from "@/lib/readers";
 import { ReaderWord } from "@/components/landing/ReaderWord";
-import { SupportThanks } from "@/components/landing/SupportThanks";
 import { RecentEssays } from "@/components/landing/RecentEssays";
 import { SupportButton } from "@/components/support/SupportButton";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
@@ -74,15 +73,14 @@ export function HomeClient({
       <ThemeSwitcher />
 
       <ThisWeek essay={hero} upcoming={!hero ? tease : null} />
+      <StartupPromo />
       {hero && <NextWeek topic={tease} />}
       <Ethos />
-      <StartupPromo />
       <ReadersByCountry data={readers} />
       <ReaderWord />
       <RecentEssays popular={popular} essays={cards} />
 
       <section className="mx-auto max-w-2xl px-6 pb-16 text-center">
-        <SupportThanks />
         <p className="font-serif text-base leading-relaxed text-foreground/60">
           {t("home.editorNote")}
         </p>

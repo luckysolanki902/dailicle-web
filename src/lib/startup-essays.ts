@@ -31,8 +31,8 @@ export async function startupIndex(): Promise<EssayListing[]> {
   return (await collection()).find(released()).project<EssayListing>(listingFields).sort({ published_at: -1 }).toArray();
 }
 
-export async function startupOpeningEssay(): Promise<EssayListing | null> {
-  return (await collection()).findOne<EssayListing>({ ...released(), is_free: true }, { projection: listingFields, sort: { published_at: -1 } });
+export async function startupLatestEssay(): Promise<EssayListing | null> {
+  return (await collection()).findOne<EssayListing>(released(), { projection: listingFields, sort: { published_at: -1 } });
 }
 
 export async function startupListing(slug: string, locale = "en"): Promise<(EssayListing & { locales: string[] }) | null> {

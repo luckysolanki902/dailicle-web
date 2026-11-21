@@ -136,8 +136,8 @@ export async function GET(request: NextRequest, { params }: Context) {
       );
       if (!signIn) return go(request, "?status=google-failed");
       await clearStartupAccount(request.cookies.get(accountCookie)?.value ?? "");
-      const response = signIn.returnTo === "archive"
-        ? NextResponse.redirect(new URL(startupPath("archive"), appOrigin(request)), 303) : go(request);
+      const response = signIn.returnTo && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(signIn.returnTo)
+        ? NextResponse.redirect(new URL(startupPath(signIn.returnTo), appOrigin(request)), 303) : go(request);
       response.headers.set("Cache-Control", "private, no-store");
       response.cookies.set(accountCookie, signIn.session, signIn.options);
       response.cookies.set(oauthCookie, "", { ...cookieOptions, maxAge: 0 });
@@ -229,7 +229,9 @@ export async function POST(request: NextRequest, { params }: Context) {
     if (action === "subscribe") return await start(request, await request.formData());
     if (action === "google") {
       if (!googleConfigured()) return go(request, "?status=google-unavailable");
-      const signIn = await beginGoogleSignIn(`${appOrigin(request)}/api/startups/google-callback`, request.nextUrl.searchParams.get("next") === "archive" ? "archive" : undefined);
+      const next = request.nextUrl.searchParams.get("next") ?? "";
+      const returnTo = next.length <= 100 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(next) ? next : undefined;
+      const signIn = await beginGoogleSignIn(`${appOrigin(request)}/api/startups/google-callback`, returnTo);
       const response = NextResponse.redirect(signIn.url, 303);
       response.headers.set("Cache-Control", "private, no-store");
       response.cookies.set(oauthCookie, signIn.attempt, signIn.options);

@@ -5,19 +5,20 @@ import { startupHref } from "@/i18n/startups";
 import Link from "next/link";
 
 export function StartupPromo({ inArchive = false }: { inArchive?: boolean }) {
+  const placement = inArchive ? "archive" : "home";
   return (
-    <aside className={inArchive ? "mb-10" : "mx-auto my-12 max-w-2xl px-6"} lang="en">
-      <Link href={`${startupHref()}?from=${inArchive ? "archive" : "home"}`}
-        onClick={() => track("startup_promo_click", { placement: inArchive ? "archive" : "home" })} className="group flex flex-wrap items-center justify-between gap-4 border-y border-foreground/15 py-6">
-        <div>
-          <p className="mb-1 text-xs tracking-[.16em] uppercase text-foreground/60">Dailicle Startups</p>
-          <p className="font-display text-2xl">Building something of your own?</p>
-          <p className="mt-1 max-w-sm text-sm leading-relaxed text-foreground/65">
-            Friday essays about finding customers and deciding what to build next.
+    <aside className={inArchive ? "mb-10" : "mx-auto my-8 max-w-3xl px-6"} lang="en">
+      <Link href={`${startupHref()}?from=${placement}`}
+        onClick={() => track("startup_promo_click", { placement })}
+        className="group flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-[#4e6854] bg-[#293c30] px-6 py-6 text-[#f7f3e8] transition-colors hover:bg-[#334b3b] focus-visible:outline-2 focus-visible:outline-offset-4 sm:px-8">
+        <div className="min-w-0">
+          <p className="font-display text-3xl tracking-tight">Dailicle Startups</p>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-[#e2e8dd]">
+            A Friday publication for people building a company, from finding your first customers to deciding what to build next.
           </p>
         </div>
-        <span className="text-sm underline decoration-foreground/35 underline-offset-4 group-hover:decoration-current">
-          Read a free essay <span aria-hidden="true">↗</span>
+        <span className="whitespace-nowrap text-sm font-semibold underline decoration-[#9bb6a1] underline-offset-4">
+          Explore Startups <span aria-hidden="true">↗</span>
         </span>
       </Link>
     </aside>

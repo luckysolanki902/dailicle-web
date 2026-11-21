@@ -1,4 +1,4 @@
-import { currentStartupAccount } from "@/lib/startup-google";
+import { currentStartupAccount, googleConfigured } from "@/lib/startup-google";
 import { StartupFeedback } from "@/components/startups/StartupFeedback";
 import { LOCALES } from "@/i18n/config";
 import { startupHref, startupPath } from "@/i18n/startups";
@@ -16,7 +16,6 @@ export async function generateMetadata({ params }: Props) {
   const { lang, slug } = await params;
   const essay = await startupListing(slug, lang);
   if (!essay) return {};
-  if (!essay.is_free && !await currentStartupAccount()) return { title: "Members’ essay", robots: { index: false, follow: true } };
   return { title: essay.title, description: essay.dek, alternates: { canonical: startupHref(slug, essay.locales.includes(lang) ? lang : "en") }, robots: { index: essay.is_free === true, follow: true } };
 }
 
@@ -26,7 +25,6 @@ export default async function StartupEssayPage({ params }: Props) {
   const essay = await startupListing(slug, lang);
   if (!essay) notFound();
   const account = !essay.is_free ? await currentStartupAccount() : null;
-  if (!essay.is_free && !account) redirect(`${startupHref()}?status=sign-in-required#membership`);
   if (!essay.locales.includes(lang)) redirect(startupHref(slug));
   const id = account ? await subscriptionForAccount(account.subject) : null;
   const paid = id ? await hasStartupAccess(id).catch(() => false) : false;
@@ -34,7 +32,7 @@ export default async function StartupEssayPage({ params }: Props) {
 
   return (
     <article lang={LOCALES[lang].htmlLang} data-clarity-mask={!essay.is_free ? "true" : undefined} className="mx-auto max-w-2xl pb-20 pt-14 sm:pt-20">
-      <p className="text-xs tracking-[.14em] uppercase text-foreground/65">{essay.is_free === true ? "Free essay" : "Members’ essay"}</p>
+      <Link href={startupPath("archive")} className="text-sm underline underline-offset-4">All essays</Link>
       <h1 className="mt-3 font-serif text-5xl tracking-tight sm:text-6xl">{essay.title}</h1>
       <p className="mt-5 font-serif text-xl text-foreground/75">{essay.dek}</p>
       {essay.locales.length > 1 && (
@@ -54,9 +52,19 @@ export default async function StartupEssayPage({ params }: Props) {
           </div>
         ) : (
           <section>
-            <h2 className="font-display text-3xl">Continue with membership</h2>
-            <p className="mt-3 text-foreground/75">Subscribe or sign in to read this essay and the startup archive.</p>
-            <Link href={`${startupPath()}#membership`} className="mt-5 inline-flex rounded-full bg-foreground px-6 py-3 text-sm text-background">Membership and sign-in</Link>
+            <h2 className="font-display text-3xl">Subscribe to continue reading</h2>
+            {account ? (
+              <Link href={`${startupPath()}#membership`} className="mt-5 inline-flex rounded-full bg-foreground px-6 py-3 text-sm text-background">View membership</Link>
+            ) : (
+              <>
+                <p className="mt-3 text-foreground/75">Sign in with Google to check your access or subscribe.</p>
+                {googleConfigured() ? (
+                  <form method="post" action={`/api/startups/google?next=${encodeURIComponent(slug)}`} className="mt-5">
+                    <button className="rounded-full bg-foreground px-6 py-3 text-sm text-background">Sign in with Google</button>
+                  </form>
+                ) : <p role="status" className="mt-4 text-sm text-foreground/65">Google sign-in is temporarily unavailable.</p>}
+              </>
+            )}
           </section>
         )}
       </div>

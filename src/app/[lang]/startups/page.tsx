@@ -4,7 +4,7 @@ import { startupHref, startupPath } from "@/i18n/startups";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { hasStartupAccess, newToken, startupOffer, subscriptionForAccount } from "@/lib/startup-membership";
-import { startupOpeningEssay } from "@/lib/startup-essays";
+import { startupLatestEssay } from "@/lib/startup-essays";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Dailicle Startups", description: "Independent essays on starting a company and finding customers.", alternates: { canonical: startupHref() } };
@@ -29,7 +29,7 @@ export default async function Startups({ params, searchParams }: {
   const account = await currentStartupAccount();
   const subscription = account ? await subscriptionForAccount(account.subject) : null;
   const [first, price, member] = await Promise.all([
-    startupOpeningEssay(),
+    startupLatestEssay(),
     account ? startupOffer().catch(() => null) : null,
     subscription ? hasStartupAccess(subscription).catch(() => false) : false,
   ]);
@@ -43,13 +43,13 @@ export default async function Startups({ params, searchParams }: {
           A Friday essay about the decisions you face when you start a company.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-4">
-          {first && <Link href={startupPath(first.slug)} className="inline-flex rounded-full bg-foreground px-6 py-3 text-sm text-background hover:opacity-80">Read the free essay</Link>}
+          {first && <Link href={startupPath(first.slug)} className="inline-flex rounded-full bg-foreground px-6 py-3 text-sm text-background hover:opacity-80">Read the latest essay</Link>}
           <Link href={startupPath("archive")} className="px-2 text-sm underline underline-offset-4">Browse the archive</Link>
         </div>
       </header>
       {first && (
         <section aria-labelledby="featured-startup" className="border-y border-foreground/15 py-8">
-          <p className="mb-2 text-xs tracking-[.14em] uppercase text-foreground/60">Free essay</p>
+          <p className="mb-2 text-xs tracking-[.14em] uppercase text-foreground/60">Latest essay</p>
           <h2 id="featured-startup" className="max-w-2xl font-serif text-3xl tracking-tight sm:text-4xl">
             <Link className="hover:underline underline-offset-4" href={startupPath(first.slug)}>{first.title}</Link>
           </h2>
@@ -58,7 +58,7 @@ export default async function Startups({ params, searchParams }: {
       )}
       <section id="membership" className="py-10">
         <h2 className="font-display text-3xl">Membership</h2>
-        <p className="mt-2 max-w-xl text-foreground/75">The first essay is free. Members get the Friday edition by email and can read the full startup archive.</p>
+        <p className="mt-2 max-w-xl text-foreground/75">Members get the Friday edition by email and can read the full startup archive.</p>
         {Object.hasOwn(notices, status) && <p role="status" className="mt-4 text-sm">{notices[status]}</p>}
         {status === "pending" && <Link href="/api/startups/return" prefetch={false} className="mt-2 inline-block text-sm underline">Check PayPal again</Link>}
         {subscription && !member && status !== "pending" && (

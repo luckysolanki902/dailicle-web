@@ -9,7 +9,7 @@ export const oauthCookie = "dailicle-startup-google-attempt";
 const maxAge = 60 * 60 * 24 * 30;
 export type StartupAccount = { subject: string; email: string };
 type GoogleSession = StartupAccount & { _id: string; expires: Date };
-type OAuthAttempt = { _id: string; state: string; verifier: string; returnTo?: "archive"; expires: Date };
+type OAuthAttempt = { _id: string; state: string; verifier: string; returnTo?: string; expires: Date };
 const sessions = async () => (await client).db("dailicle").collection<GoogleSession>("startup_google_sessions");
 const attempts = async () => (await client).db("dailicle").collection<OAuthAttempt>("startup_google_attempts");
 export const googleConfigured = () => Boolean(process.env.STARTUPS_GOOGLE_CLIENT_ID && process.env.STARTUPS_GOOGLE_CLIENT_SECRET);
@@ -25,7 +25,7 @@ export async function clearStartupAccount(token: string) {
   if (validToken(token)) await (await sessions()).deleteOne({ _id: tokenHash(token) });
 }
 
-export async function beginGoogleSignIn(callback: string, returnTo?: "archive") {
+export async function beginGoogleSignIn(callback: string, returnTo?: string) {
   const attempt = newToken();
   const state = newToken();
   const verifier = randomBytes(32).toString("base64url");
