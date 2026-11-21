@@ -7,6 +7,8 @@ import {
   type Locale,
 } from "@/i18n/config";
 
+import { startupOrigin, startupHref } from "@/i18n/startups";
+
 const COOKIE = "NEXT_LOCALE";
 
 function cookieLocale(req: NextRequest): Locale | null {
@@ -36,6 +38,26 @@ function geoLocale(req: NextRequest): Locale | null {
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
   const seg = pathname.split("/")[1];
+
+  if (startupOrigin) {
+    const onStartupDomain = req.headers.get("host")?.toLowerCase() === new URL(startupOrigin).host;
+    const startupRoute = pathname.match(/^\/(?:([a-z]{2})\/)?startups(?:\/([a-z0-9-]+))?\/?$/);
+    if (startupRoute && !onStartupDomain) {
+      const destination = new URL(startupHref(startupRoute[2], startupRoute[1]));
+      destination.search = search;
+      return NextResponse.redirect(destination, 308);
+    }
+    if (onStartupDomain) {
+      const parts = pathname.split("/").filter(Boolean);
+      const locale = PREFIXED_LOCALES.includes(parts[0]) ? parts.shift()! : DEFAULT_LOCALE;
+      if (parts.length > 1 || (parts[0] && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(parts[0]))) {
+        return new NextResponse(null, { status: 404 });
+      }
+      const url = req.nextUrl.clone();
+      url.pathname = `/${locale}/startups${parts[0] ? `/${parts[0]}` : ""}`;
+      return NextResponse.rewrite(url);
+    }
+  }
 
   // Already an explicitly-prefixed non-default locale: let it render.
   if (PREFIXED_LOCALES.includes(seg)) {

@@ -197,3 +197,25 @@ select:focus-visible {
   );
 }
 
+
+/* Dailicle Startups uses the shared typography with its own paper and ink. */
+body:has(.startup-publication) .main-publication-chrome {
+  display: none;
+}
+
+.startup-publication {
+  --background: #f6f3e9;
+  --foreground: #242b25;
+  --accent: #425a47;
+  background: var(--background);
+  color: var(--foreground);
+  color-scheme: light;
+}
+
+.theme-dark .startup-publication,
+.theme-space .startup-publication {
+  --background: #202720;
+  --foreground: #eeede0;
+  --accent: #afc5ad;
+  color-scheme: dark;
+}

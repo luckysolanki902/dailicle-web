@@ -232,9 +232,10 @@ export function paypalWebhookConfigured(): boolean {
  */
 export async function verifyPaypalWebhook(
   headers: Headers,
-  event: unknown
+  event: unknown,
+  webhookId = WEBHOOK_ID
 ): Promise<boolean> {
-  if (!WEBHOOK_ID) return false;
+  if (!webhookId) return false;
   const required = [
     "paypal-auth-algo",
     "paypal-cert-url",
@@ -258,7 +259,7 @@ export async function verifyPaypalWebhook(
         transmission_id: got["paypal-transmission-id"],
         transmission_sig: got["paypal-transmission-sig"],
         transmission_time: got["paypal-transmission-time"],
-        webhook_id: WEBHOOK_ID,
+        webhook_id: webhookId,
         webhook_event: event,
       },
     });
@@ -359,4 +360,35 @@ export function referenceFrom(order: Record<string, unknown>): string | null {
   const units = Array.isArray(order.purchase_units) ? order.purchase_units : [];
   const unit = (units[0] ?? {}) as Record<string, unknown>;
   return str(unit.custom_id, 64) ?? str(unit.reference_id, 64);
+}
+
+export function getPaypalStartupPlan(planId: string) {
+  return api(`/v1/billing/plans/${encodeURIComponent(planId)}`);
+}
+
+export function createPaypalStartupSubscription(planId: string, state: string, returnUrl: string, cancelUrl: string) {
+  return api("/v1/billing/subscriptions", {
+    method: "POST",
+    requestId: state,
+    body: {
+      plan_id: planId,
+      custom_id: state,
+      application_context: {
+        brand_name: "The Dailicle",
+        shipping_preference: "NO_SHIPPING",
+        user_action: "SUBSCRIBE_NOW",
+        return_url: returnUrl,
+        cancel_url: cancelUrl,
+      },
+    },
+  });
+}
+
+export function getPaypalStartupSubscription(id: string) {
+  return api(`/v1/billing/subscriptions/${encodeURIComponent(id)}`);
+}
+
+export function getPaypalStartupTransactions(id: string, start: Date, end: Date) {
+  const range = new URLSearchParams({ start_time: start.toISOString(), end_time: end.toISOString() });
+  return api(`/v1/billing/subscriptions/${encodeURIComponent(id)}/transactions?${range}`);
 }

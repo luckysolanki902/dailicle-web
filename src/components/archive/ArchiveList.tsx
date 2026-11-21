@@ -1,5 +1,6 @@
 "use client";
 
+import { StartupPromo } from "@/components/startups/StartupPromo";
 import React, { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { LocalizedLink as Link } from "@/i18n/Link";
@@ -202,6 +203,8 @@ export function ArchiveList({ current, legacy }: ArchiveListProps) {
         <h1 className="font-display text-4xl md:text-5xl tracking-tight">{t("archive.title")}</h1>
         <p className="text-foreground/55 text-base">{t("archive.subtitle")}</p>
       </header>
+
+      <StartupPromo inArchive />
 
       {/* Controls */}
       <div className="mb-12 space-y-5">

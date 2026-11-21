@@ -1,5 +1,6 @@
 "use client";
 
+import { StartupPromo } from "@/components/startups/StartupPromo";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { LocalizedLink as Link } from "@/i18n/Link";
@@ -75,6 +76,7 @@ export function HomeClient({
       <ThisWeek essay={hero} upcoming={!hero ? tease : null} />
       {hero && <NextWeek topic={tease} />}
       <Ethos />
+      <StartupPromo />
       <ReadersByCountry data={readers} />
       <ReaderWord />
       <RecentEssays popular={popular} essays={cards} />

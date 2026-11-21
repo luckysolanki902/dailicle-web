@@ -170,10 +170,9 @@ export default async function RootLayout({
         <I18nProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <SupportProvider>
-              <Navbar />
-              <MobileSupportPill />
+              <div className="main-publication-chrome"><Navbar /><MobileSupportPill /></div>
               {children}
-              <Footer />
+              <div className="main-publication-chrome"><Footer /></div>
               <Analytics />
               <AnalyticsProvider />
             </SupportProvider>
